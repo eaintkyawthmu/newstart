@@ -1,0 +1,360 @@
+import React, { ReactNode, useState, useEffect } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
+import { useLanguage } from '../contexts/LanguageContext';
+import { useAuth } from '../contexts/AuthContext';
+import { usePremiumAccess } from '../hooks/usePremiumAccess';
+import { supabase } from '../lib/supabaseClient';
+import ProfileMenu from '../components/ProfileMenu';
+import {
+  LayoutDashboard,
+  BookOpen,
+  LifeBuoy,
+  ChevronRight,
+  ChevronLeft,
+  Map,
+  Users,
+  MessageSquare,
+  Crown,
+  Settings,
+  CreditCard,
+  Globe,
+  RotateCcw,
+  Download,
+  Award
+} from 'lucide-react';
+import { BottomNavBar, MobileHeader, MobileMenu } from '../components/navigation';
+
+type DashboardLayoutProps = {
+  children: ReactNode;
+};
+
+const DashboardLayout = ({ children }: DashboardLayoutProps) => {
+  const { language, toggleLanguage } = useLanguage();
+  const { user } = useAuth();
+  const { hasPremiumAccess, premiumTier } = usePremiumAccess();
+  const navigate = useNavigate();
+  const location = useLocation();
+  const [isCollapsed, setIsCollapsed] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(false);
+
+  const baseMenuItems = [
+    {
+      path: '/dashboard',
+      icon: LayoutDashboard,
+      label: language === 'en' ? 'Dashboard' : 'ဒက်ရှ်ဘုတ်'
+    },
+    {
+      path: '/journey',
+      icon: Map,
+      label: language === 'en' ? 'Journey Hub' : 'ခရီးစဉ်စင်တာ'
+    },
+    {
+      path: '/library',
+      icon: BookOpen,
+      label: language === 'en' ? 'Library' : 'စာကြည့်တိုက်'
+    },
+    {
+      path: '/milestones',
+      icon: Award,
+      label: language === 'en' ? 'Milestones' : 'မှတ်တိုင်များ'
+    },
+    {
+      path: '/chat',
+      icon: MessageSquare,
+      label: language === 'en' ? 'Chat with Mini Angel' : 'Mini Angel နှင့် စကားပြောရန်'
+    },
+    {
+      path: '/consultation',
+      icon: Users,
+      label: language === 'en' ? 'Community' : 'အသိုင်းအဝိုင်း'
+    },
+    {
+      path: '/help',
+      icon: LifeBuoy,
+      label: language === 'en' ? 'Help' : 'အကူအညီ'
+    }
+  ];
+
+  // Add admin menu item conditionally
+  const menuItems = isAdmin
+    ? [...baseMenuItems, {
+        path: '/admin',
+        icon: Settings,
+        label: 'Admin Dashboard'
+      }]
+    : baseMenuItems;
+
+  // Check admin status
+  useEffect(() => {
+    const checkAdminStatus = async () => {
+      if (!user) {
+        setIsAdmin(false);
+        return;
+      }
+
+      try {
+        const { data, error } = await supabase
+          .from('profiles')
+          .select('role')
+          .eq('id', user.id)
+          .maybeSingle();
+
+        if (error) {
+          console.error('Error checking admin status:', error);
+          setIsAdmin(false);
+          return;
+        }
+
+        setIsAdmin(data?.role === 'admin');
+      } catch (error) {
+        console.error('Error checking admin status:', error);
+        setIsAdmin(false);
+      }
+    };
+
+    checkAdminStatus();
+  }, [user]);
+
+  // Set initial collapsed state based on screen size
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth < 1024) {
+        setIsCollapsed(true);
+      }
+    };
+
+    // Set initial state
+    handleResize();
+
+    // Add event listener
+    window.addEventListener('resize', handleResize);
+
+    // Cleanup
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  const toggleMobileMenu = () => {
+    setIsMobileMenuOpen(!isMobileMenuOpen);
+  };
+
+  const toggleProfileMenu = () => {
+    setIsProfileMenuOpen(!isProfileMenuOpen);
+  };
+
+  const handleMenuItemClick = (path: string) => {
+    navigate(path);
+    setIsMobileMenuOpen(false); // Close mobile menu after navigation
+  };
+
+  // Determine if we should show back button instead of menu toggle
+  const showBackButton = () => {
+    const pathsWithBackButton = [
+      '/courses/',
+      '/steps/',
+      '/profile-setup',
+      '/subscription',
+      '/admin/users/'
+    ];
+
+    return pathsWithBackButton.some(path => location.pathname.includes(path));
+  };
+
+  // Determine back button destination
+  const getBackPath = () => {
+    if (location.pathname.includes('/courses/')) {
+      return '/journey';
+    }
+    if (location.pathname.includes('/steps/')) {
+      return '/journey';
+    }
+    if (location.pathname.startsWith('/admin/users/')) {
+      return '/admin';
+    }
+    return '/dashboard';
+  };
+
+  // Get custom right content for specific pages
+  const getRightContent = () => {
+    if (location.pathname === '/chat') {
+      return (
+        <div className="flex items-center space-x-2">
+          <button
+            onClick={() => {
+              // Clear conversation functionality would go here
+              window.dispatchEvent(new CustomEvent('clear-chat'));
+            }}
+            className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+            title={language === 'en' ? 'Clear conversation' : 'စကားပြောမှုကို ရှင်းလင်းရန်'}
+          >
+            <RotateCcw className="h-5 w-5 text-gray-600" />
+          </button>
+          <button
+            onClick={() => {
+              // Export conversation functionality would go here
+              window.dispatchEvent(new CustomEvent('export-chat'));
+            }}
+            className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+            title={language === 'en' ? 'Export conversation' : 'စကားပြောမှုကို ထုတ်ယူရန်'}
+          >
+            <Download className="h-5 w-5 text-gray-600" />
+          </button>
+        </div>
+      );
+    }
+    
+    // For courses and lessons, we might want to add a completion button
+    if (location.pathname.includes('/courses/') && location.pathname.includes('/lessons/')) {
+      return (
+        <button
+          onClick={() => {
+            // Toggle completion functionality would go here
+            window.dispatchEvent(new CustomEvent('toggle-lesson-completion'));
+          }}
+          className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+        >
+          {/* This would be a dynamic icon based on completion status */}
+        </button>
+      );
+    }
+    
+    // Default is just the language toggle
+    return null;
+  };
+
+  return (
+    <div className="min-h-screen bg-gray-50 flex">
+      {/* Desktop Sidebar - Visible only on md and larger screens */}
+      <aside
+        className={`hidden md:flex flex-col fixed top-0 h-screen bg-white border-r border-gray-200 z-40 transition-all duration-300 ease-in-out shadow-lg overflow-y-auto overflow-x-hidden hide-scrollbar ${
+          isCollapsed ? 'w-16' : 'w-80'
+        }`}
+      >
+        {/* Sidebar Header with Logo and Collapse Toggle */}
+        <div className="h-16 border-b border-gray-100 flex items-center justify-between px-4">
+          <div className="flex items-center overflow-hidden">
+            <CreditCard className="h-6 w-6 text-blue-600 flex-shrink-0" />
+            {!isCollapsed && (
+              <span className="ml-3 font-semibold text-gray-900 truncate">My New Start</span>
+            )}
+          </div>
+          {/* Desktop Collapse Toggle */}
+          <button
+            onClick={() => setIsCollapsed(!isCollapsed)}
+            className="hidden md:flex items-center justify-center w-8 h-8 rounded-full hover:bg-gray-100 transition-colors"
+            aria-label={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
+          >
+            {isCollapsed ? (
+              <ChevronRight className="h-5 w-5 text-gray-500" />
+            ) : (
+              <ChevronLeft className="h-5 w-5 text-gray-500" />
+            )}
+          </button>
+        </div>
+
+        {/* Navigation Menu */}
+        <nav className="flex-1 p-4 min-h-0">
+          <div className="space-y-2">
+            {menuItems.map((item) => {
+              const isActive = location.pathname === item.path || 
+                (location.pathname.startsWith(`${item.path}/`) && item.path !== '/') ||
+                (item.path === '/journey' && location.pathname.startsWith('/courses'));
+                
+              return (
+                <button
+                  key={item.path}
+                  onClick={() => handleMenuItemClick(item.path)}
+                  className={`w-full flex items-center ${isCollapsed ? 'justify-center' : ''} px-3 py-3 rounded-md transition-colors text-left ${
+                    isActive
+                      ? 'bg-blue-100 text-blue-800 border border-blue-300'
+                      : 'text-gray-700 hover:bg-gray-100'
+                  }`}
+                  aria-current={isActive ? 'page' : undefined}
+                >
+                  <item.icon className={`h-6 w-6 flex-shrink-0 ${isActive ? 'text-blue-600' : 'text-gray-500'}`} />
+                  {!isCollapsed && (
+                    <span className="ml-3 font-medium truncate">{item.label}</span>
+                  )}
+                </button>
+              );
+            })}
+          </div>
+
+          {/* Premium Upgrade Button */}
+          {!isCollapsed && !hasPremiumAccess && (
+            <div className="mt-6 pt-6 border-t border-gray-200">
+              <button
+                onClick={() => navigate('/subscription')}
+                className="w-full flex items-center px-4 py-3 bg-gradient-to-r from-purple-600 to-indigo-600 text-white rounded-lg hover:from-purple-700 hover:to-indigo-700 transition-colors"
+              >
+                <Crown className="h-5 w-5 mr-3 flex-shrink-0" />
+                <span className="font-medium">
+                  {language === 'en' ? 'Upgrade to Premium' : 'Premium သို့ အဆင့်မြှင့်ရန်'}
+                </span>
+              </button>
+            </div>
+          )}
+        </nav>
+
+        {/* Sidebar Footer with Profile Menu */}
+        <div className="p-4 border-t border-gray-200">
+          <ProfileMenu
+            isOpen={isProfileMenuOpen}
+            onToggle={toggleProfileMenu}
+            isCollapsed={isCollapsed}
+          />
+        </div>
+      </aside>
+
+      {/* Overlay for mobile - only visible when mobile menu is open */}
+      {isMobileMenuOpen && (
+        <div
+          className="fixed inset-0 bg-black bg-opacity-50 z-30 md:hidden"
+          onClick={toggleMobileMenu}
+          aria-hidden="true"
+        />
+      )}
+
+      {/* Main Content Area */}
+      <div className="flex-1 flex flex-col min-h-screen md:ml-16 lg:ml-80">
+        {/* Mobile Header (Visible only on mobile) */}
+        <div className="md:hidden">
+          <MobileHeader
+            onMenuToggle={toggleMobileMenu}
+            showBackButton={showBackButton()}
+            backPath={getBackPath()}
+            rightContent={getRightContent()}
+          />
+        </div>
+
+        {/* Mobile Menu (Controlled by isMobileMenuOpen, visible only on mobile) */}
+        <MobileMenu
+          isOpen={isMobileMenuOpen}
+          onClose={() => setIsMobileMenuOpen(false)}
+          menuItems={menuItems}
+        />
+
+        {/* Page Content */}
+        <main className="flex-1 overflow-auto p-4 md:p-6 lg:p-8 pb-safe pt-0 md:pt-6 hide-scrollbar">
+          <div className="max-w-7xl mx-auto">
+            {/* Main Content */}
+            {children}
+          </div>
+        </main>
+
+        {/* Footer */}
+        <footer className="bg-white py-4 border-t border-gray-200 mt-auto hidden md:block">
+          <div className="container mx-auto px-4 text-center text-gray-500 text-sm">
+            &copy; {new Date().getFullYear()} My New Start. All rights reserved.
+          </div>
+        </footer>
+
+        {/* Mobile Bottom Navigation (Visible only on mobile) */}
+        <BottomNavBar />
+      </div>
+    </div>
+  );
+};
+
+export default DashboardLayout;

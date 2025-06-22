@@ -1,0 +1,1 @@
+-- This migration file has been removed as it was only for demo user creation

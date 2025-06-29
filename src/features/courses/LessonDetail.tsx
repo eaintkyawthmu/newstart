@@ -492,7 +492,7 @@ const LessonDetail = () => {
       >
         {/* Desktop Navigation Tabs - Hidden on Mobile */}
         <div className="hidden md:block border-b border-gray-200 mb-6 w-full">
-          <div className="max-w-6xl mx-auto"> {/* Added this wrapper div */}
+          <div className="max-w-6xl mx-auto">
             <LessonNavigation 
               availablePages={availablePages}
               currentPage={currentPage}

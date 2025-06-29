@@ -20,7 +20,7 @@ const LessonNavigation: React.FC<LessonNavigationProps> = ({
   
   if (isDesktop) {
     return (
-      <div className="flex justify-center">
+      <div className="flex justify-center w-full">
         {availablePages.map((page) => (
           <button
             key={page}

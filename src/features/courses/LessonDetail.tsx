@@ -491,16 +491,13 @@ const LessonDetail = () => {
         ref={contentRef}
       >
         {/* Desktop Navigation Tabs - Hidden on Mobile */}
-        {/* CRUCIAL CHANGE: Move border-b inside the max-w-6xl wrapper */}
-        <div className="hidden md:block w-full"> {/* Removed border-b from here */}
-          <div className="max-w-6xl mx-auto border-b border-gray-200 mb-6"> {/* Added border-b here */}
-            <LessonNavigation 
-              availablePages={availablePages}
-              currentPage={currentPage}
-              goToPage={goToPage}
-              isDesktop={true}
-            />
-          </div>
+        <div className="hidden md:block w-full max-w-6xl mx-auto border-b border-gray-200 mb-6">
+          <LessonNavigation 
+            availablePages={availablePages}
+            currentPage={currentPage}
+            goToPage={goToPage}
+            isDesktop={true}
+          />
         </div>
         
         <div className="max-w-6xl mx-auto">

@@ -19,9 +19,8 @@ const LessonNavigation: React.FC<LessonNavigationProps> = ({
   const { language } = useLanguage();
   
   if (isDesktop) {
-    // CHANGE HERE: Removed 'justify-center' from this div
     return (
-      <div className="flex w-full"> {/* This flex container will now fill its parent's width */}
+      <div className="flex w-full">
         {availablePages.map((page) => (
           <button
             key={page}
@@ -45,7 +44,7 @@ const LessonNavigation: React.FC<LessonNavigationProps> = ({
 
   return (
     <div className="fixed top-14 left-0 right-0 z-30 bg-white border-b border-gray-200 overflow-x-auto hide-scrollbar whitespace-nowrap px-2 py-1">
-      <div className="flex justify-center"> {/* This retains justify-center for mobile */}
+      <div className="flex justify-center">
         {availablePages.map((page) => (
           <button
             key={page}

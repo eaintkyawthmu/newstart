@@ -24,7 +24,7 @@ const Button: React.FC<ButtonProps> = ({
   ...props
 }) => {
   // Base classes
-  const baseClasses = 'inline-flex items-center justify-center font-medium rounded-lg transition-colors duration-200 touch-target focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2';
+  const baseClasses = 'inline-flex items-center justify-center font-medium rounded-xl transition-all duration-200 touch-target focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2';
   
   // Size classes
   const sizeClasses = {
@@ -35,11 +35,11 @@ const Button: React.FC<ButtonProps> = ({
   
   // Variant classes
   const variantClasses = {
-    primary: 'bg-blue-600 text-white hover:bg-blue-700 focus-visible:ring-blue-500 disabled:bg-blue-300',
+    primary: 'bg-primary-600 text-white hover:bg-primary-700 focus-visible:ring-primary-500 disabled:bg-primary-300 shadow-soft-sm hover:shadow-soft',
     secondary: 'bg-gray-100 text-gray-800 hover:bg-gray-200 focus-visible:ring-gray-500 disabled:bg-gray-100 disabled:text-gray-400',
-    outline: 'bg-white text-gray-700 border border-gray-300 hover:bg-gray-50 focus-visible:ring-blue-500 disabled:text-gray-300',
+    outline: 'bg-white text-gray-700 border border-gray-300 hover:bg-gray-50 focus-visible:ring-primary-500 disabled:text-gray-300 shadow-soft-sm',
     ghost: 'bg-transparent text-gray-700 hover:bg-gray-100 focus-visible:ring-gray-500 disabled:text-gray-300',
-    danger: 'bg-red-600 text-white hover:bg-red-700 focus-visible:ring-red-500 disabled:bg-red-300'
+    danger: 'bg-error-600 text-white hover:bg-error-700 focus-visible:ring-error-500 disabled:bg-error-300 shadow-soft-sm'
   };
   
   // Width classes

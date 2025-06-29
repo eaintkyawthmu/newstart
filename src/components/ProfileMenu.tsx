@@ -79,8 +79,8 @@ const ProfileMenu = ({ isOpen, onToggle, isCollapsed }: ProfileMenuProps) => {
       >
         <div className="flex items-center justify-center min-w-0">
           <div className="flex-shrink-0">
-            <div className="w-10 h-10 rounded-full bg-gradient-to-r from-blue-500 to-blue-600 flex items-center justify-center text-white">
-              <UserCircle className="h-6 w-6" />
+            <div className="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center text-gray-500">
+              <UserCircle className="h-5 w-5" />
             </div>
           </div>
           {!isCollapsed && (
@@ -88,15 +88,12 @@ const ProfileMenu = ({ isOpen, onToggle, isCollapsed }: ProfileMenuProps) => {
               <p className="text-sm font-medium text-gray-900 truncate m-0">
                 {userProfile?.first_name ? `${userProfile.first_name} ${userProfile.last_name || ''}` : 'My Profile'}
               </p>
-              <p className="text-xs text-gray-500 truncate m-0">
-                {language === 'en' ? 'View profile' : 'ပရိုဖိုင်ကြည့်ရန်'}
-              </p>
             </div>
           )}
         </div>
         {!isCollapsed && (
           <ChevronDown
-            className={`h-5 w-5 text-gray-400 transition-transform duration-200 ${
+            className={`h-4 w-4 text-gray-400 transition-transform duration-200 ${
               isOpen ? 'transform rotate-180' : ''
             }`}
           />
@@ -105,8 +102,8 @@ const ProfileMenu = ({ isOpen, onToggle, isCollapsed }: ProfileMenuProps) => {
 
       {/* Dropdown */}
       {isOpen && (
-        <div className={`absolute bottom-full mb-2 bg-white rounded-lg shadow-lg border border-gray-200 py-2 z-50 ${
-          isCollapsed ? 'left-16 w-64' : 'left-0 w-64'
+        <div className={`absolute bottom-full mb-2 bg-white rounded-lg shadow-soft-lg border border-gray-200 py-2 z-50 ${
+          isCollapsed ? 'left-16 w-56' : 'left-0 w-56'
         }`}>
           <div className="px-4 py-2 border-b border-gray-100">
             <p className="text-sm font-medium text-gray-900">

@@ -227,34 +227,30 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
     <div className="min-h-screen bg-gray-50 flex">
       {/* Desktop Sidebar - Visible only on md and larger screens */}
       <aside
-        className={`hidden md:flex flex-col fixed top-0 h-screen bg-white border-r border-gray-200 z-40 transition-all duration-300 ease-in-out shadow-lg overflow-y-auto overflow-x-hidden hide-scrollbar ${
-          isCollapsed ? 'w-16' : 'w-80'
+        className={`hidden md:flex flex-col fixed top-0 h-screen bg-white border-r border-gray-200 z-40 transition-all duration-300 ease-in-out ${
+          isCollapsed ? 'w-16' : 'w-64'
         }`}
       >
-        {/* Sidebar Header with Logo and Collapse Toggle */}
-        <div className="h-16 border-b border-gray-100 flex items-center justify-between px-4">
-          <div className="flex items-center overflow-hidden">
-            <CreditCard className="h-6 w-6 text-blue-600 flex-shrink-0" />
-            {!isCollapsed && (
-              <span className="ml-3 font-semibold text-gray-900 truncate">My New Start</span>
-            )}
-          </div>
-          {/* Desktop Collapse Toggle */}
-          <button
-            onClick={() => setIsCollapsed(!isCollapsed)}
-            className="hidden md:flex items-center justify-center w-8 h-8 rounded-full hover:bg-gray-100 transition-colors"
-            aria-label={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
-          >
-            {isCollapsed ? (
-              <ChevronRight className="h-5 w-5 text-gray-500" />
-            ) : (
-              <ChevronLeft className="h-5 w-5 text-gray-500" />
-            )}
-          </button>
+        {/* Sidebar Header with Logo */}
+        <div className="h-16 border-b border-gray-100 flex items-center justify-center">
+          <CreditCard className="h-6 w-6 text-blue-600 flex-shrink-0" />
         </div>
 
+        {/* Collapse/Expand Button */}
+        <button
+          onClick={() => setIsCollapsed(!isCollapsed)}
+          className="absolute top-16 -right-3 bg-white border border-gray-200 rounded-full p-1 shadow-soft-sm"
+          aria-label={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
+        >
+          {isCollapsed ? (
+            <ChevronRight className="h-4 w-4 text-gray-500" />
+          ) : (
+            <ChevronLeft className="h-4 w-4 text-gray-500" />
+          )}
+        </button>
+
         {/* Navigation Menu */}
-        <nav className="flex-1 p-4 min-h-0">
+        <nav className="flex-1 p-4 min-h-0 overflow-y-auto hide-scrollbar">
           <div className="space-y-2">
             {menuItems.map((item) => {
               const isActive = location.pathname === item.path || 
@@ -267,12 +263,12 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
                   onClick={() => handleMenuItemClick(item.path)}
                   className={`w-full flex items-center ${isCollapsed ? 'justify-center' : ''} px-3 py-3 rounded-md transition-colors text-left ${
                     isActive
-                      ? 'bg-blue-100 text-blue-800 border border-blue-300'
-                      : 'text-gray-700 hover:bg-gray-100'
+                      ? 'bg-blue-50 text-blue-600'
+                      : 'text-gray-700 hover:bg-gray-50'
                   }`}
                   aria-current={isActive ? 'page' : undefined}
                 >
-                  <item.icon className={`h-6 w-6 flex-shrink-0 ${isActive ? 'text-blue-600' : 'text-gray-500'}`} />
+                  <item.icon className={`h-5 w-5 flex-shrink-0 ${isActive ? 'text-blue-600' : 'text-gray-500'}`} />
                   {!isCollapsed && (
                     <span className="ml-3 font-medium truncate">{item.label}</span>
                   )}
@@ -297,8 +293,8 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
           )}
         </nav>
 
-        {/* Sidebar Footer with Profile Menu */}
-        <div className="p-4 border-t border-gray-200">
+        {/* Sidebar Footer with Profile */}
+        <div className="mt-auto border-t border-gray-200 p-4">
           <ProfileMenu
             isOpen={isProfileMenuOpen}
             onToggle={toggleProfileMenu}
@@ -317,7 +313,7 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
       )}
 
       {/* Main Content Area */}
-      <div className="flex-1 flex flex-col min-h-screen md:ml-16 lg:ml-80">
+      <div className={`flex-1 flex flex-col min-h-screen ${isCollapsed ? 'md:ml-16' : 'md:ml-64'}`}>
         {/* Mobile Header (Visible only on mobile) */}
         <div className="md:hidden">
           <MobileHeader

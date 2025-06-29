@@ -490,20 +490,7 @@ const LessonDetail = () => {
         onTouchEnd={handleTouchEnd}
         ref={contentRef}
       >
-        {/* Desktop Navigation Tabs - Hidden on Mobile */}
-        <div className="hidden md:block">
-          <div className="max-w-6xl mx-auto border-b border-gray-200 mb-6 w-full">
-            <LessonNavigation 
-              availablePages={availablePages}
-              currentPage={currentPage}
-              goToPage={goToPage}
-              isDesktop={true}
-            />
-          </div>
-        </div>
-
-        
-        <div className="max-w-6xl mx-auto">
+        <div className="max-w-4xl mx-auto">
           {/* Desktop Header - Hidden on Mobile */}
           <div className="hidden md:flex items-center justify-between mb-6">
             <button
@@ -527,6 +514,18 @@ const LessonDetail = () => {
                 ? (language === 'en' ? 'Completed' : 'ပြီးဆုံး')
                 : (language === 'en' ? 'Mark as Complete' : 'ပြီးဆုံးအဖြစ် မှတ်သားရန်')}
             </button>
+          </div>
+
+          {/* Desktop Navigation Tabs - Hidden on Mobile */}
+          <div className="hidden md:block border-b border-gray-200 mb-6">
+            <div className="max-w-6xl mx-auto border-b border-gray-200 mb-6"> {/* Added border-b here */}
+              <LessonNavigation 
+                availablePages={availablePages}
+                currentPage={currentPage}
+                goToPage={goToPage}
+                isDesktop={true}
+              />
+            </div>
           </div>
 
           {/* Lesson Content */}

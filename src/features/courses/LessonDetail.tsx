@@ -491,8 +491,8 @@ const LessonDetail = () => {
         ref={contentRef}
       >
         {/* Desktop Navigation Tabs - Hidden on Mobile */}
-        <div className="hidden md:block w-full">
-          <div className="max-w-6xl mx-auto">
+        <div className="hidden md:block">
+          <div className="max-w-6xl mx-auto border-b border-gray-200 mb-6 w-full">
             <LessonNavigation 
               availablePages={availablePages}
               currentPage={currentPage}

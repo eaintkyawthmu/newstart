@@ -500,7 +500,7 @@ const LessonDetail = () => {
           />
         </div>
         
-        <div className="max-w-4xl mx-auto">
+        <div className="max-w-6xl mx-auto">
           {/* Desktop Header - Hidden on Mobile */}
           <div className="hidden md:flex items-center justify-between mb-6">
             <button

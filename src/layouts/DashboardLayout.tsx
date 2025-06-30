@@ -233,7 +233,11 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
       >
         {/* Sidebar Header with Logo */}
         <div className="h-16 border-b border-gray-100 flex items-center justify-center">
-          <CreditCard className="h-6 w-6 text-blue-600 flex-shrink-0" />
+          {isCollapsed ? (
+            <img src="/icons/icon-96x96.png" alt="MyNewStart" className="h-8 w-8" />
+          ) : (
+            <img src="/icons/logo-text.svg" alt="MyNewStart" className="h-8" />
+          )}
         </div>
 
         {/* Collapse/Expand Button */}

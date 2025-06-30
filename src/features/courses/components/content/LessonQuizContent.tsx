@@ -278,18 +278,6 @@ const LessonQuizContent: React.FC<LessonQuizContentProps> = ({
         </div>
       ))}
       
-      {/* Action Plan after quiz */}
-      {quizSubmitted && lesson.quiz.actionPlan && (
-        <div className="bg-purple-50 border border-purple-100 rounded-lg p-4 mt-6">
-          <h3 className="font-semibold text-purple-800 mb-2">
-            {language === 'en' ? 'Your Action Plan' : 'သင့်လုပ်ဆောင်ရန် အစီအစဉ်'}
-          </h3>
-          <div className="prose max-w-none text-purple-700 text-sm">
-            <PortableText value={Array.isArray(lesson.quiz.actionPlan) ? lesson.quiz.actionPlan : [lesson.quiz.actionPlan]} />
-          </div>
-        </div>
-      )}
-      
       <div className="flex justify-center mt-5">
         {!quizSubmitted ? (
           <button

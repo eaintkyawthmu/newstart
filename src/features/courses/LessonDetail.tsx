@@ -477,11 +477,23 @@ const LessonDetail = () => {
         />
 
         {/* Navigation Tabs - Mobile specific */}
-        <LessonNavigation 
-          availablePages={availablePages}
-          currentPage={currentPage}
-          goToPage={goToPage}
-        />
+        <div className="md:hidden">
+          <LessonNavigation 
+            availablePages={availablePages}
+            currentPage={currentPage}
+            goToPage={goToPage}
+          />
+        </div>
+
+        {/* Desktop Navigation Tabs - Hidden on Mobile */}
+        <div className="hidden md:block border-b border-gray-200">
+          <LessonNavigation 
+            availablePages={availablePages}
+            currentPage={currentPage}
+            goToPage={goToPage}
+            isDesktop={true}
+          />
+        </div>
 
         {/* Main Content Area */}
         <div 
@@ -551,7 +563,7 @@ const LessonDetail = () => {
           </div>
 
           {/* Page Navigation Buttons */}
-          <div className="flex justify-between mt-6 mb-8">
+          <div className="flex justify-between mt-6 mb-4">
             <button
               onClick={handlePrevPage}
               disabled={currentPageIndex === 0}

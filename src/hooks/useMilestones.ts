@@ -432,7 +432,7 @@ export const useMilestones = () => {
             }
           }
           
-          if (req.type === 'quiz') {န
+          if (req.type === 'quiz') {
             // This would require checking quiz completion and scores
             // For now, we'll just check if the specific quiz lesson is completed
             if (req.reference && req.reference._ref && type === 'lesson' && id !== req.reference._ref) {
@@ -504,12 +504,43 @@ export const useMilestones = () => {
     }
   };
 
+  // Get badge image for this milestone
+  const getBadgeImage = (milestoneId: string) => {
+    // Map milestone IDs to badge images with the new naming convention
+    const badgeMap: Record<string, string> = {
+      'milestone-first-login': '/badges/1-milestone.png',
+      'milestone-profile-complete': '/badges/2-milestone.png',
+      'milestone-first-lesson': '/badges/3-milestone.png',
+      'milestone-documentation-master': '/badges/4-milestone.png',
+      'milestone-ssn-expert': '/badges/5-milestone.png',
+      'milestone-banking-basics': '/badges/6-milestone.png',
+      'milestone-credit-master': '/badges/7-milestone.png',
+      'milestone-housing-expert': '/badges/8-milestone.png',
+      'milestone-utilities-master': '/badges/9-milestone.png',
+      'milestone-tax-basics': '/badges/10-milestone.png',
+      'milestone-employment-ready': '/badges/11-milestone.png',
+      'milestone-health-insurance': '/badges/12-milestone.png',
+      'milestone-insurance-expert': '/badges/13-milestone.png',
+      'milestone-education-navigator': '/badges/14-milestone.png',
+      'milestone-family-planner': '/badges/15-milestone.png',
+      'milestone-beginner': '/badges/16-milestone.png',
+      'milestone-intermediate': '/badges/17-milestone.png',
+      'milestone-advanced': '/badges/18-milestone.png',
+      'milestone-community-member': '/badges/19-milestone.png',
+      'milestone-cultural-navigator': '/badges/20-milestone.png'
+    };
+    
+    // Return the mapped badge or a default
+    return badgeMap[milestoneId] || '/badges/1-milestone.png';
+  };
+
   return {
     milestones,
     userMilestones,
     loading,
     checkAndAwardMilestones,
     claimReward,
-    refreshMilestones: fetchUserMilestones
+    refreshMilestones: fetchUserMilestones,
+    getBadgeImage
   };
 };

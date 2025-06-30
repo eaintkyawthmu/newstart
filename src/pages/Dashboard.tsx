@@ -35,7 +35,7 @@ const Dashboard = () => {
   const { showToast } = useToast();
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState(true);
-  const { milestones, userMilestones } = useMilestones();
+  const { milestones, userMilestones, getBadgeImage } = useMilestones();
 
   // Check for success or canceled query params for Stripe
   useEffect(() => {
@@ -217,21 +217,6 @@ const Dashboard = () => {
       ]
     }
   ];
-
-  // Helper function to get badge image for a milestone
-  const getMilestoneBadgeImage = (milestoneId: string) => {
-    // Map milestone IDs to badge images - in a real app, this would come from your Sanity data
-    const badgeMap: Record<string, string> = {
-      'milestone-first-lesson': '/badges/first-lesson.png',
-      'milestone-credit-master': '/badges/credit-master.png',
-      'milestone-beginner': '/badges/achievement-beginner.png',
-      'milestone-intermediate': '/badges/achievement-intermediate.png',
-      'milestone-advanced': '/badges/achievement-advanced.png',
-    };
-    
-    // Return the mapped badge or a default
-    return badgeMap[milestoneId] || '/badges/achievement-beginner.png';
-  };
 
   if (loading) {
     return (
@@ -518,15 +503,12 @@ const Dashboard = () => {
               const milestone = milestones.find(m => m.id === userMilestone.milestone_id);
               if (!milestone) return null;
               
-              // Get badge image for this milestone
-              const badgeImage = getMilestoneBadgeImage(userMilestone.milestone_id);
-              
               return (
                 <div key={userMilestone.id} className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-lg border border-blue-200 p-4">
                   <div className="flex items-start">
                     <div className="w-16 h-16 rounded-full bg-white border border-blue-100 flex items-center justify-center mr-3 flex-shrink-0 overflow-hidden">
                       <img 
-                        src={badgeImage} 
+                        src={getBadgeImage(userMilestone.milestone_id)} 
                         alt={milestone.title} 
                         className="w-14 h-14 object-contain"
                       />

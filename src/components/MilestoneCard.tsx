@@ -2,6 +2,7 @@ import React from 'react';
 import { useLanguage } from '../contexts/LanguageContext';
 import { Milestone, UserMilestone } from '../types/milestone';
 import { Award, CheckCircle, Clock, Lock } from 'lucide-react';
+import { useMilestones } from '../hooks/useMilestones';
 
 interface MilestoneCardProps {
   milestone: Milestone;
@@ -15,6 +16,7 @@ const MilestoneCard: React.FC<MilestoneCardProps> = ({
   onClaimReward
 }) => {
   const { language } = useLanguage();
+  const { getBadgeImage } = useMilestones();
   const isEarned = !!userMilestone;
   const isClaimed = userMilestone?.reward_claimed;
 
@@ -54,21 +56,6 @@ const MilestoneCard: React.FC<MilestoneCardProps> = ({
     }
   };
 
-  // Get badge image for this milestone
-  const getBadgeImage = () => {
-    // Map milestone IDs to badge images - in a real app, this would come from your Sanity data
-    const badgeMap: Record<string, string> = {
-      'milestone-first-lesson': '/badges/first-lesson.png',
-      'milestone-credit-master': '/badges/credit-master.png',
-      'milestone-beginner': '/badges/achievement-beginner.png',
-      'milestone-intermediate': '/badges/achievement-intermediate.png',
-      'milestone-advanced': '/badges/achievement-advanced.png',
-    };
-    
-    // Return the mapped badge or a default
-    return badgeMap[milestone.id] || '/badges/achievement-beginner.png';
-  };
-
   return (
     <div className={`border rounded-lg overflow-hidden transition-all duration-300 ${
       isEarned 
@@ -79,7 +66,7 @@ const MilestoneCard: React.FC<MilestoneCardProps> = ({
         <div className="flex items-start">
           <div className="w-16 h-16 rounded-full flex-shrink-0 bg-white border border-gray-200 flex items-center justify-center mr-4 overflow-hidden">
             {isEarned ? (
-              <img src={getBadgeImage()} alt={milestone.title} className="w-14 h-14 object-contain" />
+              <img src={getBadgeImage(milestone.id)} alt={milestone.title} className="w-14 h-14 object-contain" />
             ) : (
               <Lock className="h-8 w-8 text-gray-400" />
             )}

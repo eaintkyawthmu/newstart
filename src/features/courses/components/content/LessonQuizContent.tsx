@@ -218,7 +218,6 @@ const LessonQuizContent: React.FC<LessonQuizContentProps> = ({
                   <input
                     type="radio"
                     name={`question-${questionIndex}`}
-                    value={optionIndex}
                     checked={userAnswers[questionIndex]?.selectedOptionIndex === optionIndex}
                     onChange={() => !quizSubmitted && handleAnswerChange(questionIndex, optionIndex)}
                     className="h-4 w-4 text-blue-600 border-gray-300 focus:ring-blue-500"
@@ -269,34 +268,11 @@ const LessonQuizContent: React.FC<LessonQuizContentProps> = ({
             </div>
           )}
           
-          {quizSubmitted && (
-            <div className="mt-4 space-y-3">
-              {/* Feedback */}
-              {quizResults[questionIndex]?.feedback && (
-                <div className="p-3 bg-gray-50 rounded-lg border border-gray-200">
-                  <p className="text-gray-700 text-sm">
-                    <strong>{language === 'en' ? 'Feedback:' : 'တုံ့ပြန်ချက်:'}</strong> {quizResults[questionIndex].feedback}
-                  </p>
-                </div>
-              )}
-              
-              {/* Practical Application */}
-              {quizResults[questionIndex]?.practicalApplication && (
-                <div className="p-3 bg-blue-50 rounded-lg border border-blue-200">
-                  <p className="text-blue-700 text-sm">
-                    <strong>{language === 'en' ? 'Real-world Application:' : 'လက်တွေ့အသုံးချမှု:'}</strong> {quizResults[questionIndex].practicalApplication}
-                  </p>
-                </div>
-              )}
-              
-              {/* Follow-up Action */}
-              {quizResults[questionIndex]?.followUpAction && (
-                <div className="p-3 bg-green-50 rounded-lg border border-green-200">
-                  <p className="text-green-700 text-sm">
-                    <strong>{language === 'en' ? 'Next Step:' : 'နောက်အဆင့်:'}</strong> {quizResults[questionIndex].followUpAction}
-                  </p>
-                </div>
-              )}
+          {quizSubmitted && quizResults[questionIndex]?.feedback && (
+            <div className="mt-3 p-3 bg-gray-50 rounded-lg border border-gray-200">
+              <p className="text-gray-700 text-sm">
+                <strong>{language === 'en' ? 'Feedback:' : 'တုံ့ပြန်ချက်:'}</strong> {quizResults[questionIndex].feedback}
+              </p>
             </div>
           )}
         </div>

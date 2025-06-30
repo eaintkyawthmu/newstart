@@ -70,10 +70,10 @@ const LessonQuizContent: React.FC<LessonQuizContentProps> = ({
       const userAnswer = userAnswers[index];
       let isCorrect = false;
       
-      if (question.questionType === 'multipleChoice' && userAnswer.selectedOptionIndex !== undefined) {
+      if (question.questionType === 'multipleChoice' && userAnswer?.selectedOptionIndex !== undefined) {
         // Check if the selected option is correct
         isCorrect = question.options[userAnswer.selectedOptionIndex]?.isCorrect || false;
-      } else if (question.questionType === 'trueFalse' && userAnswer.trueFalseAnswer !== undefined) {
+      } else if (question.questionType === 'trueFalse' && userAnswer?.trueFalseAnswer !== undefined) {
         // Check if the true/false answer is correct
         isCorrect = userAnswer.trueFalseAnswer === question.correctAnswer;
       }
@@ -319,7 +319,7 @@ const LessonQuizContent: React.FC<LessonQuizContentProps> = ({
           <button
             onClick={handleSubmitQuiz}
             disabled={userAnswers.some(answer => 
-              (answer.selectedOptionIndex === undefined && answer.trueFalseAnswer === undefined)
+              !answer || (answer.selectedOptionIndex === undefined && answer.trueFalseAnswer === undefined)
             )}
             className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center"
           >

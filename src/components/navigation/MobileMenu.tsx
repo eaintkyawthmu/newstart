@@ -90,7 +90,7 @@ const MobileMenu: React.FC<MobileMenuProps> = ({ isOpen, onClose, menuItems }) =
       >
         <div className="flex items-center justify-between p-4 border-b border-gray-200">
           <div className="flex items-center">
-            <img src="/icons//newstart-logotext.svg" alt="MyNewStart" className="h-20 items-center" />
+            <img src="/icons//newstart-logotext.svg" alt="MyNewStart" className="h-20 w-8 mr-2" />
           </div>
           <button
             onClick={onClose}

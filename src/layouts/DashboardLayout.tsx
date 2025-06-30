@@ -242,9 +242,9 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
         {/* Sidebar Header with Logo */}
         <div className="h-16 border-b border-gray-100 flex items-center justify-center">
           {isCollapsed ? (
-            <img src="/icons/icon-96x96.png" alt="MyNewStart" className="h-8 w-8" />
+            <img src="/icons/logo.svg" alt="MyNewStart" className="h-8 w-8" />
           ) : (
-            <img src="/icons/newstart-logotext.svg" alt="MyNewStart" className="h-20" />
+            <img src="/icons/logo.svg" alt="MyNewStart" className="h-8" />
           )}
         </div>
 

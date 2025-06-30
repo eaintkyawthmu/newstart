@@ -10,7 +10,6 @@ import {
   Star,
   Users,
   MessageSquare,
-  CreditCard,
   Globe,
   TrendingUp,
   BookOpen,
@@ -98,8 +97,7 @@ const LandingPage = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center">
-              <CreditCard className="h-8 w-8 text-blue-600 mr-2" />
-              <span className="text-xl font-bold text-gray-900">My New Start</span>
+              <img src="/icons/logo.svg" alt="My New Start" className="h-8" />
             </div>
             <div className="flex items-center space-x-4">
               <button
@@ -146,9 +144,6 @@ const LandingPage = () => {
                 >
                   Start Learning Free
                   <ArrowRight className="ml-2 h-5 w-5" />
-                </button>
-                <button className="border border-gray-300 text-gray-700 px-8 py-4 rounded-lg text-lg font-semibold hover:bg-gray-50 transition-colors">
-                  Watch Demo
                 </button>
               </div>
               
@@ -411,9 +406,6 @@ const LandingPage = () => {
               Get Started Free
               <ArrowRight className="ml-2 h-5 w-5" />
             </button>
-            <button className="border border-blue-300 text-white px-8 py-4 rounded-lg text-lg font-semibold hover:bg-blue-700 transition-colors">
-              Schedule a Demo
-            </button>
           </div>
           
           <p className="text-blue-200 mt-6 text-sm">
@@ -428,8 +420,7 @@ const LandingPage = () => {
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
             <div>
               <div className="flex items-center mb-4">
-                <CreditCard className="h-8 w-8 text-blue-400 mr-2" />
-                <span className="text-xl font-bold">My New Start</span>
+                <img src="/icons/logo.svg" alt="My New Start" className="h-8 mr-2" />
               </div>
               <p className="text-gray-400">
                 Empowering immigrants with financial literacy and life guidance in the U.S.

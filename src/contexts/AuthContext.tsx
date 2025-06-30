@@ -34,9 +34,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         
         if (error) {
           console.error('Error getting initial session:', error);
+          // Clear any invalid session and redirect to clean state
+          await supabase.auth.signOut();
           setUser(null);
           setProfileComplete(false);
           setLoading(false);
+          window.location.href = '/';
           return;
         }
 
@@ -48,9 +51,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         }
       } catch (error) {
         console.error('Unexpected error getting initial session:', error);
+        // Clear any invalid session and redirect to clean state
+        await supabase.auth.signOut();
         setUser(null);
         setProfileComplete(false);
         setLoading(false);
+        window.location.href = '/';
       }
     };
 

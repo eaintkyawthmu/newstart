@@ -523,7 +523,7 @@ export const useMilestones = () => {
     };
     
     // Return the mapped badge or a default
-    return badgeMap[milestoneId] || '/badges/identity-established.png';
+    return badgeMap[milestoneId] || '/badges/All_Milestones.png';
   };
 
   return {

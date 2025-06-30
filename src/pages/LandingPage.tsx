@@ -420,7 +420,7 @@ const LandingPage = () => {
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
             <div>
               <div className="flex items-center mb-4">
-                <img src="/icons/logomain-trans.svg" alt="My New Start" className="h-8 mr-2" />
+                <img src="/icons/logomain-trans.svg" alt="My New Start" className="h-20 mr-2" />
               </div>
               <p className="text-gray-400">
                 Empowering immigrants with financial literacy and life guidance in the U.S.

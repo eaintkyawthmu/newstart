@@ -97,7 +97,7 @@ const LandingPage = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center">
-              <img src="/icons/logomain-trans.svg" alt="My New Start" className="h-25" />
+              <img src="/icons/logomain-trans.svg" alt="My New Start" className="h-22" />
             </div>
             <div className="flex items-center space-x-4">
               <button
@@ -420,7 +420,7 @@ const LandingPage = () => {
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
             <div>
               <div className="flex items-center mb-4">
-                <img src="/icons/logo.svg" alt="My New Start" className="h-8 mr-2" />
+                <img src="/icons/logomain-trans.svg" alt="My New Start" className="h-8 mr-2" />
               </div>
               <p className="text-gray-400">
                 Empowering immigrants with financial literacy and life guidance in the U.S.

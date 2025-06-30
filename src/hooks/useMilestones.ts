@@ -378,6 +378,9 @@ export const useMilestones = () => {
     if (!user) return;
 
     try {
+      // Refresh user milestones first to ensure we have the latest data
+      await fetchUserMilestones();
+      
       // Get current progress data
       const { data: progressData, error: progressError } = await supabase
         .from('course_progress')
@@ -392,7 +395,7 @@ export const useMilestones = () => {
 
       // Check each milestone to see if it should be awarded
       for (const milestone of milestones) {
-        // Skip if already earned
+        // Skip if already earned (check against the refreshed userMilestones)
         const alreadyEarned = userMilestones.some(um => um.milestone_id === milestone.id);
         if (alreadyEarned) continue;
 
@@ -466,7 +469,14 @@ export const useMilestones = () => {
           reward_claimed: false
         });
         
-      if (error) throw error;
+      if (error) {
+        // Check if this is a duplicate key error (milestone already awarded)
+        if (error.code === '23505') {
+          console.log(`Milestone "${milestone.title}" was already awarded to user ${user.id}`);
+          return; // Don't show error toast for already-awarded milestones
+        }
+        throw error;
+      }
       
       // Show toast notification
       showToast('success', `You've earned the "${milestone.title}" milestone!`);

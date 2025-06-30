@@ -26,21 +26,6 @@ const MilestonesPage: React.FC = () => {
     !userMilestones.some(um => um.milestone_id === m.id)
   );
 
-  // Helper function to get badge image for a milestone
-  const getBadgeImage = (milestoneId: string) => {
-    // Map milestone IDs to badge images - in a real app, this would come from your Sanity data
-    const badgeMap: Record<string, string> = {
-      'milestone-first-lesson': '/badges/first-lesson.png',
-      'milestone-credit-master': '/badges/credit-master.png',
-      'milestone-beginner': '/badges/achievement-beginner.png',
-      'milestone-intermediate': '/badges/achievement-intermediate.png',
-      'milestone-advanced': '/badges/achievement-advanced.png',
-    };
-    
-    // Return the mapped badge or a default based on milestone ID
-    return badgeMap[milestoneId] || '/badges/achievement-beginner.png';
-  };
-
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">

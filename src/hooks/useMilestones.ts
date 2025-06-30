@@ -516,32 +516,32 @@ export const useMilestones = () => {
 
   // Get badge image for this milestone
   const getBadgeImage = (milestoneId: string) => {
-    // Map milestone IDs to badge images with the new naming convention
+    // Map milestone IDs to badge images
     const badgeMap: Record<string, string> = {
-      'milestone-first-login': '/badges/1-milestone.png',
-      'milestone-profile-complete': '/badges/2-milestone.png',
-      'milestone-first-lesson': '/badges/3-milestone.png',
-      'milestone-documentation-master': '/badges/4-milestone.png',
-      'milestone-ssn-expert': '/badges/5-milestone.png',
-      'milestone-banking-basics': '/badges/6-milestone.png',
-      'milestone-credit-master': '/badges/7-milestone.png',
-      'milestone-housing-expert': '/badges/8-milestone.png',
-      'milestone-utilities-master': '/badges/9-milestone.png',
-      'milestone-tax-basics': '/badges/10-milestone.png',
-      'milestone-employment-ready': '/badges/11-milestone.png',
-      'milestone-health-insurance': '/badges/12-milestone.png',
-      'milestone-insurance-expert': '/badges/13-milestone.png',
-      'milestone-education-navigator': '/badges/14-milestone.png',
-      'milestone-family-planner': '/badges/15-milestone.png',
-      'milestone-beginner': '/badges/16-milestone.png',
-      'milestone-intermediate': '/badges/17-milestone.png',
-      'milestone-advanced': '/badges/18-milestone.png',
-      'milestone-community-member': '/badges/19-milestone.png',
-      'milestone-cultural-navigator': '/badges/20-milestone.png'
+      'milestone-first-login': '/badges/achievement-beginner.png',
+      'milestone-profile-complete': '/badges/achievement-beginner.png',
+      'milestone-first-lesson': '/badges/first-lesson.png',
+      'milestone-documentation-master': '/badges/achievement-intermediate.png',
+      'milestone-ssn-expert': '/badges/achievement-intermediate.png',
+      'milestone-banking-basics': '/badges/achievement-intermediate.png',
+      'milestone-credit-master': '/badges/credit-master.png',
+      'milestone-housing-expert': '/badges/achievement-advanced.png',
+      'milestone-utilities-master': '/badges/achievement-advanced.png',
+      'milestone-tax-basics': '/badges/achievement-advanced.png',
+      'milestone-employment-ready': '/badges/achievement-advanced.png',
+      'milestone-health-insurance': '/badges/achievement-advanced.png',
+      'milestone-insurance-expert': '/badges/achievement-advanced.png',
+      'milestone-education-navigator': '/badges/achievement-advanced.png',
+      'milestone-family-planner': '/badges/achievement-advanced.png',
+      'milestone-beginner': '/badges/achievement-beginner.png',
+      'milestone-intermediate': '/badges/achievement-intermediate.png',
+      'milestone-advanced': '/badges/achievement-advanced.png',
+      'milestone-community-member': '/badges/achievement-intermediate.png',
+      'milestone-cultural-navigator': '/badges/achievement-advanced.png'
     };
     
     // Return the mapped badge or a default
-    return badgeMap[milestoneId] || '/badges/1-milestone.png';
+    return badgeMap[milestoneId] || '/badges/achievement-beginner.png';
   };
 
   return {

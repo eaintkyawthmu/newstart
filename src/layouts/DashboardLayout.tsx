@@ -236,7 +236,7 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
           {isCollapsed ? (
             <img src="/icons/icon-96x96.png" alt="MyNewStart" className="h-8 w-8" />
           ) : (
-            <img src="/icons/logo-text.svg" alt="MyNewStart" className="h-8" />
+            <img src="/icons/logo.svg" alt="MyNewStart" className="h-8" />
           )}
         </div>
 

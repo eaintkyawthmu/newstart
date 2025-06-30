@@ -57,10 +57,6 @@ const MobileHeader: React.FC<MobileHeaderProps> = ({
         </button>
       )}
       
-      <div className="flex items-center">
-        <h1 className="text-lg font-semibold text-gray-900 truncate max-w-[60%]">{getPageTitle()}</h1>
-      </div>
-      
       {rightContent ? (
         rightContent
       ) : (

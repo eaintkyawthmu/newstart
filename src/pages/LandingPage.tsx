@@ -456,7 +456,7 @@ const LandingPage = () => {
           </div>
           
           <div className="border-t border-gray-800 mt-8 pt-8 text-center text-gray-400">
-            <p>&copy; {new Date().getFullYear()} My New Start. All rights reserved.</p>
+            <p>&copy; {new Date().getFullYear()} My New Start. Build with bolt.new.</p>
           </div>
         </div>
       </footer>

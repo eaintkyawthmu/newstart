@@ -50,8 +50,8 @@ const LandingPage = () => {
       rating: 5
     },
     {
-      name: "Ahmed K.",
-      country: "Syria",
+      name: "Khin A.",
+      country: "Myanmar",
       text: "The tax filing guide was so clear. I filed my taxes myself for the first time.",
       rating: 5
     },

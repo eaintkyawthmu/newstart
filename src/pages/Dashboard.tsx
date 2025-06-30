@@ -382,7 +382,7 @@ const Dashboard = () => {
                     <step.icon className={`h-5 w-5 ${
                       step.status === 'completed' ? 'text-green-600' :
                       step.status === 'in-progress' ? 'text-blue-600' :
-                      'text-gray-500'
+                      'text-gray-400'
                     }`} />
                   </div>
                   <div>
@@ -506,11 +506,11 @@ const Dashboard = () => {
               return (
                 <div key={userMilestone.id} className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-lg border border-blue-200 p-4">
                   <div className="flex items-start">
-                    <div className="w-16 h-16 rounded-full bg-white border border-blue-100 flex items-center justify-center mr-3 flex-shrink-0 overflow-hidden">
+                    <div className="w-24 h-24 rounded-lg bg-white border border-blue-100 flex items-center justify-center mr-3 flex-shrink-0 overflow-hidden">
                       <img 
                         src={getBadgeImage(userMilestone.milestone_id)} 
                         alt={milestone.title} 
-                        className="w-14 h-14 object-contain"
+                        className="w-full h-full object-cover"
                       />
                     </div>
                     <div>

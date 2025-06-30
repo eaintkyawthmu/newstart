@@ -64,11 +64,11 @@ const MilestoneCard: React.FC<MilestoneCardProps> = ({
     }`}>
       <div className="p-4">
         <div className="flex items-start">
-          <div className="w-16 h-16 rounded-full flex-shrink-0 bg-white border border-gray-200 flex items-center justify-center mr-4 overflow-hidden">
+          <div className="w-24 h-24 rounded-lg flex-shrink-0 bg-white border border-gray-200 flex items-center justify-center mr-4 overflow-hidden">
             {isEarned ? (
-              <img src={getBadgeImage(milestone.id)} alt={milestone.title} className="w-14 h-14 object-contain" />
+              <img src={getBadgeImage(milestone.id)} alt={milestone.title} className="w-full h-full object-cover" />
             ) : (
-              <Lock className="h-8 w-8 text-gray-400" />
+              <Lock className="h-10 w-10 text-gray-400" />
             )}
           </div>
           

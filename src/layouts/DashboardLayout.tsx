@@ -56,11 +56,6 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
       label: language === 'en' ? 'Library' : 'စာကြည့်တိုက်'
     },
     {
-      path: '/milestones',
-      icon: Award,
-      label: language === 'en' ? 'Milestones' : 'မှတ်တိုင်များ'
-    },
-    {
       path: '/chat',
       icon: MessageSquare,
       label: language === 'en' ? 'Chat with Mini Angel' : 'Mini Angel နှင့် စကားပြောရန်'

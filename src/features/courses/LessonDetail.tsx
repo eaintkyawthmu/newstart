@@ -490,16 +490,7 @@ const LessonDetail = () => {
         onTouchEnd={handleTouchEnd}
         ref={contentRef}
       >
-        {/* Desktop Navigation Tabs - Hidden on Mobile */}
-        <div className="hidden md:block w-full max-w-6xl mx-auto border-b border-gray-200 mb-6">
-          <LessonNavigation 
-            availablePages={availablePages}
-            currentPage={currentPage}
-            goToPage={goToPage}
-            isDesktop={true}
-          />
-        </div>
-        
+
         {/* Desktop Header - Hidden on Mobile */}
         <div className="hidden md:flex items-center justify-between mb-6">
           <button

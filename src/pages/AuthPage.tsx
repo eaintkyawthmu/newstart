@@ -39,7 +39,7 @@ const AuthPage = () => {
 
         {/* Right side - Auth form */}
         <div className="lg:w-5/12">
-          <Auth />
+          <Auth initialIsSignUp={initialMode} />
         </div>
       </div>
     </div>

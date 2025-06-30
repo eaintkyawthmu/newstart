@@ -2,14 +2,18 @@ import React, { useState } from 'react';
 import { supabase } from '../lib/supabaseClient';
 import { Mail, Lock, ArrowRight, Eye, EyeOff, AlertCircle, CheckCircle } from 'lucide-react';
 
-const Auth = () => {
+interface AuthProps {
+  initialIsSignUp?: boolean;
+}
+
+const Auth: React.FC<AuthProps> = ({ initialIsSignUp = false }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [fullName, setFullName] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
-  const [isSignUp, setIsSignUp] = useState(false);
+  const [isSignUp, setIsSignUp] = useState(initialIsSignUp);
   const [showPassword, setShowPassword] = useState(false);
   const [isForgotPassword, setIsForgotPassword] = useState(false);
 

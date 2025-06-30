@@ -220,7 +220,15 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
     }
     
     // Default is just the language toggle
-    return null;
+    return (
+      <button
+        onClick={toggleLanguage}
+        className="p-2 rounded-lg hover:bg-gray-100 transition-colors"
+        aria-label={language === 'en' ? 'Switch to Burmese' : 'Switch to English'}
+      >
+        <Globe className="h-5 w-5 text-gray-600" />
+      </button>
+    );
   };
 
   return (
@@ -334,6 +342,23 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
           onClose={() => setIsMobileMenuOpen(false)}
           menuItems={menuItems}
         />
+
+        {/* Desktop Header (Visible only on desktop) */}
+        <div className="hidden md:flex items-center justify-between h-16 px-8 bg-white border-b border-gray-200">
+          <div className="flex items-center">
+            {showBackButton() && (
+              <button
+                onClick={() => navigate(getBackPath())}
+                className="mr-4 p-2 rounded-lg hover:bg-gray-100 transition-colors"
+              >
+                <ChevronLeft className="h-5 w-5 text-gray-600" />
+              </button>
+            )}
+          </div>
+          <div className="flex items-center space-x-4">
+            {getRightContent()}
+          </div>
+        </div>
 
         {/* Page Content */}
         <main className="flex-1 overflow-auto p-4 md:p-6 lg:p-8 pb-safe pt-0 md:pt-6 hide-scrollbar">

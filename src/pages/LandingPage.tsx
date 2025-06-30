@@ -97,7 +97,7 @@ const LandingPage = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center">
-              <img src="/icons/logomain-trans.svg" alt="My New Start" className="h-20" />
+              <img src="/icons/logomain-trans.svg" alt="My New Start" className="h-24" />
             </div>
             <div className="flex items-center space-x-4">
               <button

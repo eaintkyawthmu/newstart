@@ -1,5 +1,5 @@
 import React from 'react';
-import { Award } from 'lucide-react';
+import { Award, ArrowLeft } from 'lucide-react';
 import { useLanguage } from '../../../contexts/LanguageContext';
 
 interface LessonHeaderProps {

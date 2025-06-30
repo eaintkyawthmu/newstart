@@ -432,7 +432,7 @@ export const useMilestones = () => {
             }
           }
           
-          if (req.type === 'quiz') {
+          if (req.type === 'quiz') {န
             // This would require checking quiz completion and scores
             // For now, we'll just check if the specific quiz lesson is completed
             if (req.reference && req.reference._ref && type === 'lesson' && id !== req.reference._ref) {

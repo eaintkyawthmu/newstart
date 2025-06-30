@@ -1,5 +1,5 @@
 import React from 'react';
-import { ArrowLeft, Award } from 'lucide-react';
+import { Award } from 'lucide-react';
 import { useLanguage } from '../../../contexts/LanguageContext';
 
 interface LessonHeaderProps {
@@ -18,7 +18,7 @@ const LessonHeader: React.FC<LessonHeaderProps> = ({
   const { language } = useLanguage();
   
   return (
-    <header className="fixed top-0 left-0 right-0 z-40 bg-white border-b border-gray-200 px-4 flex items-center justify-between h-14">
+    <div className="bg-white border-b border-gray-200 px-4 flex items-center justify-between h-14">
       <button
         onClick={navigateBack}
         className="p-2 rounded-lg hover:bg-gray-100 transition-colors"
@@ -44,7 +44,7 @@ const LessonHeader: React.FC<LessonHeaderProps> = ({
       >
         <Award className="h-6 w-6" />
       </button>
-    </header>
+    </div>
   );
 };
 

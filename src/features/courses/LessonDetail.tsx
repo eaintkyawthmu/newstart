@@ -466,159 +466,161 @@ const LessonDetail = () => {
   const currentPageIndex = availablePages.indexOf(currentPage);
 
   return (
-    <div className="max-w-6xl mx-auto w-full min-h-screen overflow-x-hidden bg-gray-50">
-      <div className="bg-white rounded-lg border border-gray-200 shadow-sm">
-        {/* Mobile Header */}
-        <LessonHeader 
-          title={lesson.title}
-          completed={completed}
-          toggleCompletion={toggleCompletion}
-          navigateBack={() => navigate(`/courses/${pathSlug}`)}
-        />
-
-        {/* Navigation Tabs - Mobile specific */}
-        <div className="md:hidden">
-          <LessonNavigation 
-            availablePages={availablePages}
-            currentPage={currentPage}
-            goToPage={goToPage}
-          />
-        </div>
-
-        {/* Desktop Navigation Tabs - Hidden on Mobile */}
-        <div className="hidden md:block border-b border-gray-200">
-          <LessonNavigation 
-            availablePages={availablePages}
-            currentPage={currentPage}
-            goToPage={goToPage}
-            isDesktop={true}
-          />
-        </div>
-
-        {/* Main Content Area */}
-        <div 
-          className="p-5"
-          onTouchStart={handleTouchStart}
-          onTouchMove={handleTouchMove}
-          onTouchEnd={handleTouchEnd}
-          ref={contentRef}
-        >
-          {/* Desktop Header - Hidden on Mobile */}
-          <div className="hidden md:flex items-center justify-between mb-6">
-            <button
-              onClick={() => navigate(`/courses/${pathSlug}`)}
-              className="flex items-center text-gray-600 hover:text-gray-800 transition-colors"
-            >
-              <ArrowLeft className="h-5 w-5 mr-2" />
-              {language === 'en' ? 'Back to Course' : 'သင်တန်းသို့ ပြန်သွားရန်'}
-            </button>
-
-            <button
-              onClick={toggleCompletion}
-              className={`flex items-center px-4 py-2 rounded-lg transition-colors ${
-                completed
-                  ? 'bg-green-100 text-green-700 hover:bg-green-200'
-                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-              }`}
-            >
-              <Award className="h-5 w-5 mr-2" />
-              {completed
-                ? (language === 'en' ? 'Completed' : 'ပြီးဆုံး')
-                : (language === 'en' ? 'Mark as Complete' : 'ပြီးဆုံးအဖြစ် မှတ်သားရန်')}
-            </button>
-          </div>
-
-          {/* Lesson Content */}
-          <LessonContent
-            lesson={lesson}
-            currentPage={currentPage}
-            completedTasks={completedTasks}
-            handleTaskCompletion={handleTaskCompletion}
-            userAnswers={userAnswers}
-            setUserAnswers={setUserAnswers}
-            quizSubmitted={quizSubmitted}
-            setQuizSubmitted={setQuizSubmitted}
-            quizResults={quizResults}
-            setQuizResults={setQuizResults}
-            totalScore={totalScore}
-            setTotalScore={setTotalScore}
-            language={language}
-            trackEvent={trackEvent}
-            startTime={startTime}
+    <div className="w-full min-h-screen overflow-x-hidden bg-gray-50">
+      <div className="max-w-6xl mx-auto">
+        <div className="bg-white rounded-lg border border-gray-200 shadow-sm">
+          {/* Mobile Header */}
+          <LessonHeader 
+            title={lesson.title}
+            completed={completed}
             toggleCompletion={toggleCompletion}
+            navigateBack={() => navigate(`/courses/${pathSlug}`)}
           />
 
-          {/* Page Navigation Dots - Mobile Only */}
-          <div className="md:hidden flex justify-center mt-6 space-x-2">
-            {availablePages.map((page, index) => (
-              <button
-                key={page}
-                onClick={() => goToPage(page)}
-                className={`w-2.5 h-2.5 rounded-full ${
-                  currentPage === page ? 'bg-blue-600' : 'bg-gray-300'
-                }`}
-                aria-label={`Go to page ${index + 1}`}
-              />
-            ))}
+          {/* Navigation Tabs - Mobile specific */}
+          <div className="md:hidden">
+            <LessonNavigation 
+              availablePages={availablePages}
+              currentPage={currentPage}
+              goToPage={goToPage}
+            />
           </div>
 
-          {/* Page Navigation Buttons */}
-          <div className="flex justify-between mt-6 mb-4">
-            <button
-              onClick={handlePrevPage}
-              disabled={currentPageIndex === 0}
-              className={`flex items-center px-4 py-2 rounded-lg border border-gray-300 text-gray-700 ${
-                currentPageIndex === 0 
-                  ? 'opacity-50 cursor-not-allowed' 
-                  : 'hover:bg-gray-50'
-              }`}
-            >
-              <ChevronLeft className="h-5 w-5 mr-1" />
-              <span className="hidden md:inline">{language === 'en' ? 'Previous' : 'နောက်သို့'}</span>
-            </button>
+          {/* Desktop Navigation Tabs - Hidden on Mobile */}
+          <div className="hidden md:block border-b border-gray-200">
+            <LessonNavigation 
+              availablePages={availablePages}
+              currentPage={currentPage}
+              goToPage={goToPage}
+              isDesktop={true}
+            />
+          </div>
 
-            {currentPageIndex === availablePages.length - 1 ? (
-              <div className="flex space-x-3">
-                {nextLesson ? (
-                  <button
-                    onClick={() => navigateToLesson(nextLesson.slug)}
-                    className="flex items-center px-4 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition-colors"
-                  >
-                    <span className="hidden md:inline">{language === 'en' ? 'Next Lesson' : 'နောက်သင်ခန်းစာ'}</span>
-                    <span className="md:hidden">{language === 'en' ? 'Next' : 'ရှေ့သို့'}</span>
-                    <ChevronRight className="h-5 w-5 ml-1" />
-                  </button>
-                ) : (
-                  <button
-                    onClick={() => navigate(`/courses/${pathSlug}`)}
-                    className="flex items-center px-4 py-2 rounded-lg bg-green-600 text-white hover:bg-green-700 transition-colors"
-                  >
-                    <span>{language === 'en' ? 'Finish' : 'ပြီးဆုံး'}</span>
-                    <Award className="h-5 w-5 ml-1" />
-                  </button>
-                )}
-              </div>
-            ) : (
+          {/* Main Content Area */}
+          <div 
+            className="p-5"
+            onTouchStart={handleTouchStart}
+            onTouchMove={handleTouchMove}
+            onTouchEnd={handleTouchEnd}
+            ref={contentRef}
+          >
+            {/* Desktop Header - Hidden on Mobile */}
+            <div className="hidden md:flex items-center justify-between mb-6">
               <button
-                onClick={handleNextPage}
-                className="flex items-center px-4 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition-colors"
+                onClick={() => navigate(`/courses/${pathSlug}`)}
+                className="flex items-center text-gray-600 hover:text-gray-800 transition-colors"
               >
-                <span className="hidden md:inline">{language === 'en' ? 'Continue' : 'ဆက်လက်'}</span>
-                <span className="md:hidden">{language === 'en' ? 'Next' : 'ရှေ့သို့'}</span>
-                <ChevronRight className="h-5 w-5 ml-1" />
+                <ArrowLeft className="h-5 w-5 mr-2" />
+                {language === 'en' ? 'Back to Course' : 'သင်တန်းသို့ ပြန်သွားရန်'}
               </button>
-            )}
+
+              <button
+                onClick={toggleCompletion}
+                className={`flex items-center px-4 py-2 rounded-lg transition-colors ${
+                  completed
+                    ? 'bg-green-100 text-green-700 hover:bg-green-200'
+                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                }`}
+              >
+                <Award className="h-5 w-5 mr-2" />
+                {completed
+                  ? (language === 'en' ? 'Completed' : 'ပြီးဆုံး')
+                  : (language === 'en' ? 'Mark as Complete' : 'ပြီးဆုံးအဖြစ် မှတ်သားရန်')}
+              </button>
+            </div>
+
+            {/* Lesson Content */}
+            <LessonContent
+              lesson={lesson}
+              currentPage={currentPage}
+              completedTasks={completedTasks}
+              handleTaskCompletion={handleTaskCompletion}
+              userAnswers={userAnswers}
+              setUserAnswers={setUserAnswers}
+              quizSubmitted={quizSubmitted}
+              setQuizSubmitted={setQuizSubmitted}
+              quizResults={quizResults}
+              setQuizResults={setQuizResults}
+              totalScore={totalScore}
+              setTotalScore={setTotalScore}
+              language={language}
+              trackEvent={trackEvent}
+              startTime={startTime}
+              toggleCompletion={toggleCompletion}
+            />
+
+            {/* Page Navigation Dots - Mobile Only */}
+            <div className="md:hidden flex justify-center mt-6 space-x-2">
+              {availablePages.map((page, index) => (
+                <button
+                  key={page}
+                  onClick={() => goToPage(page)}
+                  className={`w-2.5 h-2.5 rounded-full ${
+                    currentPage === page ? 'bg-blue-600' : 'bg-gray-300'
+                  }`}
+                  aria-label={`Go to page ${index + 1}`}
+                />
+              ))}
+            </div>
+
+            {/* Page Navigation Buttons */}
+            <div className="flex justify-between mt-6 mb-4">
+              <button
+                onClick={handlePrevPage}
+                disabled={currentPageIndex === 0}
+                className={`flex items-center px-4 py-2 rounded-lg border border-gray-300 text-gray-700 ${
+                  currentPageIndex === 0 
+                    ? 'opacity-50 cursor-not-allowed' 
+                    : 'hover:bg-gray-50'
+                }`}
+              >
+                <ChevronLeft className="h-5 w-5 mr-1" />
+                <span className="hidden md:inline">{language === 'en' ? 'Previous' : 'နောက်သို့'}</span>
+              </button>
+
+              {currentPageIndex === availablePages.length - 1 ? (
+                <div className="flex space-x-3">
+                  {nextLesson ? (
+                    <button
+                      onClick={() => navigateToLesson(nextLesson.slug)}
+                      className="flex items-center px-4 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition-colors"
+                    >
+                      <span className="hidden md:inline">{language === 'en' ? 'Next Lesson' : 'နောက်သင်ခန်းစာ'}</span>
+                      <span className="md:hidden">{language === 'en' ? 'Next' : 'ရှေ့သို့'}</span>
+                      <ChevronRight className="h-5 w-5 ml-1" />
+                    </button>
+                  ) : (
+                    <button
+                      onClick={() => navigate(`/courses/${pathSlug}`)}
+                      className="flex items-center px-4 py-2 rounded-lg bg-green-600 text-white hover:bg-green-700 transition-colors"
+                    >
+                      <span>{language === 'en' ? 'Finish' : 'ပြီးဆုံး'}</span>
+                      <Award className="h-5 w-5 ml-1" />
+                    </button>
+                  )}
+                </div>
+              ) : (
+                <button
+                  onClick={handleNextPage}
+                  className="flex items-center px-4 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition-colors"
+                >
+                  <span className="hidden md:inline">{language === 'en' ? 'Continue' : 'ဆက်လက်'}</span>
+                  <span className="md:hidden">{language === 'en' ? 'Next' : 'ရှေ့သို့'}</span>
+                  <ChevronRight className="h-5 w-5 ml-1" />
+                </button>
+              )}
+            </div>
           </div>
         </div>
-      </div>
 
-      {/* Milestone Earned Modal */}
-      <LessonMilestoneModal
-        show={showMilestoneModal}
-        onClose={() => setShowMilestoneModal(false)}
-        milestoneName={earnedMilestone}
-        language={language}
-      />
+        {/* Milestone Earned Modal */}
+        <LessonMilestoneModal
+          show={showMilestoneModal}
+          onClose={() => setShowMilestoneModal(false)}
+          milestoneName={earnedMilestone}
+          language={language}
+        />
+      </div>
     </div>
   );
 };

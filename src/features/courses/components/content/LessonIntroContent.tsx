@@ -20,7 +20,7 @@ const LessonIntroContent: React.FC<LessonIntroContentProps> = ({
     <div className="space-y-6">
       {/* Introduction */}
       {lesson.introduction && (
-        <div className="prose max-w-none">
+        <div className="prose max-w-none overflow-visible">
           <PortableText value={Array.isArray(lesson.introduction) ? lesson.introduction : [lesson.introduction]} />
         </div>
       )}

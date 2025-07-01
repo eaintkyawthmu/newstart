@@ -128,7 +128,7 @@ const LessonMainContent: React.FC<LessonMainContentProps> = ({ lesson }) => {
         {renderVideoContent()}
         
         {lesson.content && (
-          <div className="prose prose-sm md:prose-base max-w-none overflow-hidden">
+          <div className="prose prose-sm md:prose-base max-w-none overflow-visible">
             <PortableText value={Array.isArray(lesson.content) ? lesson.content : [lesson.content]} />
           </div>
         )}
@@ -138,7 +138,7 @@ const LessonMainContent: React.FC<LessonMainContentProps> = ({ lesson }) => {
     return renderExerciseContent();
   } else {
     return (
-      <div className="prose prose-sm md:prose-base max-w-none overflow-hidden">
+      <div className="prose prose-sm md:prose-base max-w-none overflow-visible">
         <PortableText value={Array.isArray(lesson.content) ? lesson.content : [lesson.content]} />
       </div>
     );

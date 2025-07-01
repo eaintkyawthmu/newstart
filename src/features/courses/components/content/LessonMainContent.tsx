@@ -77,7 +77,7 @@ const LessonMainContent: React.FC<LessonMainContentProps> = ({ lesson }) => {
     
     return (
       <div className="space-y-6">
-        <div className="prose max-w-none overflow-visible">
+        <div className="prose max-w-none overflow-x-auto">
           <PortableText value={Array.isArray(exercise.description) ? exercise.description : [exercise.description]} />
         </div>
         
@@ -92,7 +92,7 @@ const LessonMainContent: React.FC<LessonMainContentProps> = ({ lesson }) => {
                 <h4 className="font-medium text-gray-800 mb-2">
                   {language === 'en' ? `Step ${index + 1}` : `အဆင့် ${index + 1}`}
                 </h4>
-                <div className="prose max-w-none text-gray-700 overflow-visible">
+                <div className="prose max-w-none text-gray-700 overflow-x-auto">
                   <PortableText value={Array.isArray(step.instruction) ? step.instruction : [step.instruction]} />
                 </div>
                 
@@ -128,7 +128,7 @@ const LessonMainContent: React.FC<LessonMainContentProps> = ({ lesson }) => {
         {renderVideoContent()}
         
         {lesson.content && (
-          <div className="prose prose-sm md:prose-base max-w-none overflow-visible">
+          <div className="prose prose-sm md:prose-base max-w-none overflow-x-auto">
             <PortableText value={Array.isArray(lesson.content) ? lesson.content : [lesson.content]} />
           </div>
         )}
@@ -138,7 +138,7 @@ const LessonMainContent: React.FC<LessonMainContentProps> = ({ lesson }) => {
     return renderExerciseContent();
   } else {
     return (
-      <div className="prose prose-sm md:prose-base max-w-none overflow-visible">
+      <div className="prose prose-sm md:prose-base max-w-none overflow-x-auto">
         <PortableText value={Array.isArray(lesson.content) ? lesson.content : [lesson.content]} />
       </div>
     );

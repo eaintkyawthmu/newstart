@@ -33,7 +33,7 @@ const LessonActionsContent: React.FC<LessonActionsContentProps> = ({
                   onChange={(e) => handleTaskCompletion(task._key, e.target.checked)}
                   className="h-5 w-5 text-purple-600 rounded border-gray-300 focus:ring-purple-500 flex-shrink-0 mt-1"
                 />
-                <div className={`text-gray-700 text-sm overflow-visible ${completedTasks.includes(task._key) ? 'line-through text-gray-500' : ''}`}>
+                <div className={`text-gray-700 text-sm overflow-x-auto ${completedTasks.includes(task._key) ? 'line-through text-gray-500' : ''}`}>
                   <PortableText value={Array.isArray(task.description) ? task.description : [task.description]} />
                 </div>
                 {!task.isOptional && (

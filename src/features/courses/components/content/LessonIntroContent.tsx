@@ -20,7 +20,7 @@ const LessonIntroContent: React.FC<LessonIntroContentProps> = ({
     <div className="space-y-6">
       {/* Introduction */}
       {lesson.introduction && (
-        <div className="prose max-w-none overflow-visible">
+        <div className="prose max-w-none overflow-x-auto">
           <PortableText value={Array.isArray(lesson.introduction) ? lesson.introduction : [lesson.introduction]} />
         </div>
       )}
@@ -41,7 +41,7 @@ const LessonIntroContent: React.FC<LessonIntroContentProps> = ({
                   onChange={(e) => handleTaskCompletion(deliverable._key, e.target.checked)}
                   className="h-5 w-5 text-blue-600 rounded border-gray-300 focus:ring-blue-500 flex-shrink-0 mt-1"
                 />
-                <div className={`text-gray-700 ${completedTasks.includes(deliverable._key) ? 'line-through text-gray-500' : ''}`}>
+                <div className={`text-gray-700 overflow-x-auto ${completedTasks.includes(deliverable._key) ? 'line-through text-gray-500' : ''}`}>
                   <PortableText value={Array.isArray(deliverable.description) ? deliverable.description : [deliverable.description]} />
                 </div>
                 {!deliverable.isOptional && (

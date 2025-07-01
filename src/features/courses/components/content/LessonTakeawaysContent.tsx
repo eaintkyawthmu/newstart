@@ -18,7 +18,7 @@ const LessonTakeawaysContent: React.FC<LessonTakeawaysContentProps> = ({ lesson 
             <Lightbulb className="h-5 w-5 mr-2" />
             {language === 'en' ? 'Key Takeaways' : 'အဓိကအချက်များ'}
           </h2>
-          <div className="text-green-700 text-sm overflow-visible">
+          <div className="text-green-700 text-sm overflow-x-auto">
             <PortableText value={Array.isArray(lesson.keyTakeaways) ? lesson.keyTakeaways : [lesson.keyTakeaways]} />
           </div>
         </div>
@@ -29,7 +29,7 @@ const LessonTakeawaysContent: React.FC<LessonTakeawaysContentProps> = ({ lesson 
           <h2 className="font-semibold text-amber-800 mb-2 text-sm md:text-base">
             {language === 'en' ? 'Reflect & Grow' : 'ပြန်လည်သုံးသပ်ပြီး တိုးတက်ပါ'}
           </h2>
-          <div className="text-amber-700 text-sm overflow-visible">
+          <div className="text-amber-700 text-sm overflow-x-auto">
             <PortableText value={Array.isArray(lesson.reflectionPrompts) ? lesson.reflectionPrompts : [lesson.reflectionPrompts]} />
           </div>
         </div>

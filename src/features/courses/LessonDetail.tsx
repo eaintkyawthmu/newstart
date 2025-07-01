@@ -467,7 +467,7 @@ const LessonDetail = () => {
 
   return (
     <div className="max-w-6xl mx-auto">
-      <div className="bg-white rounded-lg border border-gray-200 shadow-sm overflow-hidden">
+      <div className="bg-white rounded-lg border border-gray-200 shadow-sm">
         {/* Mobile Header */}
         <LessonHeader 
           title={lesson.title}

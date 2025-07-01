@@ -497,7 +497,7 @@ const LessonDetail = () => {
 
         {/* Main Content Area */}
         <div 
-          className="p-5 overflow-auto max-h-[calc(100vh-200px)] md:max-h-none"
+          className="p-5"
           onTouchStart={handleTouchStart}
           onTouchMove={handleTouchMove}
           onTouchEnd={handleTouchEnd}

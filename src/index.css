@@ -191,6 +191,8 @@
   /* Markdown styles for chat messages */
   .prose {
     @apply text-sm;
+    word-wrap: break-word; /* Added */
+    overflow-wrap: break-word; /* Added */
   }
 
   .prose p {

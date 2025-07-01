@@ -154,7 +154,7 @@ const LessonContent: React.FC<LessonContentProps> = ({
       </div>
 
       {/* Page Content */}
-      <div className="bg-white rounded-lg border border-gray-200 p-5 shadow-sm">
+      <div className="bg-white rounded-lg border border-gray-200 p-5 shadow-sm overflow-y-auto">
         {renderPageContent()}
       </div>
     </>

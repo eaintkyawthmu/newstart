@@ -466,7 +466,7 @@ const LessonDetail = () => {
   const currentPageIndex = availablePages.indexOf(currentPage);
 
   return (
-    <div className="max-w-6xl mx-auto">
+    <div className="max-w-6xl mx-auto w-full min-h-screen overflow-x-hidden bg-gray-50">
       <div className="bg-white rounded-lg border border-gray-200 shadow-sm">
         {/* Mobile Header */}
         <LessonHeader 

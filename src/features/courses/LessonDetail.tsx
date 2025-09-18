@@ -20,6 +20,7 @@ import {
   Clock,
   ChevronDown,
   ChevronUp,
+  ChevronRight,
   Download,
   ExternalLink,
   RefreshCw,

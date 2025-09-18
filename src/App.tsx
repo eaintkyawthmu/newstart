@@ -8,6 +8,8 @@ import { AuthProvider } from './contexts/AuthContext';
 import { ToastProvider } from './contexts/ToastContext';
 import { useAuth } from './contexts/AuthContext';
 import { supabase } from './lib/supabaseClient';
+import { initMonitoring } from './utils/monitoring';
+import { trackCustomError } from './utils/errorTracking';
 import DashboardLayout from './layouts/DashboardLayout';
 import Dashboard from './pages/Dashboard';
 import Guide from './pages/Guide';
@@ -118,6 +120,11 @@ const AppContent: React.FC = () => {
   const { user } = useAuth();
   const location = useLocation();
   
+  // Initialize monitoring
+  useEffect(() => {
+    initMonitoring();
+  }, []);
+  
   // Don't show MiniAngel on these pages
   const hideFloatingChatOn = [
     '/auth',
@@ -139,6 +146,31 @@ const AppContent: React.FC = () => {
       initAnalytics();
     }
   }, [user]);
+
+  // Track route changes
+  useEffect(() => {
+    if (user) {
+      trackEvent('page_view', {
+        page_path: location.pathname,
+        page_title: document.title
+      });
+    }
+  }, [location.pathname, user]);
+
+  // Global error handler for unhandled promise rejections
+  useEffect(() => {
+    const handleUnhandledRejection = (event: PromiseRejectionEvent) => {
+      console.error('Unhandled promise rejection:', event.reason);
+      trackCustomError('Unhandled promise rejection', {
+        reason: event.reason?.message || 'Unknown error',
+        stack: event.reason?.stack,
+        pathname: location.pathname
+      });
+    };
+
+    window.addEventListener('unhandledrejection', handleUnhandledRejection);
+    return () => window.removeEventListener('unhandledrejection', handleUnhandledRejection);
+  }, [location.pathname]);
 
   return (
     <>

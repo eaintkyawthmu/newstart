@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { ImageIcon } from 'lucide-react';
+import { createResponsiveImageProps, handleImageError } from '../utils/imageOptimization';
 
 interface LazyImageProps {
   src: string;
@@ -8,6 +9,9 @@ interface LazyImageProps {
   placeholder?: React.ReactNode;
   onLoad?: () => void;
   onError?: () => void;
+  responsive?: boolean;
+  fallbackSrc?: string;
+  quality?: number;
 }
 
 const LazyImage: React.FC<LazyImageProps> = ({
@@ -16,7 +20,10 @@ const LazyImage: React.FC<LazyImageProps> = ({
   className = '',
   placeholder,
   onLoad,
-  onError
+  onError,
+  responsive = true,
+  fallbackSrc,
+  quality = 80
 }) => {
   const [isLoaded, setIsLoaded] = useState(false);
   const [hasError, setHasError] = useState(false);
@@ -31,7 +38,10 @@ const LazyImage: React.FC<LazyImageProps> = ({
           observer.disconnect();
         }
       },
-      { threshold: 0.1 }
+      { 
+        threshold: 0.1,
+        rootMargin: '50px 0px'
+      }
     );
 
     if (imgRef.current) {
@@ -46,9 +56,15 @@ const LazyImage: React.FC<LazyImageProps> = ({
     onLoad?.();
   };
 
-  const handleError = () => {
+  const handleErrorEvent = () => {
     setHasError(true);
     onError?.();
+    
+    // Try fallback image if available
+    if (fallbackSrc && imgRef.current && imgRef.current.src !== fallbackSrc) {
+      imgRef.current.src = fallbackSrc;
+      setHasError(false);
+    }
   };
 
   const defaultPlaceholder = (
@@ -66,20 +82,24 @@ const LazyImage: React.FC<LazyImageProps> = ({
     );
   }
 
+  // Get responsive image props if enabled
+  const imageProps = responsive 
+    ? createResponsiveImageProps(src, alt, { quality })
+    : { src, alt };
   return (
     <div ref={imgRef} className={`relative ${className}`}>
       {!isLoaded && (placeholder || defaultPlaceholder)}
       
       {isInView && (
         <img
-          src={src}
-          alt={alt}
+          {...imageProps}
           className={`responsive-image transition-opacity duration-300 ${
             isLoaded ? 'opacity-100' : 'opacity-0 absolute inset-0'
           } ${className}`}
           onLoad={handleLoad}
-          onError={handleError}
+          onError={handleErrorEvent}
           loading="lazy"
+          decoding="async"
         />
       )}
     </div>

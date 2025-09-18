@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useLanguage } from '../contexts/LanguageContext';
 import { useStep } from '../contexts/StepContext';
+import { useSEO } from '../hooks/useSEO';
+import LazyImage from '../components/LazyImage';
 import { supabase } from '../lib/supabaseClient';
 import {
   BookOpen, Target, Award, ChevronRight, DollarSign,
@@ -36,6 +38,17 @@ const Dashboard = () => {
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState(true);
   const { milestones, userMilestones, getBadgeImage } = useMilestones();
+
+  // SEO optimization
+  useSEO({
+    title: 'Dashboard - Your Immigration Journey',
+    description: 'Track your progress, access learning resources, and manage your financial journey in America.',
+    keywords: ['dashboard', 'immigration progress', 'financial tracking'],
+    breadcrumbs: [
+      { name: 'Home', url: '/' },
+      { name: 'Dashboard', url: '/dashboard' }
+    ]
+  });
 
   // Check for success or canceled query params for Stripe
   useEffect(() => {
@@ -562,10 +575,12 @@ const Dashboard = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="border border-gray-200 rounded-lg overflow-hidden hover:shadow-md transition-all duration-200">
             <div className="aspect-video bg-gray-100 relative">
-              <img 
+              <LazyImage
                 src="https://images.pexels.com/photos/3760067/pexels-photo-3760067.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2" 
                 alt="New to America" 
                 className="w-full h-full object-cover"
+                responsive={true}
+                fallbackSrc="/icons/icon-512x512.png"
               />
             </div>
             <div className="p-4">
@@ -588,10 +603,12 @@ const Dashboard = () => {
           
           <div className="border border-gray-200 rounded-lg overflow-hidden hover:shadow-md transition-all duration-200">
             <div className="aspect-video bg-gray-100 relative">
-              <img 
+              <LazyImage
                 src="https://images.pexels.com/photos/6266257/pexels-photo-6266257.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2" 
                 alt="Banking & Credit" 
                 className="w-full h-full object-cover"
+                responsive={true}
+                fallbackSrc="/icons/icon-512x512.png"
               />
             </div>
             <div className="p-4">

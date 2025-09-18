@@ -1,5 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useSEO } from '../hooks/useSEO';
+import LazyImage from '../components/LazyImage';
 import { 
   ArrowRight, 
   CheckCircle, 
@@ -18,6 +20,17 @@ import {
 
 const LandingPage = () => {
   const navigate = useNavigate();
+
+  // SEO optimization
+  useSEO({
+    title: 'Financial Guidance for U.S. Immigrants',
+    description: 'Learn how to build credit, manage money, understand taxes, and navigate daily life in America with step-by-step guidance tailored for immigrants.',
+    keywords: ['immigration', 'financial literacy', 'credit building', 'U.S. immigrants', 'banking', 'taxes'],
+    type: 'website',
+    breadcrumbs: [
+      { name: 'Home', url: '/' }
+    ]
+  });
 
   const features = [
     {
@@ -183,6 +196,12 @@ const LandingPage = () => {
               </div>
             </div>
           </div>
+        </div>
+        
+        {/* Background decoration */}
+        <div className="absolute inset-0 overflow-hidden pointer-events-none" aria-hidden="true">
+          <div className="absolute -top-40 -right-40 w-80 h-80 bg-blue-200 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-blob"></div>
+          <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-purple-200 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-blob animation-delay-2000"></div>
         </div>
       </section>
 

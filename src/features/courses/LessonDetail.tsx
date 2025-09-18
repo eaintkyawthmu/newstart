@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useLanguage } from '../../contexts/LanguageContext';
+import { useSEO } from '../../hooks/useSEO';
 import { sanityClient } from '../../lib/sanityClient';
 import { supabase } from '../../lib/supabaseClient';
 import { useQuery } from '@tanstack/react-query';
@@ -45,6 +46,24 @@ const LessonDetail = () => {
   const [completedTasks, setCompletedTasks] = useState<string[]>([]);
   const [showMilestoneModal, setShowMilestoneModal] = useState(false);
   const [earnedMilestone, setEarnedMilestone] = useState<string | null>(null);
+
+  // SEO optimization
+  useSEO({
+    title: lesson?.title ? `${lesson.title} - Lesson` : 'Lesson',
+    description: lesson?.introduction ? 
+      (Array.isArray(lesson.introduction) ? 
+        lesson.introduction[0]?.children?.[0]?.text || 'Learn essential skills for life in America' :
+        'Learn essential skills for life in America') :
+      'Interactive lesson designed to help immigrants succeed in America',
+    keywords: ['immigration lesson', 'financial education', 'life skills', 'interactive learning'],
+    breadcrumbs: [
+      { name: 'Home', url: '/' },
+      { name: 'Dashboard', url: '/dashboard' },
+      { name: 'Journey Hub', url: '/journey' },
+      { name: path?.title || 'Course', url: `/courses/${pathSlug}` },
+      { name: lesson?.title || 'Lesson', url: `/courses/${pathSlug}/lessons/${lessonSlug}` }
+    ]
+  });
 
   // Fetch the entire journey path to get context for navigation
   const { data: path, isLoading: pathLoading } = useQuery({

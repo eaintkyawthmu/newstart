@@ -1,4 +1,5 @@
 import { supabase } from '../lib/supabaseClient';
+import { trackCustomError } from './errorTracking';
 
 interface EventProperties {
   [key: string]: any;
@@ -21,7 +22,12 @@ export const trackEvent = async (
 ): Promise<void> => {
   try {
     const { data: { user } } = await supabase.auth.getUser();
-    if (!user) return;
+    if (!user) {
+      // Track anonymous events with session ID
+      const sessionId = sessionStorage.getItem('analytics_session_id') || getSessionId();
+      console.log(`Anonymous event tracked: ${eventName}`, properties);
+      return;
+    }
 
     // Add common properties
     const eventProperties = {
@@ -33,10 +39,13 @@ export const trackEvent = async (
       user_agent: navigator.userAgent,
       screen_size: `${window.innerWidth}x${window.innerHeight}`,
       language: navigator.language,
+      connection_type: (navigator as any).connection?.effectiveType || 'unknown',
+      device_memory: (navigator as any).deviceMemory || 'unknown',
+      hardware_concurrency: navigator.hardwareConcurrency || 'unknown'
     };
 
     // Send the event to Supabase
-    await supabase
+    const { error } = await supabase
       .from('analytics_events')
       .insert({
         user_id: user.id,
@@ -47,9 +56,14 @@ export const trackEvent = async (
         ip_address: null, // IP will be captured server-side
       });
 
+    if (error) {
+      trackCustomError('Failed to track analytics event', { eventName, error: error.message });
+    }
+
     console.log(`Event tracked: ${eventName}`, properties);
   } catch (error) {
     console.error('Error tracking event:', error);
+    trackCustomError('Analytics tracking failed', { eventName, error: error.message });
   }
 };
 

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useLanguage } from '../contexts/LanguageContext';
 import { useNavigate } from 'react-router-dom';
+import { useSEO } from '../hooks/useSEO';
 import { fetchJourneyPath } from '../lib/sanityClient';
 import { supabase } from '../lib/supabaseClient';
 import type { JourneyPath } from '../types/journey';
@@ -12,6 +13,18 @@ const JourneyHub = () => {
   const { language } = useLanguage();
   const navigate = useNavigate();
   const [progress, setProgress] = useState<Record<string, number>>({});
+
+  // SEO optimization
+  useSEO({
+    title: 'Journey Hub - Immigration Learning Paths',
+    description: 'Explore comprehensive learning paths designed specifically for immigrants to navigate life in America successfully.',
+    keywords: ['immigration courses', 'learning paths', 'financial education', 'U.S. immigrants'],
+    breadcrumbs: [
+      { name: 'Home', url: '/' },
+      { name: 'Dashboard', url: '/dashboard' },
+      { name: 'Journey Hub', url: '/journey' }
+    ]
+  });
 
   // Updated path slugs to reflect immigrant journey
   const pathSlugs = [

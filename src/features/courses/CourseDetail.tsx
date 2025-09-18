@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useLanguage } from '../../contexts/LanguageContext';
+import { useSEO } from '../../hooks/useSEO';
 import { fetchJourneyPath } from '../../lib/sanityClient';
 import { supabase } from '../../lib/supabaseClient';
 import type { JourneyPath, Module, Lesson } from '../../types/journey';
@@ -38,6 +39,23 @@ const CourseDetail = () => {
   const [expandedModule, setExpandedModule] = useState<string | null>(null);
   const [progress, setProgress] = useState<Record<string, boolean>>({});
   const [overallProgress, setOverallProgress] = useState(0);
+
+  // SEO optimization
+  useSEO({
+    title: path?.title ? `${path.title} - Course Details` : 'Course Details',
+    description: path?.description ? 
+      (Array.isArray(path.description) ? 
+        path.description[0]?.children?.[0]?.text || 'Learn essential skills for life in America' :
+        'Learn essential skills for life in America') :
+      'Comprehensive course designed for immigrants to succeed in America',
+    keywords: ['immigration course', 'financial education', 'life skills', 'U.S. immigrants'],
+    breadcrumbs: [
+      { name: 'Home', url: '/' },
+      { name: 'Dashboard', url: '/dashboard' },
+      { name: 'Journey Hub', url: '/journey' },
+      { name: path?.title || 'Course', url: `/courses/${slug}` }
+    ]
+  });
 
   // Update the query to explicitly request all module fields and lessons for progress calculation
   const { data: path, isLoading, error } = useQuery({

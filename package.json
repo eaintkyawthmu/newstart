@@ -13,6 +13,7 @@
     "bundle-analyzer": "npx vite-bundle-analyzer dist"
   },
   "dependencies": {
+    "@juggle/resize-observer": "^3.4.0",
     "@portabletext/react": "^3.0.11",
     "@portabletext/types": "^2.0.8",
     "@sanity/client": "^6.12.3",

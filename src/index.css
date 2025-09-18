@@ -176,45 +176,41 @@
     -moz-appearance: textfield;
   }
 
-  /* Auth UI customization */
-  .auth-container {
-    @apply w-full max-w-md mx-auto;
-  }
+  /* ======================================================================== */
+  /* START: Consolidated & Refactored Prose Styles                           */
+  /* ======================================================================== */
+  /* This single block replaces all previous .prose and .lesson-prose styles  */
 
-  .auth-button {
-    @apply w-full py-2 px-4 rounded-lg font-medium transition-colors duration-200;
-  }
-
-  .auth-input {
-    @apply w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent;
-  }
-
-  /* Markdown styles for chat messages */
   .prose {
-    @apply text-sm leading-relaxed;
-    word-wrap: break-word; /* Added */
-    overflow-wrap: break-word; /* Added */
-    hyphens: auto; 
-    word-break: break-word;
+    /* --- Base & Mobile Styles First --- */
+    font-size: 0.875rem; /* 14px on mobile */
+    line-height: 1.6;
     max-width: 100%;
-  }
-
-  .prose p {
-    @apply my-2 leading-relaxed;
-    word-wrap: break-word;
     overflow-wrap: break-word;
   }
 
-  .prose ul {
-    @apply list-disc pl-4 my-2;
-    word-wrap: break-word;
-    overflow-wrap: break-word;
+  .prose p,
+  .prose ul,
+  .prose ol,
+  .prose blockquote {
+    margin-top: 0.75rem;
+    margin-bottom: 0.75rem;
   }
 
-  .prose ol {
-    @apply list-decimal pl-4 my-2;
-    word-wrap: break-word;
-    overflow-wrap: break-word;
+  .prose h1, .prose h2, .prose h3, .prose h4 {
+    margin: 1.25rem 0 0.5rem 0;
+  }
+
+  .prose h1 { font-size: 1.25rem; }
+  .prose h2 { font-size: 1.125rem; }
+  .prose h3 { font-size: 1rem; }
+
+  .prose ul { @apply list-disc; padding-left: 1.25rem; }
+  .prose ol { @apply list-decimal; padding-left: 1.25rem; }
+
+  .prose a {
+    @apply text-blue-600 hover:text-blue-700 underline;
+    word-break: break-all; /* Best for long URLs */
   }
 
   .prose code {
@@ -222,161 +218,46 @@
     word-break: break-all;
   }
 
-  .prose a {
-    @apply text-blue-600 hover:text-blue-700 underline;
-    word-break: break-all;
+  /* --- Fixes for Overflowing Content --- */
+
+  .prose img,
+  .prose video,
+  .prose iframe {
+    max-width: 100%;
+    height: auto;
+    border-radius: 0.5rem;
+  }
+
+  .prose pre {
+    white-space: pre-wrap; /* Allows wrapping */
+    overflow-x: auto;   /* Adds a scrollbar if it still overflows */
+  }
+
+  .prose table {
+    display: block;
+    width: 100%;
+    overflow-x: auto; /* Makes tables scroll horizontally on mobile */
+  }
+
+  .prose blockquote {
+    max-width: 100%;
     overflow-wrap: break-word;
   }
 
-  .prose h1,
-  .prose h2,
-  .prose h3,
-  .prose h4,
-  .prose h5,
-  .prose h6 {
-    word-wrap: break-word;
-    overflow-wrap: break-word;
-    hyphens: auto;
-  }
-
-  /* Mobile-specific prose adjustments */
-  @media (max-width: 768px) {
+  /* --- Tablet & Desktop Overrides --- */
+  @media (min-width: 768px) {
     .prose {
-      font-size: 0.875rem !important;
-      line-height: 1.6 !important;
-      padding: 0 !important;
-      margin: 0 !important;
-      width: 100% !important;
-      max-width: 100% !important;
-      min-width: 0 !important;
-      word-wrap: break-word !important;
-      overflow-wrap: break-word !important;
-      hyphens: auto !important;
+      font-size: 1rem; /* 16px */
+      line-height: 1.7;
     }
-    
-    .prose p {
-      margin: 0.5rem 0 !important;
-      font-size: 0.875rem !important;
-      line-height: 1.6 !important;
-      width: 100% !important;
-      max-width: 100% !important;
-      word-wrap: break-word !important;
-      overflow-wrap: break-word !important;
-    }
-    
-    .prose h1 {
-      font-size: 1.125rem !important;
-      margin: 0.75rem 0 0.5rem 0 !important;
-      width: 100% !important;
-      max-width: 100% !important;
-    }
-    
-    .prose h2 {
-      font-size: 1rem !important;
-      margin: 0.5rem 0 0.25rem 0 !important;
-      width: 100% !important;
-      max-width: 100% !important;
-    }
-    
-    .prose h3 {
-      font-size: 0.875rem !important;
-      margin: 0.25rem 0 !important;
-      width: 100% !important;
-      max-width: 100% !important;
-    }
-    
-    .prose ul,
-    .prose ol {
-      margin: 0.5rem 0 !important;
-      padding-left: 1rem !important;
-      width: 100% !important;
-      max-width: 100% !important;
-    }
-    
-    .prose li {
-      margin: 0.25rem 0 !important;
-      font-size: 0.875rem !important;
-      line-height: 1.6 !important;
-      width: 100% !important;
-      max-width: 100% !important;
-      word-wrap: break-word !important;
-      overflow-wrap: break-word !important;
-    }
-    
-    .prose blockquote {
-      margin: 0.5rem 0 !important;
-      padding: 0.5rem 0.75rem !important;
-      font-size: 0.875rem !important;
-      width: 100% !important;
-      max-width: 100% !important;
-    }
+    .prose h1 { font-size: 1.5rem; }
+    .prose h2 { font-size: 1.25rem; }
+    .prose h3 { font-size: 1.125rem; }
   }
 
-  /* Mobile lesson content optimizations */
-  @media (max-width: 639px) {
-    /* Modern lesson viewer mobile optimizations */
-    .lesson-section {
-      width: 100% !important;
-      max-width: 100% !important;
-      min-width: 0 !important;
-      overflow-x: visible !important;
-      word-break: break-word !important;
-      overflow-wrap: break-word !important;
-      hyphens: auto !important;
-    }
-    
-    .lesson-content {
-      padding: 0.75rem !important;
-      margin: 0 !important;
-      width: 100% !important;
-      max-width: 100% !important;
-    }
-    
-    .lesson-prose {
-      font-size: 0.875rem !important;
-      line-height: 1.6 !important;
-      width: 100% !important;
-      max-width: 100% !important;
-      word-break: break-word !important;
-      overflow-wrap: break-word !important;
-    }
-    
-    .lesson-prose * {
-      width: 100% !important;
-      max-width: 100% !important;
-      word-break: break-word !important;
-      overflow-wrap: break-word !important;
-    }
-    
-    .lesson-prose p {
-      margin: 0.5rem 0 !important;
-      font-size: 0.875rem !important;
-      line-height: 1.6 !important;
-    }
-    
-    .lesson-prose h1,
-    .lesson-prose h2,
-    .lesson-prose h3,
-    .lesson-prose h4 {
-      margin: 0.75rem 0 0.5rem 0 !important;
-      word-break: break-word !important;
-      overflow-wrap: break-word !important;
-    }
-    
-    .lesson-prose ul,
-    .lesson-prose ol {
-      margin: 0.5rem 0 !important;
-      padding-left: 1rem !important;
-    }
-    
-    .lesson-prose li {
-      margin: 0.25rem 0 !important;
-      font-size: 0.875rem !important;
-      line-height: 1.6 !important;
-      word-break: break-word !important;
-      overflow-wrap: break-word !important;
-    }
-  }
+  /* ======================================================================== */
+  /* END: Consolidated & Refactored Prose Styles                             */
+  /* ======================================================================== */
 
   /* Enhanced animations */
   @keyframes blob {
@@ -653,62 +534,6 @@
   
   .image-placeholder {
     @apply bg-gray-200 animate-pulse flex items-center justify-center;
-  }
-  
-  /* Fix for right-side content cutoff */
-  .prose img,
-  .prose video,
-  .prose iframe {
-    /* Prevents media from overflowing the container */
-    max-width: 100% !important;
-    width: 100% !important;
-    height: auto !important;
-    border-radius: 0.5rem; /* Optional: adds rounded corners */
-    object-fit: cover;
-  }
-  
-  .prose pre {
-    /* Makes code blocks wrap or scroll horizontally */
-    white-space: pre-wrap !important;
-    word-break: break-all !important;
-    overflow-x: auto !important;
-    max-width: 100% !important;
-    width: 100% !important;
-  }
-  
-  .prose table {
-    /* Makes tables responsive on small screens */
-    display: block !important;
-    max-width: 100% !important;
-    width: 100% !important;
-    overflow-x: auto !important;
-  }
-  
-  .prose blockquote {
-    /* Ensures blockquotes don't overflow */
-    max-width: 100% !important;
-    width: 100% !important;
-    word-wrap: break-word !important;
-    overflow-wrap: break-word !important;
-  }
-  
-  .prose code {
-    /* Inline code wrapping */
-    word-break: break-all !important;
-    overflow-wrap: break-word !important;
-    white-space: pre-wrap !important;
-  }
-  
-  /* Additional overflow fixes for lesson content */
-  .lesson-content * {
-    max-width: 100% !important;
-    box-sizing: border-box !important;
-  }
-  
-  .lesson-section-content {
-    overflow-x: visible !important;
-    word-wrap: break-word !important;
-    overflow-wrap: break-word !important;
   }
   
   /* Enhanced typography */

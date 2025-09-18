@@ -316,240 +316,6 @@ const LessonDetail = () => {
     return { prevLesson, nextLesson };
   };
 
-  // Quiz handlers
-  const handleAnswerChange = (questionIndex: number, value: number | boolean) => {
-    setUserAnswers(prev => {
-      const newAnswers = [...prev];
-      
-      if (typeof value === 'number') {
-        newAnswers[questionIndex] = {
-          ...newAnswers[questionIndex],
-          selectedOptionIndex: value,
-          trueFalseAnswer: undefined
-        };
-      } else {
-        newAnswers[questionIndex] = {
-          ...newAnswers[questionIndex],
-          selectedOptionIndex: undefined,
-          trueFalseAnswer: value
-        };
-      }
-      
-      return newAnswers;
-    });
-  };
-
-  const handleSubmitQuiz = () => {
-    if (!lesson?.quiz?.questions || !Array.isArray(lesson.quiz.questions)) return;
-    
-    const results: any[] = [];
-    let score = 0;
-    
-    lesson.quiz.questions.forEach((question: any, index: number) => {
-      const userAnswer = userAnswers[index];
-      let isCorrect = false;
-      
-      if (question.questionType === 'multipleChoice' && userAnswer?.selectedOptionIndex !== undefined) {
-        isCorrect = question.options[userAnswer.selectedOptionIndex]?.isCorrect || false;
-      } else if (question.questionType === 'trueFalse' && userAnswer?.trueFalseAnswer !== undefined) {
-        isCorrect = userAnswer.trueFalseAnswer === question.correctAnswer;
-      }
-      
-      if (isCorrect) score++;
-      
-      results.push({
-        questionIndex: index,
-        isCorrect,
-        feedback: question.feedback
-      });
-    });
-    
-    setQuizResults(results);
-    setTotalScore(score);
-    setQuizSubmitted(true);
-    
-    // Track quiz submission
-    trackEvent('quiz_submitted', {
-      lesson_id: lesson._id,
-      lesson_title: lesson.title,
-      score,
-      total_questions: lesson.quiz.questions.length,
-      passed: score / lesson.quiz.questions.length >= 0.7,
-      time_spent_seconds: Math.floor((new Date().getTime() - startTime.getTime()) / 1000)
-    });
-    
-    // Auto-complete lesson if quiz passed
-    if (score / lesson.quiz.questions.length >= 0.7 && !completed) {
-      toggleCompletion();
-    }
-  };
-
-  const handleRetakeQuiz = () => {
-    setUserAnswers(lesson?.quiz?.questions?.map((_, index) => ({
-      questionIndex: index,
-      selectedOptionIndex: undefined,
-      trueFalseAnswer: undefined
-    })) || []);
-    setQuizSubmitted(false);
-    setQuizResults([]);
-    setTotalScore(0);
-  };
-
-  // Calculate progress
-  const calculateProgress = () => {
-    const totalTasks = [
-      ...(lesson?.measurableDeliverables || []),
-      ...(lesson?.actionableTasks || [])
-    ].length;
-    
-    if (totalTasks === 0) return completed ? 100 : 0;
-    
-    const completedCount = completedTasks.length;
-    const taskProgress = (completedCount / totalTasks) * 80; // Tasks worth 80%
-    const completionBonus = completed ? 20 : 0; // Completion worth 20%
-    
-    return Math.min(Math.round(taskProgress + completionBonus), 100);
-  };
-
-  if (pathLoading || lessonLoading) {
-    return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
-      </div>
-    );
-  }
-
-  if (!lesson || !path) {
-    return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
-        <div className="text-center">
-          <AlertCircle className="h-12 w-12 text-red-500 mx-auto mb-4" />
-          <h2 className="text-xl font-semibold text-gray-800 mb-2">
-            {language === 'en' ? 'Lesson not found' : 'သင်ခန်းစာ မတွေ့ရှိပါ'}
-          </h2>
-        </div>
-      </div>
-    );
-  }
-
-  const { prevLesson, nextLesson } = findAdjacentLessons();
-  const progress = calculateProgress();
-
-  return (
-    <div className="min-h-screen bg-gray-50 w-full">
-      {/* Header */}
-  
-  <header className="sticky top-0 z-40 bg-white border-b border-gray-200 shadow-sm w-full">
-    <div className="flex items-center justify-between px-3 py-2 min-h-[56px]">
-      
-      {/* This invisible spacer balances the button on the right */}
-      <div className="w-[44px] h-[44px]" aria-hidden="true"></div>
-  
-      {/* The title will now be perfectly centered */}
-      <div className="flex-1 text-center px-2 min-w-0">
-        <h1 className="text-sm font-semibold text-gray-900 truncate">
-          {lesson.title}
-        </h1>
-        <div className="flex items-center justify-center text-xs text-gray-500 mt-0.5">
-          <Clock className="w-3 h-3 mr-1" />
-          <span>{lesson.duration}</span>
-          <span className="mx-2">•</span>
-          <span>{progress}% {language === 'en' ? 'complete' : 'ပြီးဆုံး'}</span>
-        </div>
-      </div>
-      
-      {/* This is the button on the right */}
-      <button
-        onClick={toggleCompletion}
-        className={`p-2 rounded-lg transition-colors min-h-[44px] min-w-[44px] flex items-center justify-center ${
-          completed
-            ? 'text-green-600 bg-green-50'
-            : 'text-gray-400 hover:bg-gray-100'
-        }`}
-        aria-label={completed 
-          ? (language === 'en' ? 'Mark as incomplete' : 'မပြီးဆုံးသေးသည်ဟု မှတ်သားရန်') 
-          : (language === 'en' ? 'Mark as complete' : 'ပြီးဆုံးအဖြစ် မှတ်သားရန်')}
-      >
-        <Award className="w-5 h-5" />
-      </button>
-    </div>
-    
-    {/* Progress Bar */}
-    <div className="w-full bg-gray-200 h-1">
-      <div 
-        className="bg-blue-600 h-1 transition-all duration-500 ease-out"
-        style={{ width: `${progress}%` }}
-      />
-    </div>
-  </header>
-
-      {/* Main Content - Vertical Scrolling */}
-      <main className="pb-20">
-        <div className="max-w-4xl mx-auto px-3 py-4 space-y-4">
-          
-          {/* Introduction Section */}
-          <section id="intro" className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-            <button
-              onClick={() => toggleSection('intro')}
-              className="w-full p-4 flex items-center justify-between hover:bg-gray-50 transition-colors"
-            >
-              <div className="flex items-center">
-                <BookOpen className="w-5 h-5 text-blue-600 mr-3" />
-                <h2 className="text-lg font-semibold text-gray-900">
-                  {language === 'en' ? 'Introduction' : 'မိတ်ဆက်'}
-                </h2>
-              </div>
-              {expandedSections.has('intro') ? (
-                <ChevronUp className="w-5 h-5 text-gray-400" />
-              ) : (
-                <ChevronDown className="w-5 h-5 text-gray-400" />
-              )}
-            </button>
-            
-            {expandedSections.has('intro') && (
-              <div className="px-4 pb-4 border-t border-gray-100">
-                {lesson.introduction && (
-                  <div className="prose prose-sm max-w-none text-gray-700 mb-4">
-                    <PortableText value={Array.isArray(lesson.introduction) ? lesson.introduction : [lesson.introduction]} />
-                  </div>
-                )}
-                
-                {lesson.measurableDeliverables && lesson.measurableDeliverables.length > 0 && (
-                  <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
-                    <h3 className="font-semibold text-blue-800 mb-3 flex items-center text-sm">
-                      <Target className="w-4 h-4 mr-2" />
-                      {language === 'en' ? 'What You\'ll Achieve' : 'သင်ရရှိမည့်အရာများ'}
-                    </h3>
-                    <div className="space-y-2">
-                      {lesson.measurableDeliverables.map((deliverable: any) => (
-                        <label 
-                          key={deliverable._key} 
-                          className="flex items-start space-x-2 cursor-pointer hover:bg-blue-100 p-2 rounded-md transition-colors"
-                        >
-                          <input
-                            type="checkbox"
-                            checked={completedTasks.includes(deliverable._key)}
-                            onChange={(e) => handleTaskCompletion(deliverable._key, e.target.checked)}
-                            className="w-4 h-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500 flex-shrink-0 mt-0.5"
-                          />
-                          <div className={`text-sm text-gray-700 flex-1 ${
-                            completedTasks.includes(deliverable._key) ? 'line-through text-gray-500' : ''
-                          }`}>
-                            <PortableText value={Array.isArray(deliverable.description) ? deliverable.description : [deliverable.description]} />
-                          </div>
-                          {!deliverable.isOptional && (
-                            <span className="px-1.5 py-0.5 bg-red-100 text-red-800 text-xs rounded-full flex-shrink-0">
-                              {language === 'en' ? 'Required' : 'လိုအပ်သည်'}
-                            </span>
-                          )}
-                        </label>
-                      ))}
-                    </div>
-                  </div>
-                )}
-              </div>
-            )}
-          </section>
 
           {/* Content Section */}
           {(lesson.content || lesson.type === 'video') && (
@@ -680,55 +446,49 @@ const LessonDetail = () => {
                             className="flex items-start space-x-2 cursor-pointer hover:bg-purple-100 p-2 rounded-md transition-colors"
                           >
                             <input
-                              type="checkbox"
-                              checked={completedTasks.includes(task._key)}
-                              onChange={(e) => handleTaskCompletion(task._key, e.target.checked)}
-                              className="w-4 h-4 text-purple-600 rounded border-gray-300 focus:ring-purple-500 flex-shrink-0 mt-0.5"
-                            />
-                            <div className={`text-sm text-gray-700 flex-1 ${
-                              completedTasks.includes(task._key) ? 'line-through text-gray-500' : ''
-                            }`}>
-                              <PortableText value={Array.isArray(task.description) ? task.description : [task.description]} />
-                            </div>
-                            {!task.isOptional && (
-                              <span className="px-1.5 py-0.5 bg-red-100 text-red-800 text-xs rounded-full flex-shrink-0">
-                                {language === 'en' ? 'Required' : 'လိုအပ်သည်'}
-                              </span>
-                            )}
-                          </label>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-
-                  {/* Resources */}
-                  {lesson.lessonResources && lesson.lessonResources.length > 0 && (
-                    <div className="border border-gray-200 rounded-lg p-3">
-                      <h3 className="font-semibold text-gray-800 mb-3 text-sm">
-                        {language === 'en' ? 'Additional Resources' : 'ထပ်ဆောင်းအရင်းအမြစ်များ'}
-                      </h3>
-                      <div className="space-y-2">
-                        {lesson.lessonResources.map((resource: any, index: number) => (
-                          <a
-                            key={index}
-                            href={resource.url}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="flex items-center p-2 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
-                          >
-                            {resource.type === 'download' ? (
-                              <Download className="w-4 h-4 text-gray-500 mr-2 flex-shrink-0" />
-                            ) : (
-                              <ExternalLink className="w-4 h-4 text-gray-500 mr-2 flex-shrink-0" />
-                            )}
-                            <div className="flex-1 min-w-0">
-                              <p className="font-medium text-gray-800 text-sm truncate">{resource.title}</p>
-                              {resource.description && (
-                                <p className="text-xs text-gray-600 truncate">{resource.description}</p>
                               )}
                             </div>
-                          </a>
+      <main className="pb-20 pt-4">
                         ))}
+          
+          {/* Lesson Title Card */}
+          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4">
+            <div className="flex items-center justify-between mb-3">
+              <div className="flex-1">
+                <h1 className="text-lg font-bold text-gray-900 mb-1">
+                  {lesson.title}
+                </h1>
+                <div className="flex items-center text-sm text-gray-500">
+                  <Clock className="w-4 h-4 mr-1" />
+                  <span>{lesson.duration}</span>
+                  <span className="mx-2">•</span>
+                  <span>{progress}% {language === 'en' ? 'complete' : 'ပြီးဆုံး'}</span>
+                </div>
+              </div>
+              
+              <button
+                onClick={toggleCompletion}
+                className={`p-3 rounded-lg transition-colors min-h-[48px] min-w-[48px] flex items-center justify-center ${
+                  completed
+                    ? 'text-green-600 bg-green-50 border border-green-200'
+                    : 'text-gray-400 hover:bg-gray-100 border border-gray-200'
+                }`}
+                aria-label={completed 
+                  ? (language === 'en' ? 'Mark as incomplete' : 'မပြီးဆုံးသေးသည်ဟု မှတ်သားရန်') 
+                  : (language === 'en' ? 'Mark as complete' : 'ပြီးဆုံးအဖြစ် မှတ်သားရန်')}
+              >
+                <Award className="w-6 h-6" />
+              </button>
+            </div>
+            
+            {/* Progress Bar */}
+            <div className="w-full bg-gray-200 rounded-full h-2">
+              <div 
+                className="bg-blue-600 h-2 rounded-full transition-all duration-500 ease-out"
+                style={{ width: `${progress}%` }}
+              />
+            </div>
+          </div>
                       </div>
                     </div>
                   )}

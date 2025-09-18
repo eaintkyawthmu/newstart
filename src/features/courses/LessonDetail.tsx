@@ -427,12 +427,6 @@ const LessonDetail = () => {
           <h2 className="text-xl font-semibold text-gray-800 mb-2">
             {language === 'en' ? 'Lesson not found' : 'သင်ခန်းစာ မတွေ့ရှိပါ'}
           </h2>
-          <button
-            onClick={() => navigate(`/courses/${pathSlug}`)}
-            className="text-blue-600 hover:text-blue-700 underline"
-          >
-            {language === 'en' ? 'Return to Course' : 'သင်တန်းသို့ ပြန်သွားရန်'}
-          </button>
         </div>
       </div>
     );

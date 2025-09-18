@@ -442,13 +442,6 @@ const LessonDetail = () => {
       {/* Header */}
       <header className="sticky top-0 z-40 bg-white border-b border-gray-200 shadow-sm">
         <div className="flex items-center justify-between px-3 py-2 min-h-[56px]">
-          <button
-            onClick={() => navigate(`/courses/${pathSlug}`)}
-            className="p-2 rounded-lg hover:bg-gray-100 transition-colors min-h-[44px] min-w-[44px] flex items-center justify-center"
-            aria-label={language === 'en' ? 'Go back to course' : 'သင်တန်းသို့ ပြန်သွားရန်'}
-          >
-            <ArrowLeft className="w-5 h-5 text-gray-600" />
-          </button>
           
           <div className="flex-1 text-center px-2 min-w-0">
             <h1 className="text-sm font-semibold text-gray-900 truncate">

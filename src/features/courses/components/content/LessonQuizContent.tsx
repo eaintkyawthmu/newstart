@@ -272,7 +272,7 @@ const LessonQuizContent: React.FC<LessonQuizContentProps> = ({
             <div className="mt-2 sm:mt-3 p-2 sm:p-3 bg-gray-50 rounded-lg border border-gray-200">
               <p className="text-gray-700 text-xs sm:text-sm">
                 <strong>{language === 'en' ? 'Feedback:' : 'တုံ့ပြန်ချက်:'}</strong> {quizResults[questionIndex].feedback}
-        <div className="mb-4 p-3 sm:p-4 bg-success-50 border border-success-200 rounded-lg text-success-600 text-sm flex items-start">
+              </p>
             </div>
           )}
         </div>
@@ -304,4 +304,4 @@ const LessonQuizContent: React.FC<LessonQuizContentProps> = ({
   );
 };
 
-      <div className="bg-blue-50 border border-blue-100 rounded-lg p-3 sm:p-4">
+export default LessonQuizContent;

@@ -443,46 +443,56 @@ const LessonDetail = () => {
 
   return (
     <div className="min-h-screen bg-gray-50 w-full">
-      {/* Main Content - Vertical Scrolling */}
-      <main className="pb-20 pt-4">
-        <div className="max-w-4xl mx-auto px-3 py-4 space-y-4">
+      {/* Header */}
+      <header className="sticky top-0 z-40 bg-white border-b border-gray-200 shadow-sm w-full">
+        <div className="flex items-center justify-between px-3 py-2 min-h-[56px]">
+          <button
+            onClick={() => navigate(`/courses/${pathSlug}`)}
+            className="p-2 rounded-lg hover:bg-gray-100 transition-colors min-h-[44px] min-w-[44px] flex items-center justify-center"
+            aria-label={language === 'en' ? 'Back to course' : 'သင်တန်းသို့ ပြန်သွားရန်'}
+          >
+            <ArrowLeft className="w-5 h-5 text-gray-600" />
+          </button>
           
-          {/* Lesson Title Card */}
-          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4">
-            <div className="flex items-center justify-between mb-2">
-              <h1 className="text-lg font-bold text-gray-900 flex-1 pr-2">
-                {lesson.title}
-              </h1>
-              <button
-                onClick={toggleCompletion}
-                className={`p-2 rounded-lg transition-colors min-h-[44px] min-w-[44px] flex items-center justify-center flex-shrink-0 ${
-                  completed
-                    ? 'text-green-600 bg-green-50'
-                    : 'text-gray-400 hover:bg-gray-100'
-                }`}
-                aria-label={completed 
-                  ? (language === 'en' ? 'Mark as incomplete' : 'မပြီးဆုံးသေးသည်ဟု မှတ်သားရန်') 
-                  : (language === 'en' ? 'Mark as complete' : 'ပြီးဆုံးအဖြစ် မှတ်သားရန်')}
-              >
-                <Award className="w-5 h-5" />
-              </button>
-            </div>
-            
-            <div className="flex items-center text-sm text-gray-500 mb-3">
-              <Clock className="w-4 h-4 mr-1" />
+          <div className="flex-1 text-center px-2 min-w-0">
+            <h1 className="text-sm font-semibold text-gray-900 truncate">
+              {lesson.title}
+            </h1>
+            <div className="flex items-center justify-center text-xs text-gray-500 mt-0.5">
+              <Clock className="w-3 h-3 mr-1" />
               <span>{lesson.duration}</span>
               <span className="mx-2">•</span>
               <span>{progress}% {language === 'en' ? 'complete' : 'ပြီးဆုံး'}</span>
             </div>
-            
-            {/* Progress Bar */}
-            <div className="w-full bg-gray-200 rounded-full h-2">
-              <div 
-                className="bg-blue-600 h-2 rounded-full transition-all duration-500 ease-out"
-                style={{ width: `${progress}%` }}
-              />
-            </div>
           </div>
+          
+          <button
+            onClick={toggleCompletion}
+            className={`p-2 rounded-lg transition-colors min-h-[44px] min-w-[44px] flex items-center justify-center ${
+              completed
+                ? 'text-green-600 bg-green-50'
+                : 'text-gray-400 hover:bg-gray-100'
+            }`}
+            aria-label={completed 
+              ? (language === 'en' ? 'Mark as incomplete' : 'မပြီးဆုံးသေးသည်ဟု မှတ်သားရန်') 
+              : (language === 'en' ? 'Mark as complete' : 'ပြီးဆုံးအဖြစ် မှတ်သားရန်')}
+          >
+            <Award className="w-5 h-5" />
+          </button>
+        </div>
+        
+        {/* Progress Bar */}
+        <div className="w-full bg-gray-200 h-1">
+          <div 
+            className="bg-blue-600 h-1 transition-all duration-500 ease-out"
+            style={{ width: `${progress}%` }}
+          />
+        </div>
+      </header>
+
+      {/* Main Content - Vertical Scrolling */}
+      <main className="pb-20">
+        <div className="max-w-4xl mx-auto px-3 py-4 space-y-4">
           
           {/* Introduction Section */}
           <section id="intro" className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">

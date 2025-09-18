@@ -17,26 +17,28 @@ const LessonIntroContent: React.FC<LessonIntroContentProps> = ({
   const { language } = useLanguage();
   
   return (
-    <div className="space-y-4 sm:space-y-6 animate-fade-in w-full max-w-full break-words overflow-x-visible px-2 sm:px-4">
+    <div className="w-full max-w-full overflow-x-visible space-y-4 mobile-lesson-content">
       {/* Introduction */}
       {lesson.introduction && (
-        <div className="prose prose-sm md:prose-base max-w-none w-full break-words overflow-x-visible animate-slide-up mobile-prose-override">
-          <PortableText value={Array.isArray(lesson.introduction) ? lesson.introduction : [lesson.introduction]} />
+        <div className="w-full max-w-full overflow-x-visible mobile-prose-lesson">
+          <div className="prose prose-sm max-w-none w-full overflow-x-visible">
+            <PortableText value={Array.isArray(lesson.introduction) ? lesson.introduction : [lesson.introduction]} />
+          </div>
         </div>
       )}
       
       {/* Measurable Deliverables */}
       {lesson.measurableDeliverables && lesson.measurableDeliverables.length > 0 && (
-        <div className="bg-blue-50 border border-blue-100 rounded-lg p-2 sm:p-4 animate-slide-up hover-lift w-full max-w-full break-words overflow-x-visible">
-          <h2 className="font-semibold text-blue-800 mb-4 flex items-center">
-            <Target className="h-5 w-5 mr-2" aria-hidden="true" />
+        <div className="w-full max-w-full overflow-x-visible bg-blue-50 border border-blue-100 rounded-lg p-2 sm:p-4 animate-slide-up hover-lift">
+          <h2 className="font-semibold text-blue-800 mb-3 flex items-center text-sm sm:text-base">
+            <Target className="h-4 w-4 sm:h-5 sm:w-5 mr-2" aria-hidden="true" />
             {language === 'en' ? 'What You\'ll Achieve' : 'သင်ရရှိမည့်အရာများ'}
           </h2>
-          <div className="space-y-2 w-full max-w-full">
+          <div className="w-full max-w-full overflow-x-visible space-y-2">
             {lesson.measurableDeliverables.map((deliverable: any) => (
               <label 
                 key={deliverable._key} 
-                className="flex items-start space-x-2 cursor-pointer hover:bg-blue-100 p-1 sm:p-2 rounded-md transition-colors duration-200 w-full max-w-full break-words"
+                className="w-full max-w-full overflow-x-visible flex items-start space-x-2 cursor-pointer hover:bg-blue-100 p-1 sm:p-2 rounded-md transition-colors duration-200"
               >
                 <input
                   type="checkbox"
@@ -47,11 +49,11 @@ const LessonIntroContent: React.FC<LessonIntroContentProps> = ({
                 />
                 <div 
                   id={`task-${deliverable._key}-description`}
-                  className={`text-sm sm:text-base text-gray-700 transition-all duration-200 w-full max-w-full break-words overflow-x-visible mobile-text-override ${
+                  className={`w-full max-w-full overflow-x-visible text-sm text-gray-700 transition-all duration-200 mobile-text-full ${
                     completedTasks.includes(deliverable._key) ? 'line-through text-gray-500' : ''
                   }`}
                 >
-                  <div className="w-full max-w-full break-words overflow-x-visible mobile-prose-override">
+                  <div className="w-full max-w-full overflow-x-visible mobile-prose-lesson">
                     <PortableText value={Array.isArray(deliverable.description) ? deliverable.description : [deliverable.description]} />
                   </div>
                 </div>

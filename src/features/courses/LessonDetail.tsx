@@ -988,52 +988,52 @@ const LessonDetail = () => {
       </main>
 
       {/* Bottom Navigation */}
-      <nav className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 shadow-lg z-40">
+      <nav className="fixed bottom-16 md:bottom-0 left-0 right-0 bg-white border-t border-gray-200 shadow-lg z-40">
         <div className="flex items-center justify-between px-4 py-3 max-w-4xl mx-auto">
           {prevLesson ? (
             <button
               onClick={() => navigate(`/courses/${pathSlug}/lessons/${prevLesson.slug}`)}
-              className="flex items-center px-4 py-2 rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-50 transition-colors min-h-[44px]"
+              className="flex items-center px-3 py-2 rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-50 transition-colors min-h-[44px] text-sm"
             >
               <ArrowLeft className="w-4 h-4 mr-1" />
-              <span className="text-sm">{language === 'en' ? 'Previous' : 'နောက်သို့'}</span>
+              <span className="hidden sm:inline">{language === 'en' ? 'Previous' : 'နောက်သို့'}</span>
             </button>
           ) : (
             <button
               onClick={() => navigate(`/courses/${pathSlug}`)}
-              className="flex items-center px-4 py-2 rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-50 transition-colors min-h-[44px]"
+              className="flex items-center px-3 py-2 rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-50 transition-colors min-h-[44px] text-sm"
             >
               <ArrowLeft className="w-4 h-4 mr-1" />
-              <span className="text-sm">{language === 'en' ? 'Course' : 'သင်တန်း'}</span>
+              <span className="hidden sm:inline">{language === 'en' ? 'Course' : 'သင်တန်း'}</span>
             </button>
           )}
 
           {/* Progress Indicator */}
-          <div className="flex items-center space-x-2">
-            <div className="w-16 h-2 bg-gray-200 rounded-full overflow-hidden">
+          <div className="flex items-center space-x-1 sm:space-x-2">
+            <div className="w-12 sm:w-16 h-2 bg-gray-200 rounded-full overflow-hidden">
               <div 
                 className="h-full bg-blue-600 transition-all duration-500 ease-out"
                 style={{ width: `${progress}%` }}
               />
             </div>
-            <span className="text-xs text-gray-600 font-medium">{progress}%</span>
+            <span className="text-xs text-gray-600 font-medium hidden sm:inline">{progress}%</span>
           </div>
 
           {nextLesson ? (
             <button
               onClick={() => navigate(`/courses/${pathSlug}/lessons/${nextLesson.slug}`)}
-              className="flex items-center px-4 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition-colors min-h-[44px]"
+              className="flex items-center px-3 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition-colors min-h-[44px] text-sm"
             >
-              <span className="text-sm">{language === 'en' ? 'Next' : 'ရှေ့သို့'}</span>
+              <span className="hidden sm:inline">{language === 'en' ? 'Next' : 'ရှေ့သို့'}</span>
               <ChevronRight className="w-4 h-4 ml-1" />
             </button>
           ) : (
             <button
               onClick={() => navigate(`/courses/${pathSlug}`)}
-              className="flex items-center px-4 py-2 rounded-lg bg-green-600 text-white hover:bg-green-700 transition-colors min-h-[44px]"
+              className="flex items-center px-3 py-2 rounded-lg bg-green-600 text-white hover:bg-green-700 transition-colors min-h-[44px] text-sm"
             >
               <CheckCircle className="w-4 h-4 mr-1" />
-              <span className="text-sm">{language === 'en' ? 'Complete' : 'ပြီးဆုံး'}</span>
+              <span className="hidden sm:inline">{language === 'en' ? 'Complete' : 'ပြီးဆုံး'}</span>
             </button>
           )}
         </div>

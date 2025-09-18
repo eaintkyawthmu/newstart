@@ -244,6 +244,11 @@
     overflow-wrap: break-word;
   }
 
+  .prose blockquote {
+    max-width: 100%;
+    overflow-wrap: break-word;
+  }
+
   /* --- Tablet & Desktop Overrides --- */
   @media (min-width: 768px) {
     .prose {
@@ -258,48 +263,6 @@
   /* ======================================================================== */
   /* END: Consolidated & Refactored Prose Styles                             */
   /* ======================================================================== */
-
-  /* Enhanced animations */
-  @keyframes blob {
-    0% { transform: translate(0px, 0px) scale(1); }
-    33% { transform: translate(30px, -50px) scale(1.1); }
-    66% { transform: translate(-20px, 20px) scale(0.9); }
-    100% { transform: translate(0px, 0px) scale(1); }
-  }
-  
-  .animate-blob {
-    animation: blob 7s infinite;
-  }
-  
-  .animation-delay-2000 {
-    animation-delay: 2s;
-  }
-  
-  .animation-delay-4000 {
-    animation-delay: 4s;
-  }
-
-  /* Smooth section transitions */
-  .section-transition {
-    transition: all 0.3s ease-in-out;
-  }
-  
-  .section-expanded {
-    max-height: none;
-    opacity: 1;
-  }
-  
-  .section-collapsed {
-    max-height: 0;
-    opacity: 0;
-    overflow: hidden;
-  }
-  
-  /* Enhanced accordion animations */
-  .accordion-content {
-    transition: max-height 0.3s ease-in-out, opacity 0.2s ease-in-out;
-  }
-  
   /* Floating action button */
   .fab {
     position: fixed;

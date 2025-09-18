@@ -981,7 +981,7 @@ const LessonDetail = () => {
                   <FileText className="w-4 h-4 text-amber-600 mr-2" />
                   {language === 'en' ? 'Quiz' : 'မေးခွန်းတို'}
                 </button>
-              )}
+              )} */}
             </div>
           </div>
         </div>

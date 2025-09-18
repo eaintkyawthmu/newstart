@@ -438,44 +438,52 @@ const LessonDetail = () => {
   return (
     <div className="min-h-screen bg-gray-50 w-full">
       {/* Header */}
-      <header className="sticky top-0 z-40 bg-white border-b border-gray-200 shadow-sm w-full">
-        <div className="flex items-center justify-between px-3 py-2 min-h-[56px]">
-          
-          <div className="flex-1 text-center px-2 min-w-0">
-            <h1 className="text-sm font-semibold text-gray-900 truncate">
-              {lesson.title}
-            </h1>
-            <div className="flex items-center justify-center text-xs text-gray-500 mt-0.5">
-              <Clock className="w-3 h-3 mr-1" />
-              <span>{lesson.duration}</span>
-              <span className="mx-2">•</span>
-              <span>{progress}% {language === 'en' ? 'complete' : 'ပြီးဆုံး'}</span>
-            </div>
-          </div>
-          
-          <button
-            onClick={toggleCompletion}
-            className={`p-2 rounded-lg transition-colors min-h-[44px] min-w-[44px] flex items-center justify-center ${
-              completed
-                ? 'text-green-600 bg-green-50'
-                : 'text-gray-400 hover:bg-gray-100'
-            }`}
-            aria-label={completed 
-              ? (language === 'en' ? 'Mark as incomplete' : 'မပြီးဆုံးသေးသည်ဟု မှတ်သားရန်') 
-              : (language === 'en' ? 'Mark as complete' : 'ပြီးဆုံးအဖြစ် မှတ်သားရန်')}
-          >
-            <Award className="w-5 h-5" />
-          </button>
-        </div>
-        
-        {/* Progress Bar */}
-        <div className="w-full bg-gray-200 h-1">
-          <div 
-            className="bg-blue-600 h-1 transition-all duration-500 ease-out"
-            style={{ width: `${progress}%` }}
-          />
-        </div>
-      </header>
+      // In LessonDetail.js, replace your entire <header> with this:
+
+<header className="sticky top-0 z-40 bg-white border-b border-gray-200 shadow-sm w-full">
+  <div className="flex items-center justify-between px-3 py-2 min-h-[56px]">
+    
+    {/* 1. This is the new invisible spacer. It balances the layout. */}
+    <div className="w-[44px] h-[44px]" aria-hidden="true"></div>
+
+    {/* 2. The title block remains the same and will now be centered. */}
+    <div className="flex-1 text-center px-2 min-w-0">
+      <h1 className="text-sm font-semibold text-gray-900 truncate">
+        {lesson.title}
+      </h1>
+      <div className="flex items-center justify-center text-xs text-gray-500 mt-0.5">
+        <Clock className="w-3 h-3 mr-1" />
+        <span>{lesson.duration}</span>
+        <span className="mx-2">•</span>
+        <span>{progress}% {language === 'en' ? 'complete' : 'ပြီးဆုံး'}</span>
+      </div>
+    </div>
+    
+    {/* 3. The completion button on the right provides the balance. */}
+    <button
+      onClick={toggleCompletion}
+      className={`p-2 rounded-lg transition-colors min-h-[44px] min-w-[44px] flex items-center justify-center ${
+        completed
+          ? 'text-green-600 bg-green-50'
+          : 'text-gray-400 hover:bg-gray-100'
+      }`}
+      aria-label={completed 
+        ? (language === 'en' ? 'Mark as incomplete' : 'မပြီးဆုံးသေးသည်ဟု မှတ်သားရန်') 
+        : (language === 'en' ? 'Mark as complete' : 'ပြီးဆုံးအဖြစ် မှတ်သားရန်')}
+    >
+      <Award className="w-5 h-5" />
+    </button>
+
+  </div>
+  
+  {/* Progress Bar */}
+  <div className="w-full bg-gray-200 h-1">
+    <div 
+      className="bg-blue-600 h-1 transition-all duration-500 ease-out"
+      style={{ width: `${progress}%` }}
+    />
+  </div>
+</header>
 
       {/* Main Content - Vertical Scrolling */}
       <main className="pb-20">

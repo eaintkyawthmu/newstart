@@ -924,7 +924,7 @@ const LessonDetail = () => {
             </section>
           )}
 
-          {/* Quick Navigation Menu */}
+          {/* Quick Navigation Menu 
           <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4">
             <h3 className="font-semibold text-gray-800 mb-3 text-sm">
               {language === 'en' ? 'Jump to Section' : 'အပိုင်းသို့ ခုန်သွားရန်'}

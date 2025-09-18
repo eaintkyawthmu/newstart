@@ -48,23 +48,6 @@ const LessonDetail = () => {
   const [earnedMilestone, setEarnedMilestone] = useState<string | null>(null);
 
   // SEO optimization
-  useSEO({
-    title: lesson?.title ? `${lesson.title} - Lesson` : 'Lesson',
-    description: lesson?.introduction ? 
-      (Array.isArray(lesson.introduction) ? 
-        lesson.introduction[0]?.children?.[0]?.text || 'Learn essential skills for life in America' :
-        'Learn essential skills for life in America') :
-      'Interactive lesson designed to help immigrants succeed in America',
-    keywords: ['immigration lesson', 'financial education', 'life skills', 'interactive learning'],
-    breadcrumbs: [
-      { name: 'Home', url: '/' },
-      { name: 'Dashboard', url: '/dashboard' },
-      { name: 'Journey Hub', url: '/journey' },
-      { name: path?.title || 'Course', url: `/courses/${pathSlug}` },
-      { name: lesson?.title || 'Lesson', url: `/courses/${pathSlug}/lessons/${lessonSlug}` }
-    ]
-  });
-
   // Fetch the entire journey path to get context for navigation
   const { data: path, isLoading: pathLoading } = useQuery({
     queryKey: ['journeyPath', pathSlug],
@@ -161,6 +144,24 @@ const LessonDetail = () => {
       }
     `, { lessonSlug }),
     enabled: !!lessonSlug
+  });
+
+  // SEO optimization - moved after data fetching to ensure variables are initialized
+  useSEO({
+    title: lesson?.title ? `${lesson.title} - Lesson` : 'Lesson',
+    description: lesson?.introduction ? 
+      (Array.isArray(lesson.introduction) ? 
+        lesson.introduction[0]?.children?.[0]?.text || 'Learn essential skills for life in America' :
+        'Learn essential skills for life in America') :
+      'Interactive lesson designed to help immigrants succeed in America',
+    keywords: ['immigration lesson', 'financial education', 'life skills', 'interactive learning'],
+    breadcrumbs: [
+      { name: 'Home', url: '/' },
+      { name: 'Dashboard', url: '/dashboard' },
+      { name: 'Journey Hub', url: '/journey' },
+      { name: path?.title || 'Course', url: `/courses/${pathSlug}` },
+      { name: lesson?.title || 'Lesson', url: `/courses/${pathSlug}/lessons/${lessonSlug}` }
+    ]
   });
 
   useEffect(() => {

@@ -41,7 +41,6 @@ import {
 import ConsultationCommunity from './pages/ConsultationCommunity';
 import MiniAngel from './components/MiniAngel';
 import { initAnalytics } from './utils/analytics';
-import SampleLessonPage from './pages/SampleLessonPage';
 
 const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { user, loading, profileComplete } = useAuth();
@@ -181,9 +180,6 @@ const AppContent: React.FC = () => {
         {/* Public routes */}
         <Route path="/" element={user ? <Navigate to="/dashboard" replace /> : <LandingPage />} />
         <Route path="/auth" element={user ? <Navigate to="/dashboard" replace /> : <AuthPage />} />
-        
-        {/* Sample lesson page for demonstration */}
-        <Route path="/sample-lesson" element={<SampleLessonPage />} />
         
         {/* Profile setup route */}
         <Route path="/profile-setup" element={

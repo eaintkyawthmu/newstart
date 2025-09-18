@@ -5,7 +5,7 @@ import { useSEO } from '../hooks/useSEO';
 import { fetchJourneyPath } from '../lib/sanityClient';
 import { supabase } from '../lib/supabaseClient';
 import type { JourneyPath } from '../types/journey';
-import { AlertCircle } from 'lucide-react';
+import { AlertCircle, Filter } from 'lucide-react';
 import { CourseCard } from '../features/journey-hub';
 import { useQuery } from '@tanstack/react-query';
 import { AdvancedFilters } from '../components/ui';

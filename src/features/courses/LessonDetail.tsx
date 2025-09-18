@@ -924,66 +924,6 @@ const LessonDetail = () => {
             </section>
           )}
 
-          {/* Quick Navigation Menu */}
-          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4">
-            <h3 className="font-semibold text-gray-800 mb-3 text-sm">
-              {language === 'en' ? 'Jump to Section' : 'အပိုင်းသို့ ခုန်သွားရန်'}
-            </h3>
-            <div className="grid grid-cols-2 gap-2">
-              <button
-                onClick={() => scrollToSection('intro')}
-                className="flex items-center p-2 text-left rounded-lg hover:bg-blue-50 transition-colors text-sm"
-              >
-                <BookOpen className="w-4 h-4 text-blue-600 mr-2" />
-                {language === 'en' ? 'Introduction' : 'မိတ်ဆက်'}
-              </button>
-              
-              {(lesson.content || lesson.type === 'video') && (
-                <button
-                  onClick={() => scrollToSection('content')}
-                  className="flex items-center p-2 text-left rounded-lg hover:bg-blue-50 transition-colors text-sm"
-                >
-                  {lesson.type === 'video' ? (
-                    <PlayCircle className="w-4 h-4 text-blue-600 mr-2" />
-                  ) : (
-                    <FileText className="w-4 h-4 text-blue-600 mr-2" />
-                  )}
-                  {language === 'en' ? 'Content' : 'အကြောင်းအရာ'}
-                </button>
-              )}
-              
-              {lesson.keyTakeaways && (
-                <button
-                  onClick={() => scrollToSection('takeaways')}
-                  className="flex items-center p-2 text-left rounded-lg hover:bg-green-50 transition-colors text-sm"
-                >
-                  <Lightbulb className="w-4 h-4 text-green-600 mr-2" />
-                  {language === 'en' ? 'Takeaways' : 'အချက်များ'}
-                </button>
-              )}
-              
-              {((lesson.actionableTasks && lesson.actionableTasks.length > 0) || 
-                (lesson.lessonResources && lesson.lessonResources.length > 0)) && (
-                <button
-                  onClick={() => scrollToSection('actions')}
-                  className="flex items-center p-2 text-left rounded-lg hover:bg-purple-50 transition-colors text-sm"
-                >
-                  <Target className="w-4 h-4 text-purple-600 mr-2" />
-                  {language === 'en' ? 'Actions' : 'လုပ်ဆောင်ရန်'}
-                </button>
-              )}
-              
-              {lesson.quiz && lesson.quiz.questions && lesson.quiz.questions.length > 0 && (
-                <button
-                  onClick={() => scrollToSection('quiz')}
-                  className="flex items-center p-2 text-left rounded-lg hover:bg-amber-50 transition-colors text-sm"
-                >
-                  <FileText className="w-4 h-4 text-amber-600 mr-2" />
-                  {language === 'en' ? 'Quiz' : 'မေးခွန်းတို'}
-                </button>
-              )} 
-            </div>
-          </div>
         </div>
       </main>
 

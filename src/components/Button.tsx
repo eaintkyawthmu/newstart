@@ -1,5 +1,5 @@
 import React, { ReactNode, forwardRef } from 'react';
-import { Loader2, LucideIcon } from 'lucide-react';
+import { Loader2, DivideIcon as LucideIcon } from 'lucide-react';
 
 interface ButtonProps {
   children: ReactNode;

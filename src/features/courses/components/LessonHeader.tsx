@@ -27,7 +27,6 @@ const LessonHeader: React.FC<LessonHeaderProps> = ({
         <ArrowLeft className="h-6 w-6 text-gray-600" />
       </button>
       
-      <h1 className="text-base font-semibold text-gray-900 truncate max-w-[60%]">
       <h1 className="text-base font-semibold text-gray-900 max-w-[60%] sm:truncate leading-tight">
         {title}
       </h1>

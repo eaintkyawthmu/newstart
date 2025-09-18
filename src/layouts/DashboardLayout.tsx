@@ -388,7 +388,9 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
         />
 
         {/* Desktop Header (Visible only on desktop) */}
-        <div className="hidden md:flex items-center justify-end h-16 px-8 bg-white border-b border-gray-200">
+        <div className={`hidden md:flex items-center justify-end h-16 px-8 bg-white border-b border-gray-200 ${
+          location.pathname.includes('/lessons/') ? 'md:hidden' : ''
+        }`}>
           <div className="flex items-center space-x-4">
             {getRightContent()}
           </div>
@@ -397,11 +399,15 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
         {/* Page Content */}
         <main 
           id="main-content"
-          className="flex-1 overflow-auto p-4 md:p-6 lg:p-8 pb-safe pt-0 md:pt-6 hide-scrollbar"
+          className={`flex-1 overflow-auto hide-scrollbar ${
+            location.pathname.includes('/lessons/') 
+              ? 'p-0 pt-0' 
+              : 'p-4 md:p-6 lg:p-8 pb-safe pt-0 md:pt-6'
+          }`}
           role="main"
           aria-label="Main content"
         >
-          <div className="max-w-7xl mx-auto">
+          <div className={location.pathname.includes('/lessons/') ? '' : 'max-w-7xl mx-auto'}>
             {/* Main Content */}
             {children}
           </div>

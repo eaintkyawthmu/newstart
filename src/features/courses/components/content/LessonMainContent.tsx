@@ -9,14 +9,14 @@ interface LessonMainContentProps {
 
 const LessonMainContent: React.FC<LessonMainContentProps> = ({ lesson }) => {
   const { language } = useLanguage();
-  
+
   const renderVideoContent = () => {
     if (!lesson) return null;
 
     // Handle YouTube videos with proper embed configuration
     if (lesson.videoType === 'youtube' && lesson.youtubeVideoId) {
       return (
-        <div className="aspect-video w-full mb-5 animate-fade-in">
+        <div className="aspect-video w-full mb-3 sm:mb-5 animate-fade-in">
           <iframe
             src={`https://www.youtube.com/embed/${lesson.youtubeVideoId}?rel=0&modestbranding=1&fs=1&cc_load_policy=0&iv_load_policy=3&autohide=0&controls=1&showinfo=0`}
             title={lesson.title}
@@ -33,13 +33,13 @@ const LessonMainContent: React.FC<LessonMainContentProps> = ({ lesson }) => {
     // Handle self-hosted videos
     if (lesson.videoType === 'selfhosted' && lesson.selfHostedVideoUrl) {
       return (
-        <div className="aspect-video w-full mb-5 animate-fade-in">
+        <div className="aspect-video w-full mb-3 sm:mb-5 animate-fade-in">
           <video
             src={lesson.selfHostedVideoUrl}
             controls
             className="w-full h-full rounded-lg shadow-sm"
             preload="metadata"
-            poster="" // You can add a poster image URL here if available
+            poster=""
           >
             <p className="text-gray-600 p-4">
               {language === 'en' 
@@ -53,96 +53,102 @@ const LessonMainContent: React.FC<LessonMainContentProps> = ({ lesson }) => {
 
     // Fallback for video lessons without proper video configuration
     return (
-      <div className="aspect-video w-full mb-5 bg-gray-100 rounded-lg flex items-center justify-center border-2 border-dashed border-gray-300 animate-fade-in">
-        <div className="text-center p-5">
-          <PlayCircle className="h-12 w-12 text-gray-400 mx-auto mb-3" aria-hidden="true" />
-          <p className="text-gray-600 font-medium">
-            {language === 'en' ? 'Video content not available' : 'ဗီဒီယိုအကြောင်းအရာ မရရှိနိုင်ပါ'}
-          </p>
-          <p className="text-gray-500 text-sm mt-2">
+      <div className="aspect-video w-full mb-3 sm:mb-5 bg-gray-100 rounded-lg flex items-center justify-center border-2 border-dashed border-gray-300 animate-fade-in">
+        <div className="text-center p-3 sm:p-5">
+          <PlayCircle className="h-8 w-8 sm:h-12 sm:w-12 text-gray-400 mx-auto mb-2 sm:mb-3" aria-hidden="true" />
+          <p className="text-gray-600 font-medium text-sm sm:text-base">
             {language === 'en' 
-              ? 'Please check back later or contact support' 
-              : 'နောက်မှ ပြန်စစ်ဆေးပါ သို့မဟုတ် အကူအညီဌာနသို့ ဆက်သွယ်ပါ'}
+              ? 'Video content will be available here' 
+              : 'ဗီဒီယိုအကြောင်းအရာ ဤနေရာတွင် ရရှိနိုင်ပါမည်'}
           </p>
         </div>
       </div>
     );
   };
 
-  // Render exercise content if this is an exercise lesson
-  const renderExerciseContent = () => {
-    if (!lesson.associatedExercise) return null;
-    
-    const exercise = lesson.associatedExercise;
-    
+  if (!lesson || !lesson.content) {
     return (
-      <div className="space-y-6">
-        <div className="prose prose-sm md:prose-base max-w-none w-full">
-          <PortableText value={Array.isArray(exercise.description) ? exercise.description : [exercise.description]} />
-        </div>
-        
-        {exercise.steps && exercise.steps.length > 0 && (
-          <div className="space-y-4 mt-6">
-            <h3 className="text-lg font-semibold text-gray-800">
-              {language === 'en' ? 'Exercise Steps' : 'လေ့ကျင့်ခန်းအဆင့်များ'}
-            </h3>
-            
-            {exercise.steps.map((step: any, index: number) => (
-              <div key={index} className="bg-gray-50 border border-gray-200 rounded-lg p-4">
-                <h4 className="font-medium text-gray-800 mb-2">
-                  {language === 'en' ? `Step ${index + 1}` : `အဆင့် ${index + 1}`}
-                </h4>
-                <div className="prose prose-sm md:prose-base max-w-none w-full text-gray-700">
-                  <PortableText value={Array.isArray(step.instruction) ? step.instruction : [step.instruction]} />
-                </div>
-                
-                {step.expectedOutcome && (
-                  <div className="mt-3 p-3 bg-blue-50 rounded-md">
-                    <p className="text-sm text-blue-800">
-                      <strong>{language === 'en' ? 'Expected Outcome:' : 'မျှော်မှန်းရလဒ်:'}</strong> {step.expectedOutcome}
-                    </p>
-                  </div>
-                )}
-              </div>
-            ))}
-          </div>
-        )}
-        
-        {exercise.estimatedTime && (
-          <div className="flex items-center text-sm text-gray-600 mt-4">
-            <span className="mr-2">⏱️</span>
-            <span>
-              {language === 'en' 
-                ? `Estimated time: ${exercise.estimatedTime}` 
-                : `ခန့်မှန်းအချိန်: ${exercise.estimatedTime}`}
-            </span>
-          </div>
-        )}
-      </div>
-    );
-  };
-
-  if (lesson.type === 'video') {
-    return (
-      <div className="space-y-5 animate-fade-in">
-        {renderVideoContent()}
-        
-        {lesson.content && (
-          <div className="prose prose-sm md:prose-base max-w-none w-full animate-slide-up">
-            <PortableText value={Array.isArray(lesson.content) ? lesson.content : [lesson.content]} />
-          </div>
-        )}
-      </div>
-    );
-  } else if (lesson.type === 'exercise') {
-    return renderExerciseContent();
-  } else {
-    return (
-      <div className="prose prose-sm md:prose-base max-w-none w-full animate-fade-in">
-        <PortableText value={Array.isArray(lesson.content) ? lesson.content : [lesson.content]} />
+      <div className="w-full max-w-full px-2 sm:px-4 py-4">
+        <p className="text-gray-600 text-sm sm:text-base">
+          {language === 'en' ? 'Loading lesson content...' : 'စာသင်ခန်းအကြောင်းအရာ ဖွင့်နေသည်...'}
+        </p>
       </div>
     );
   }
+
+  return (
+    <div className="w-full max-w-full">
+      {/* Video Content */}
+      {renderVideoContent()}
+      
+      {/* Main Content */}
+      <div className="w-full max-w-full px-2 sm:px-4">
+        <div className="prose prose-sm sm:prose-base max-w-none w-full break-words overflow-wrap-break-word hyphens-auto">
+          <div className="mobile-content text-sm sm:text-base leading-relaxed sm:leading-normal">
+            <PortableText 
+              value={lesson.content} 
+              components={{
+                block: {
+                  normal: ({ children }) => (
+                    <p className="mb-3 sm:mb-4 text-sm sm:text-base leading-6 sm:leading-7 break-words overflow-wrap-break-word hyphens-auto">
+                      {children}
+                    </p>
+                  ),
+                  h1: ({ children }) => (
+                    <h1 className="text-lg sm:text-2xl font-bold mb-3 sm:mb-4 text-gray-900 break-words">
+                      {children}
+                    </h1>
+                  ),
+                  h2: ({ children }) => (
+                    <h2 className="text-base sm:text-xl font-semibold mb-2 sm:mb-3 text-gray-900 break-words">
+                      {children}
+                    </h2>
+                  ),
+                  h3: ({ children }) => (
+                    <h3 className="text-sm sm:text-lg font-medium mb-2 text-gray-900 break-words">
+                      {children}
+                    </h3>
+                  ),
+                },
+                marks: {
+                  strong: ({ children }) => (
+                    <strong className="font-semibold text-gray-900">{children}</strong>
+                  ),
+                  em: ({ children }) => (
+                    <em className="italic text-gray-800">{children}</em>
+                  ),
+                },
+                list: {
+                  bullet: ({ children }) => (
+                    <ul className="list-disc pl-4 sm:pl-6 mb-3 sm:mb-4 space-y-1 sm:space-y-2">
+                      {children}
+                    </ul>
+                  ),
+                  number: ({ children }) => (
+                    <ol className="list-decimal pl-4 sm:pl-6 mb-3 sm:mb-4 space-y-1 sm:space-y-2">
+                      {children}
+                    </ol>
+                  ),
+                },
+                listItem: {
+                  bullet: ({ children }) => (
+                    <li className="text-sm sm:text-base leading-6 sm:leading-7 break-words overflow-wrap-break-word">
+                      {children}
+                    </li>
+                  ),
+                  number: ({ children }) => (
+                    <li className="text-sm sm:text-base leading-6 sm:leading-7 break-words overflow-wrap-break-word">
+                      {children}
+                    </li>
+                  ),
+                },
+              }}
+            />
+          </div>
+        </div>
+      </div>
+    </div>
+  );
 };
 
 export default LessonMainContent;

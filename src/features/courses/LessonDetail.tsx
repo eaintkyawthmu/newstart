@@ -437,48 +437,9 @@ const LessonDetail = () => {
 
   return (
     <div className="min-h-screen bg-gray-50 w-full">
-      {/* Main Content - Vertical Scrolling */}
-      <main className="pb-20">
+      {/* Main Content - Full Screen */}
+      <main className="pb-20 pt-0">
         <div className="max-w-4xl mx-auto px-3 py-4 space-y-4">
-          
-          {/* Lesson Title Card - Replaces Header */}
-          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4">
-            <div className="flex items-center justify-between mb-3">
-              <div className="flex-1 min-w-0">
-                <h1 className="text-lg font-semibold text-gray-900 truncate">
-                  {lesson.title}
-                </h1>
-                <div className="flex items-center text-sm text-gray-500 mt-1">
-                  <Clock className="w-4 h-4 mr-1" />
-                  <span>{lesson.duration}</span>
-                  <span className="mx-2">•</span>
-                  <span>{progress}% {language === 'en' ? 'complete' : 'ပြီးဆုံး'}</span>
-                </div>
-              </div>
-              
-              <button
-                onClick={toggleCompletion}
-                className={`p-3 rounded-lg transition-colors min-h-[44px] min-w-[44px] flex items-center justify-center ${
-                  completed
-                    ? 'text-green-600 bg-green-50'
-                    : 'text-gray-400 hover:bg-gray-100'
-                }`}
-                aria-label={completed 
-                  ? (language === 'en' ? 'Mark as incomplete' : 'မပြီးဆုံးသေးသည်ဟု မှတ်သားရန်') 
-                  : (language === 'en' ? 'Mark as complete' : 'ပြီးဆုံးအဖြစ် မှတ်သားရန်')}
-              >
-                <Award className="w-5 h-5" />
-              </button>
-            </div>
-            
-            {/* Progress Bar */}
-            <div className="w-full bg-gray-200 rounded-full h-2">
-              <div 
-                className="bg-blue-600 h-2 rounded-full transition-all duration-500 ease-out"
-                style={{ width: `${progress}%` }}
-              />
-            </div>
-          </div>
           
           {/* Introduction Section */}
           <section id="intro" className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
@@ -488,19 +449,57 @@ const LessonDetail = () => {
             >
               <div className="flex items-center">
                 <BookOpen className="w-5 h-5 text-blue-600 mr-3" />
-                <h2 className="text-lg font-semibold text-gray-900">
-                  {language === 'en' ? 'Introduction' : 'မိတ်ဆက်'}
-                </h2>
+                <div className="flex-1 min-w-0">
+                  <h1 className="text-lg font-semibold text-gray-900 truncate">
+                    {lesson.title}
+                  </h1>
+                  <div className="flex items-center text-sm text-gray-500 mt-1">
+                    <Clock className="w-4 h-4 mr-1" />
+                    <span>{lesson.duration}</span>
+                    <span className="mx-2">•</span>
+                    <span>{progress}% {language === 'en' ? 'complete' : 'ပြီးဆုံး'}</span>
+                  </div>
+                </div>
               </div>
-              {expandedSections.has('intro') ? (
-                <ChevronUp className="w-5 h-5 text-gray-400" />
-              ) : (
-                <ChevronDown className="w-5 h-5 text-gray-400" />
-              )}
+              <div className="flex items-center space-x-2">
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    toggleCompletion();
+                  }}
+                  className={`p-2 rounded-lg transition-colors min-h-[44px] min-w-[44px] flex items-center justify-center ${
+                    completed
+                      ? 'text-green-600 bg-green-50'
+                      : 'text-gray-400 hover:bg-gray-100'
+                  }`}
+                  aria-label={completed 
+                    ? (language === 'en' ? 'Mark as incomplete' : 'မပြီးဆုံးသေးသည်ဟု မှတ်သားရန်') 
+                    : (language === 'en' ? 'Mark as complete' : 'ပြီးဆုံးအဖြစ် မှတ်သားရန်')}
+                >
+                  <Award className="w-5 h-5" />
+                </button>
+                {expandedSections.has('intro') ? (
+                  <ChevronUp className="w-5 h-5 text-gray-400" />
+                ) : (
+                  <ChevronDown className="w-5 h-5 text-gray-400" />
+                )}
+              </div>
             </button>
             
             {expandedSections.has('intro') && (
               <div className="px-4 pb-4 border-t border-gray-100">
+                {/* Progress Bar */}
+                <div className="w-full bg-gray-200 rounded-full h-2 mb-4">
+                  <div 
+                    className="bg-blue-600 h-2 rounded-full transition-all duration-500 ease-out"
+                    style={{ width: `${progress}%` }}
+                  />
+                </div>
+                
+                <h2 className="text-lg font-semibold text-gray-900 mb-3">
+                  {language === 'en' ? 'Introduction' : 'မိတ်ဆက်'}
+                </h2>
+                
                 {lesson.introduction && (
                   <div className="prose prose-sm max-w-none text-gray-700 mb-4">
                     <PortableText value={Array.isArray(lesson.introduction) ? lesson.introduction : [lesson.introduction]} />

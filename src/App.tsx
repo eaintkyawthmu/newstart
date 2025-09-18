@@ -6,6 +6,7 @@ import { LanguageProvider } from './contexts/LanguageContext';
 import { StepProvider } from './contexts/StepContext';
 import { AuthProvider } from './contexts/AuthContext';
 import { ToastProvider } from './contexts/ToastContext';
+import { AccessibilityProvider } from './components/ui';
 import { useAuth } from './contexts/AuthContext';
 import { supabase } from './lib/supabaseClient';
 import { initMonitoring } from './utils/monitoring';
@@ -372,18 +373,20 @@ const AppContent: React.FC = () => {
 function App() {
   return (
     <ErrorBoundary>
-      <BrowserRouter>
-        <SkipLink />
-        <AuthProvider>
-          <LanguageProvider>
-            <StepProvider>
-              <ToastProvider>
-                <AppContent />
-              </ToastProvider>
-            </StepProvider>
-          </LanguageProvider>
-        </AuthProvider>
-      </BrowserRouter>
+      <AccessibilityProvider>
+        <BrowserRouter>
+          <SkipLink />
+          <AuthProvider>
+            <LanguageProvider>
+              <StepProvider>
+                <ToastProvider>
+                  <AppContent />
+                </ToastProvider>
+              </StepProvider>
+            </LanguageProvider>
+          </AuthProvider>
+        </BrowserRouter>
+      </AccessibilityProvider>
     </ErrorBoundary>
   );
 }

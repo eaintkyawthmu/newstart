@@ -5,6 +5,10 @@ import { useAuth } from '../contexts/AuthContext';
 import { usePremiumAccess } from '../hooks/usePremiumAccess';
 import { supabase } from '../lib/supabaseClient';
 import ProfileMenu from '../components/ProfileMenu';
+import SearchBar from '../components/ui/SearchBar';
+import NotificationCenter from '../components/ui/NotificationCenter';
+import OfflineIndicator from '../components/ui/OfflineIndicator';
+import AccessibilityMenu from '../components/ui/AccessibilityMenu';
 import {
   LayoutDashboard,
   BookOpen,
@@ -20,7 +24,10 @@ import {
   Globe,
   RotateCcw,
   Download,
-  Award
+  Award,
+  Bell,
+  Search,
+  Eye
 } from 'lucide-react';
 import { BottomNavBar, MobileHeader, MobileMenu } from '../components/navigation';
 
@@ -38,6 +45,10 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
+  const [isAccessibilityOpen, setIsAccessibilityOpen] = useState(false);
+  const [unreadNotifications, setUnreadNotifications] = useState(3);
 
   const baseMenuItems = [
     {
@@ -176,6 +187,13 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
       return (
         <div className="flex items-center space-x-2">
           <button
+            onClick={() => setIsAccessibilityOpen(true)}
+            className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+            title={language === 'en' ? 'Accessibility settings' : 'အသုံးပြုနိုင်မှု ဆက်တင်များ'}
+          >
+            <Eye className="h-5 w-5 text-gray-600" />
+          </button>
+          <button
             onClick={() => {
               // Clear conversation functionality would go here
               window.dispatchEvent(new CustomEvent('clear-chat'));
@@ -216,13 +234,44 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
     
     // Default is just the language toggle
     return (
-      <button
-        onClick={toggleLanguage}
-        className="p-2 rounded-lg hover:bg-gray-100 transition-colors"
-        aria-label={language === 'en' ? 'Switch to Burmese' : 'Switch to English'}
-      >
-        <Globe className="h-5 w-5 text-gray-600" />
-      </button>
+      <div className="flex items-center space-x-2">
+        <button
+          onClick={() => setIsSearchOpen(true)}
+          className="p-2 rounded-lg hover:bg-gray-100 transition-colors"
+          title={language === 'en' ? 'Search' : 'ရှာဖွေရန်'}
+        >
+          <Search className="h-5 w-5 text-gray-600" />
+        </button>
+        
+        <button
+          onClick={() => setIsNotificationsOpen(true)}
+          className="relative p-2 rounded-lg hover:bg-gray-100 transition-colors"
+          title={language === 'en' ? 'Notifications' : 'အကြောင်းကြားချက်များ'}
+        >
+          <Bell className="h-5 w-5 text-gray-600" />
+          {unreadNotifications > 0 && (
+            <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
+              {unreadNotifications}
+            </span>
+          )}
+        </button>
+        
+        <button
+          onClick={() => setIsAccessibilityOpen(true)}
+          className="p-2 rounded-lg hover:bg-gray-100 transition-colors"
+          title={language === 'en' ? 'Accessibility settings' : 'အသုံးပြုနိုင်မှု ဆက်တင်များ'}
+        >
+          <Eye className="h-5 w-5 text-gray-600" />
+        </button>
+        
+        <button
+          onClick={toggleLanguage}
+          className="p-2 rounded-lg hover:bg-gray-100 transition-colors"
+          aria-label={language === 'en' ? 'Switch to Burmese' : 'Switch to English'}
+        >
+          <Globe className="h-5 w-5 text-gray-600" />
+        </button>
+      </div>
     );
   };
 
@@ -368,6 +417,41 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
         {/* Mobile Bottom Navigation (Visible only on mobile) */}
         <BottomNavBar />
       </div>
+      
+      {/* Global UI Components */}
+      <OfflineIndicator />
+      
+      {/* Search Modal */}
+      {isSearchOpen && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-start justify-center pt-20 px-4">
+          <div className="bg-white rounded-lg shadow-xl max-w-2xl w-full">
+            <div className="p-4">
+              <SearchBar 
+                autoFocus={true}
+                onResultClick={() => setIsSearchOpen(false)}
+              />
+              <button
+                onClick={() => setIsSearchOpen(false)}
+                className="mt-4 w-full text-center text-gray-600 hover:text-gray-800 py-2"
+              >
+                {language === 'en' ? 'Close' : 'ပိတ်ရန်'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+      
+      {/* Notifications */}
+      <NotificationCenter 
+        isOpen={isNotificationsOpen}
+        onClose={() => setIsNotificationsOpen(false)}
+      />
+      
+      {/* Accessibility Menu */}
+      <AccessibilityMenu 
+        isOpen={isAccessibilityOpen}
+        onClose={() => setIsAccessibilityOpen(false)}
+      />
     </div>
   );
 };

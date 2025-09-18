@@ -14,6 +14,7 @@ import {
 } from 'lucide-react';
 import { useMilestones } from '../hooks/useMilestones';
 import { useToast } from '../contexts/ToastContext';
+import { ProgressTracker, DataVisualization, AnimatedCounter } from '../components/ui';
 
 type UserProfile = {
   first_name: string;
@@ -314,9 +315,12 @@ const Dashboard = () => {
               </h2>
             </div>
           </div>
-          <p className="text-2xl sm:text-3xl font-bold text-gray-900">
-            {profile?.immigration_year ? new Date().getFullYear() - profile.immigration_year : '0'} {language === 'en' ? 'years' : 'နှစ်'}
-          </p>
+          <div className="text-2xl sm:text-3xl font-bold text-gray-900">
+            <AnimatedCounter 
+              value={profile?.immigration_year ? new Date().getFullYear() - profile.immigration_year : 0}
+              suffix={` ${language === 'en' ? 'years' : 'နှစ်'}`}
+            />
+          </div>
           <p className="text-sm text-gray-500 mt-2">
             {profile?.country_of_origin ? `From ${profile.country_of_origin}` : 'Country not specified'}
           </p>
@@ -359,7 +363,13 @@ const Dashboard = () => {
             : language === 'en' ? 'Not specified' : 'သတ်မှတ်မထားပါ'}
           </p>
           <p className="text-sm text-gray-500 mt-2">
-            {profile?.monthly_income ? `$${profile.monthly_income.toLocaleString()}/month` : ''}
+            {profile?.monthly_income ? (
+              <AnimatedCounter 
+                value={profile.monthly_income}
+                prefix="$"
+                suffix="/month"
+              />
+            ) : ''}
           </p>
         </div>
       </div>
@@ -381,56 +391,22 @@ const Dashboard = () => {
             : 'အမေရိကန်တွင် သင့်အခြေခံကို တည်ဆောက်ရန် ဤချက်ချင်းလုပ်ဆောင်ရမည့် လုပ်ငန်းတာဝန်များကို ပြီးဆုံးအောင် လုပ်ဆောင်ပါ'}
         </p>
 
-        <div className="space-y-4">
-          {essentialFirstSteps.map((step) => (
-            <div 
-              key={step.id}
-              className="p-4 rounded-lg border hover:shadow-sm transition-shadow cursor-pointer"
-              onClick={() => navigate(step.route)}
-            >
-              <div className="flex items-center justify-between">
-                <div className="flex items-center">
-                  <div className={`w-10 h-10 rounded-full flex items-center justify-center mr-3 ${
-                    step.status === 'completed' ? 'bg-green-100' :
-                    step.status === 'in-progress' ? 'bg-blue-100' :
-                    'bg-gray-100'
-                  }`}>
-                    <step.icon className={`h-5 w-5 ${
-                      step.status === 'completed' ? 'text-green-600' :
-                      step.status === 'in-progress' ? 'text-blue-600' :
-                      'text-gray-400'
-                    }`} />
-                  </div>
-                  <div>
-                    <h3 className="font-medium text-gray-800">{step.title}</h3>
-                    <p className="text-sm text-gray-600">{step.description}</p>
-                    
-                    {step.steps && (
-                      <div className="mt-2 flex flex-wrap gap-2">
-                        {step.steps.map((substep) => (
-                          <div 
-                            key={substep.id}
-                            className={`inline-flex items-center px-2 py-1 rounded-full text-xs ${
-                              step.id === 'welcome' && profile?.completed_welcome_steps?.includes(substep.id)
-                                ? 'bg-green-100 text-green-800'
-                                : 'bg-gray-100 text-gray-700'
-                            }`}
-                          >
-                            {step.id === 'welcome' && profile?.completed_welcome_steps?.includes(substep.id) && (
-                              <CheckCircle className="h-3 w-3 mr-1" />
-                            )}
-                            {substep.title}
-                          </div>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-                </div>
-                <ChevronRight className="h-5 w-5 text-gray-400" />
-              </div>
-            </div>
-          ))}
-        </div>
+        <ProgressTracker
+          steps={essentialFirstSteps.map(step => ({
+            id: step.id,
+            title: step.title,
+            description: step.description,
+            completed: step.status === 'completed',
+            current: step.status === 'in-progress',
+            locked: false
+          }))}
+          orientation="vertical"
+          showDescriptions={true}
+          onStepClick={(stepId) => {
+            const step = essentialFirstSteps.find(s => s.id === stepId);
+            if (step) navigate(step.route);
+          }}
+        />
       </div>
 
       {/* Practical Guided Steps */}

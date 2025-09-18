@@ -7,6 +7,16 @@ import ProgressBar from './ProgressBar';
 import Skeleton from './Skeleton';
 import Toast from './Toast';
 import Tooltip from './Tooltip';
+import AccessibilityProvider from './AccessibilityProvider';
+import AccessibilityMenu from './AccessibilityMenu';
+import SearchBar from './SearchBar';
+import NotificationCenter from './NotificationCenter';
+import OfflineIndicator from './OfflineIndicator';
+import ProgressTracker from './ProgressTracker';
+import DataVisualization from './DataVisualization';
+import InteractiveGuide from './InteractiveGuide';
+import AdvancedFilters from './AdvancedFilters';
+import AnimatedCounter from './AnimatedCounter';
 
 export {
   Alert,
@@ -17,5 +27,15 @@ export {
   ProgressBar,
   Skeleton,
   Toast,
-  Tooltip
+  Tooltip,
+  AccessibilityProvider,
+  AccessibilityMenu,
+  SearchBar,
+  NotificationCenter,
+  OfflineIndicator,
+  ProgressTracker,
+  DataVisualization,
+  InteractiveGuide,
+  AdvancedFilters,
+  AnimatedCounter
 };

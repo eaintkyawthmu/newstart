@@ -8,11 +8,14 @@ import type { JourneyPath } from '../types/journey';
 import { AlertCircle } from 'lucide-react';
 import { CourseCard } from '../features/journey-hub';
 import { useQuery } from '@tanstack/react-query';
+import { AdvancedFilters } from '../components/ui';
 
 const JourneyHub = () => {
   const { language } = useLanguage();
   const navigate = useNavigate();
   const [progress, setProgress] = useState<Record<string, number>>({});
+  const [isFiltersOpen, setIsFiltersOpen] = useState(false);
+  const [filteredPaths, setFilteredPaths] = useState<JourneyPath[]>([]);
 
   // SEO optimization
   useSEO({
@@ -50,6 +53,12 @@ const JourneyHub = () => {
         });
     },
   });
+
+  useEffect(() => {
+    if (paths) {
+      setFilteredPaths(paths);
+    }
+  }, [paths]);
 
   useEffect(() => {
     if (paths) {
@@ -104,6 +113,71 @@ const JourneyHub = () => {
     navigate(`/courses/${path.slug}`);
   };
 
+  const filterGroups = [
+    {
+      id: 'level',
+      label: language === 'en' ? 'Difficulty Level' : 'ခက်ခဲမှုအဆင့်',
+      type: 'select' as const,
+      options: [
+        { id: 'beginner', label: language === 'en' ? 'Beginner' : 'အစပိုင်း', value: 'beginner' },
+        { id: 'intermediate', label: language === 'en' ? 'Intermediate' : 'အလယ်အလတ်', value: 'intermediate' },
+        { id: 'advanced', label: language === 'en' ? 'Advanced' : 'အဆင့်မြင့်', value: 'advanced' }
+      ]
+    },
+    {
+      id: 'type',
+      label: language === 'en' ? 'Course Type' : 'သင်တန်းအမျိုးအစား',
+      type: 'multiselect' as const,
+      options: [
+        { id: 'free', label: language === 'en' ? 'Free' : 'အခမဲ့', value: 'free' },
+        { id: 'premium', label: language === 'en' ? 'Premium' : 'ပရီမီယံ', value: 'premium' }
+      ]
+    },
+    {
+      id: 'progress',
+      label: language === 'en' ? 'Progress' : 'တိုးတက်မှု',
+      type: 'range' as const,
+      min: 0,
+      max: 100
+    }
+  ];
+
+  const handleFiltersChange = (filters: Record<string, any>) => {
+    if (!paths) return;
+    
+    let filtered = [...paths];
+    
+    // Apply level filter
+    if (filters.level) {
+      filtered = filtered.filter(path => path.level === filters.level);
+    }
+    
+    // Apply type filter
+    if (filters.type && filters.type.length > 0) {
+      filtered = filtered.filter(path => {
+        if (filters.type.includes('free') && !path.isPremium) return true;
+        if (filters.type.includes('premium') && path.isPremium) return true;
+        return false;
+      });
+    }
+    
+    // Apply progress filter
+    if (filters.progress) {
+      filtered = filtered.filter(path => {
+        const pathProgress = progress[path._id] || 0;
+        return pathProgress >= (filters.progress.min || 0) && pathProgress <= (filters.progress.max || 100);
+      });
+    }
+    
+    setFilteredPaths(filtered);
+  };
+
+  const handleResetFilters = () => {
+    if (paths) {
+      setFilteredPaths(paths);
+    }
+  };
+
   if (isLoading) {
     return (
       <div className="flex items-center justify-center min-h-[400px]" role="status" aria-label="Loading journey paths">
@@ -128,19 +202,31 @@ const JourneyHub = () => {
   return (
     <div className="max-w-7xl mx-auto px-4 py-6 sm:py-8">
       <div className="mb-6">
-        <h1 className="text-2xl font-bold text-gray-800 mb-2">
-          {language === 'en' ? 'Your Immigration Journey' : 'သင့်ရွှေ့ပြောင်းအခြေချမှုခရီးစဉ်'}
-        </h1>
-        <p className="text-gray-600">
-          {language === 'en'
-            ? 'Navigate your new life in America with step-by-step guidance tailored for immigrants'
-            : 'ရွှေ့ပြောင်းအခြေချသူများအတွက် အဆင့်ဆင့်လမ်းညွှန်မှုဖြင့် အမေရိကန်တွင် သင့်ဘဝသစ်ကို လမ်းညွှန်ပါ'}
-        </p>
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between">
+          <div className="mb-4 md:mb-0">
+            <h1 className="text-2xl font-bold text-gray-800 mb-2">
+              {language === 'en' ? 'Your Immigration Journey' : 'သင့်ရွှေ့ပြောင်းအခြေချမှုခရီးစဉ်'}
+            </h1>
+            <p className="text-gray-600">
+              {language === 'en'
+                ? 'Navigate your new life in America with step-by-step guidance tailored for immigrants'
+                : 'ရွှေ့ပြောင်းအခြေချသူများအတွက် အဆင့်ဆင့်လမ်းညွှန်မှုဖြင့် အမေရိကန်တွင် သင့်ဘဝသစ်ကို လမ်းညွှန်ပါ'}
+            </p>
+          </div>
+          
+          <button
+            onClick={() => setIsFiltersOpen(true)}
+            className="flex items-center px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500"
+          >
+            <Filter className="h-5 w-5 mr-2 text-gray-500" />
+            {language === 'en' ? 'Filter Courses' : 'သင်တန်းများ စစ်ထုတ်ရန်'}
+          </button>
+        </div>
       </div>
 
       {/* Improved responsive grid layout */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8 mb-12 sm:mb-16">
-        {paths.map((path) => (
+        {filteredPaths.map((path) => (
           <div key={path._id} className="w-full">
             <CourseCard 
               path={path}
@@ -172,6 +258,15 @@ const JourneyHub = () => {
           </button>
         </div>
       </div>
+      
+      {/* Advanced Filters */}
+      <AdvancedFilters
+        filterGroups={filterGroups}
+        onFiltersChange={handleFiltersChange}
+        onReset={handleResetFilters}
+        isOpen={isFiltersOpen}
+        onClose={() => setIsFiltersOpen(false)}
+      />
     </div>
   );
 };

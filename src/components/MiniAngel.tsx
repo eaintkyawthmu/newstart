@@ -4,6 +4,7 @@ import { PageHeader } from '../components/navigation';
 import { useNavigate } from 'react-router-dom';
 import { MessageSquare, X, Send, Loader2, Minimize2, Maximize2, ExternalLink } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
+import { useAccessibility } from './ui/AccessibilityProvider';
 
 type Message = {
   role: 'user' | 'assistant';
@@ -17,6 +18,7 @@ const INITIAL_RETRY_DELAY = 1000; // 1 second
 const MiniAngel = () => {
   const { language } = useLanguage();
   const navigate = useNavigate();
+  const { announceMessage } = useAccessibility();
   const [isOpen, setIsOpen] = useState(false);
   const [isMinimized, setIsMinimized] = useState(false);
   const [messages, setMessages] = useState<Message[]>([]);
@@ -93,6 +95,9 @@ const MiniAngel = () => {
 
       const data = await response.json();
       setMessages(prev => [...prev, { role: 'assistant', content: data.message }]);
+      
+      // Announce new message to screen readers
+      announceMessage(language === 'en' ? 'New message from Mini Angel' : 'Mini Angel မှ စာအသစ်');
       
       // Store the new or existing threadId
       if (data.threadId && data.threadId !== threadId) {

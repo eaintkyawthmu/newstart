@@ -266,7 +266,7 @@ const LessonViewer: React.FC = () => {
         return (
           <div className="space-y-6">
             {/* Introduction */}
-            <div className="prose max-w-none">
+            <div className="prose prose-sm md:prose-base max-w-none w-full mobile-text">
               <PortableText value={sampleLesson.introduction} />
             </div>
             
@@ -286,7 +286,9 @@ const LessonViewer: React.FC = () => {
                       className="h-5 w-5 text-blue-600 rounded border-gray-300 focus:ring-blue-500 flex-shrink-0 mt-1"
                     />
                     <div className={`text-gray-700 ${completedTasks.includes(deliverable._key) ? 'line-through text-gray-500' : ''}`}>
-                      <PortableText value={deliverable.description} />
+                      <div className="prose prose-sm max-w-none mobile-text">
+                        <PortableText value={deliverable.description} />
+                      </div>
                     </div>
                     {!deliverable.isOptional && (
                       <span className="ml-auto px-2 py-0.5 bg-red-100 text-red-800 text-xs rounded-full flex-shrink-0">
@@ -304,7 +306,7 @@ const LessonViewer: React.FC = () => {
         return (
           <div className="space-y-6">
             {/* Main Content */}
-            <div className="prose max-w-none">
+            <div className="prose prose-sm md:prose-base max-w-none w-full mobile-text">
               <PortableText value={sampleLesson.content} />
             </div>
           </div>
@@ -319,7 +321,7 @@ const LessonViewer: React.FC = () => {
                 <Lightbulb className="h-5 w-5 mr-2" />
                 Key Takeaways
               </h2>
-              <div className="space-y-2 text-green-700">
+              <div className="space-y-2 text-green-700 prose prose-sm max-w-none mobile-text">
                 <PortableText value={sampleLesson.keyTakeaways} />
               </div>
             </div>
@@ -328,7 +330,7 @@ const LessonViewer: React.FC = () => {
             {sampleLesson.reflectionPrompts && (
               <div className="bg-amber-50 border border-amber-100 rounded-lg p-5 mt-6">
                 <h2 className="font-semibold text-amber-800 mb-4">Reflect & Grow</h2>
-                <div className="space-y-3 text-amber-700">
+                <div className="space-y-3 text-amber-700 prose prose-sm max-w-none mobile-text">
                   <PortableText value={sampleLesson.reflectionPrompts} />
                 </div>
               </div>
@@ -355,7 +357,9 @@ const LessonViewer: React.FC = () => {
                       className="h-5 w-5 text-purple-600 rounded border-gray-300 focus:ring-purple-500 flex-shrink-0 mt-1"
                     />
                     <div className={`text-gray-700 ${completedTasks.includes(task._key) ? 'line-through text-gray-500' : ''}`}>
-                      <PortableText value={task.description} />
+                      <div className="prose prose-sm max-w-none mobile-text">
+                        <PortableText value={task.description} />
+                      </div>
                     </div>
                     {!task.isOptional && (
                       <span className="ml-auto px-2 py-0.5 bg-red-100 text-red-800 text-xs rounded-full flex-shrink-0">
@@ -618,14 +622,14 @@ const LessonViewer: React.FC = () => {
       </div>
 
       {/* Current Page Title - Mobile Only */}
-      <div className="md:hidden flex items-center mb-4">
+      <div className="md:hidden flex items-center mb-3">
         {getPageIcon()}
-        <h2 className="ml-2 text-lg font-semibold text-gray-800">{getPageTitle()}</h2>
+        <h2 className="ml-2 text-base font-semibold text-gray-800">{getPageTitle()}</h2>
       </div>
 
       {/* Page Content */}
       <div 
-        className="bg-white rounded-lg border border-gray-200 p-6 shadow-sm mb-6 overflow-y-auto max-h-[70vh] animate-fade-in"
+        className="bg-white rounded-lg border border-gray-200 p-3 sm:p-6 shadow-sm mb-6 overflow-y-auto max-h-[70vh] animate-fade-in mobile-content"
         role="tabpanel"
         id={`${currentPage}-panel`}
         aria-labelledby={`${currentPage}-tab`}

@@ -148,13 +148,13 @@ const LessonContent: React.FC<LessonContentProps> = ({
   return (
     <>
       {/* Current Page Title - Mobile Only */}
-      <div className="md:hidden flex items-center mb-4">
+      <div className="md:hidden flex items-center mb-3">
         {getPageIcon()}
-        <h2 className="ml-2 text-lg font-semibold text-gray-800">{getPageTitle()}</h2>
+        <h2 className="ml-2 text-base font-semibold text-gray-800">{getPageTitle()}</h2>
       </div>
 
       {/* Page Content */}
-      <div className="bg-white rounded-lg border border-gray-200 p-5 shadow-sm overflow-y-auto max-h-[calc(100vh-200px)]">
+      <div className="bg-white rounded-lg border border-gray-200 p-3 sm:p-5 shadow-sm overflow-y-auto max-h-[calc(100vh-200px)]">
         {renderPageContent()}
       </div>
     </>

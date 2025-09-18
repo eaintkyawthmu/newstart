@@ -518,7 +518,7 @@ const LessonDetail = () => {
 
           {/* Main Content Area */}
           <div 
-            className="p-5 focus-within:outline-none"
+            className="p-3 sm:p-5 focus-within:outline-none"
             onTouchStart={handleTouchStart}
             onTouchMove={handleTouchMove}
             onTouchEnd={handleTouchEnd}
@@ -575,7 +575,7 @@ const LessonDetail = () => {
             />
 
             {/* Page Navigation Dots - Mobile Only */}
-            <div className="md:hidden flex justify-center mt-6 space-x-2 animate-fade-in">
+            <div className="md:hidden flex justify-center mt-4 space-x-2 animate-fade-in">
               {availablePages.map((page, index) => (
                 <button
                   key={page}
@@ -589,7 +589,7 @@ const LessonDetail = () => {
             </div>
 
             {/* Page Navigation Buttons */}
-            <div className="flex justify-between mt-6 mb-4 animate-fade-in">
+            <div className="flex justify-between mt-4 mb-2 animate-fade-in">
               <button
                 onClick={handlePrevPage}
                 disabled={currentPageIndex === 0}

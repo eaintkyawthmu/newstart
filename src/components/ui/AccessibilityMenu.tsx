@@ -199,7 +199,7 @@ const AccessibilityMenu: React.FC<AccessibilityMenuProps> = ({ isOpen, onClose }
                 <div className="space-y-2 text-sm text-green-800">
                   <p><kbd className="bg-white px-2 py-1 rounded border">Tab</kbd> - {language === 'en' ? 'Navigate forward' : 'ရှေ့သို့ လမ်းညွှန်'}</p>
                   <p><kbd className="bg-white px-2 py-1 rounded border">Shift + Tab</kbd> - {language === 'en' ? 'Navigate backward' : 'နောက်သို့ လမ်းညွှန်'}</p>
-                  <p><kbd className="bg-white px-2 py-1 rounded border">Enter</kbd> - {language === 'en' ? 'Activate button/link' : \'ခလုတ်/လင့်ခ် အသက်ဝင်စေရန်'}</p>
+                  <p><kbd className="bg-white px-2 py-1 rounded border">Enter</kbd> - {language === 'en' ? 'Activate button/link' : "ခလုတ်/လင့်ခ် အသက်ဝင်စေရန်"}</p>
                   <p><kbd className="bg-white px-2 py-1 rounded border">Escape</kbd> - {language === 'en' ? 'Close modal/menu' : \'မုဒယ်/မီနူး ပိတ်ရန်'}</p>
                 </div>
               </div>

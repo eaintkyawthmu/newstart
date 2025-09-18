@@ -82,9 +82,9 @@ const LessonMainContent: React.FC<LessonMainContentProps> = ({ lesson }) => {
       {renderVideoContent()}
       
       {/* Main Content */}
-      <div className="w-full max-w-full px-2 sm:px-4">
+      <div className="w-full max-w-full px-1 sm:px-4">
         <div className="prose prose-sm sm:prose-base max-w-none w-full break-words overflow-wrap-break-word hyphens-auto">
-          <div className="mobile-content text-sm sm:text-base leading-relaxed sm:leading-normal">
+          <div className="text-sm sm:text-base leading-relaxed sm:leading-normal">
             <PortableText 
               value={lesson.content} 
               components={{

@@ -12,13 +12,16 @@ import {
   AlertCircle,
   ChevronLeft,
   ChevronRight,
-  Award
+  Award,
+  BookOpen,
+  PlayCircle,
+  FileText,
+  Lightbulb,
+  Target,
+  CheckCircle
 } from 'lucide-react';
 
 // Import components
-import LessonHeader from './components/LessonHeader';
-import LessonNavigation from './components/LessonNavigation';
-import LessonContent from './components/LessonContent';
 import LessonMilestoneModal from './components/LessonMilestoneModal';
 import { LessonPage } from './types/lessonTypes';
 
@@ -33,21 +36,19 @@ const LessonDetail = () => {
   const [currentPage, setCurrentPage] = useState<LessonPage>('intro');
   const [touchStart, setTouchStart] = useState<number | null>(null);
   const [touchEnd, setTouchEnd] = useState<number | null>(null);
-  const contentRef = useRef<HTMLDivElement>(null);
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
   
   // Quiz state
   const [userAnswers, setUserAnswers] = useState<any[]>([]);
   const [quizSubmitted, setQuizSubmitted] = useState(false);
   const [quizResults, setQuizResults] = useState<any[]>([]);
   const [totalScore, setTotalScore] = useState(0);
-  const [totalQuestions, setTotalQuestions] = useState(0);
 
   // Task completion state
   const [completedTasks, setCompletedTasks] = useState<string[]>([]);
   const [showMilestoneModal, setShowMilestoneModal] = useState(false);
   const [earnedMilestone, setEarnedMilestone] = useState<string | null>(null);
 
-  // SEO optimization
   // Fetch the entire journey path to get context for navigation
   const { data: path, isLoading: pathLoading } = useQuery({
     queryKey: ['journeyPath', pathSlug],
@@ -146,7 +147,7 @@ const LessonDetail = () => {
     enabled: !!lessonSlug
   });
 
-  // SEO optimization - moved after data fetching to ensure variables are initialized
+  // SEO optimization
   useSEO({
     title: lesson?.title ? `${lesson.title} - Lesson` : 'Lesson',
     description: lesson?.introduction ? 
@@ -170,9 +171,6 @@ const LessonDetail = () => {
       
       // Initialize quiz state if this is a quiz lesson
       if (lesson.type === 'quiz' && lesson.quiz?.questions && Array.isArray(lesson.quiz.questions)) {
-        setTotalQuestions(lesson.quiz.questions.length);
-        
-        // Initialize empty user answers for each question
         const initialUserAnswers = lesson.quiz.questions.map((_, index) => ({
           questionIndex: index,
           selectedOptionIndex: undefined,
@@ -187,44 +185,8 @@ const LessonDetail = () => {
       
       // Scroll to top when lesson changes
       window.scrollTo(0, 0);
-
-      // Add event listener for global completion toggle
-      window.addEventListener('toggle-lesson-completion', toggleCompletion as any);
-      return () => {
-        window.removeEventListener('toggle-lesson-completion', toggleCompletion as any);
-      };
     }
   }, [lesson?._id]);
-
-  // Handle touch events for swiping
-  const handleTouchStart = (e: React.TouchEvent) => {
-    setTouchStart(e.targetTouches[0].clientX);
-  };
-
-  const handleTouchMove = (e: React.TouchEvent) => {
-    setTouchEnd(e.targetTouches[0].clientX);
-  };
-
-  const handleTouchEnd = () => {
-    if (!touchStart || !touchEnd) return;
-    
-    const distance = touchStart - touchEnd;
-    const isSwipe = Math.abs(distance) > 50; // Minimum distance for a swipe
-    
-    if (isSwipe) {
-      if (distance > 0) {
-        // Swipe left - go to next page
-        handleNextPage();
-      } else {
-        // Swipe right - go to previous page
-        handlePrevPage();
-      }
-    }
-    
-    // Reset touch values
-    setTouchStart(null);
-    setTouchEnd(null);
-  };
 
   const loadProgress = async () => {
     try {
@@ -272,7 +234,6 @@ const LessonDetail = () => {
       if (error) throw error;
     } catch (error) {
       console.error('Error updating task completion:', error);
-      // Revert state if update fails
       setCompletedTasks(completedTasks);
     }
   };
@@ -280,12 +241,8 @@ const LessonDetail = () => {
   const toggleCompletion = async () => {
     try {
       const { data: { user } } = await supabase.auth.getUser();
-      if (!user || !lesson || !path) {
-        console.error('Missing required data for toggle completion');
-        return;
-      }
+      if (!user || !lesson || !path) return;
 
-      // Determine if all required tasks are completed
       const allRequiredTasks = [
         ...(lesson.measurableDeliverables || []),
         ...(lesson.actionableTasks || [])
@@ -297,12 +254,12 @@ const LessonDetail = () => {
 
       const newStatus = !completed;
 
-      if (!newStatus || allRequiredTasksCompleted) { // Allow unmarking or marking if all required tasks are done
+      if (!newStatus || allRequiredTasksCompleted) {
         const progressData = {
           user_id: user.id,
           lesson_id: lesson._id,
           course_id: path._id,
-          module_id: lesson.module?._id || null, // Make module_id optional
+          module_id: lesson.module?._id || null,
           completed: newStatus,
           updated_at: new Date().toISOString()
         };
@@ -316,12 +273,9 @@ const LessonDetail = () => {
         if (error) throw error;
         setCompleted(newStatus);
         
-        // Track lesson completion
         if (newStatus) {
           const timeSpent = Math.floor((new Date().getTime() - startTime.getTime()) / 1000);
           trackLessonCompleted(lesson._id, lesson.title, timeSpent);
-          
-          // Check for milestones
           await checkAndAwardMilestones('lesson', lesson._id);
         }
       } else {
@@ -340,13 +294,11 @@ const LessonDetail = () => {
     let nextLesson = null;
     let foundCurrent = false;
 
-    // Sort modules by order
     const sortedModules = [...path.modules].sort((a, b) => (a.order || 0) - (b.order || 0));
 
     for (const module of sortedModules) {
       if (!module.lessons) continue;
 
-      // Sort lessons within module
       const sortedLessons = [...module.lessons].sort((a, b) => (a.order || 0) - (b.order || 0));
 
       for (let i = 0; i < sortedLessons.length; i++) {
@@ -357,7 +309,6 @@ const LessonDetail = () => {
           if (i > 0) {
             prevLesson = sortedLessons[i - 1];
           } else {
-            // Check previous module's last lesson
             const moduleIndex = sortedModules.indexOf(module);
             if (moduleIndex > 0) {
               const prevModule = sortedModules[moduleIndex - 1];
@@ -369,7 +320,6 @@ const LessonDetail = () => {
           if (i < sortedLessons.length - 1) {
             nextLesson = sortedLessons[i + 1];
           } else {
-            // Check next module's first lesson
             const moduleIndex = sortedModules.indexOf(module);
             if (moduleIndex < sortedModules.length - 1) {
               const nextModule = sortedModules[moduleIndex + 1];
@@ -400,31 +350,53 @@ const LessonDetail = () => {
   const getAvailablePages = (): LessonPage[] => {
     const pages: LessonPage[] = [];
     
-    // Introduction is always available
     pages.push('intro');
     
-    // Content page is available if there's content or it's a video/exercise lesson
     if (lesson?.content || lesson?.type === 'video' || lesson?.type === 'exercise') {
       pages.push('content');
     }
     
-    // Takeaways page is available if there are key takeaways
     if (lesson?.keyTakeaways) {
       pages.push('takeaways');
     }
     
-    // Actions page is available if there are action items or resources
     if ((lesson?.actionableTasks && lesson.actionableTasks.length > 0) || 
         (lesson?.lessonResources && lesson.lessonResources.length > 0)) {
       pages.push('actions');
     }
     
-    // Quiz page is available if it's a quiz lesson or has an associated quiz
     if (lesson?.type === 'quiz' || lesson?.quiz) {
       pages.push('quiz');
     }
     
     return pages;
+  };
+
+  // Handle swipe navigation
+  const handleTouchStart = (e: React.TouchEvent) => {
+    setTouchStart(e.targetTouches[0].clientX);
+  };
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    setTouchEnd(e.targetTouches[0].clientX);
+  };
+
+  const handleTouchEnd = () => {
+    if (!touchStart || !touchEnd) return;
+    
+    const distance = touchStart - touchEnd;
+    const isSwipe = Math.abs(distance) > 50;
+    
+    if (isSwipe) {
+      if (distance > 0) {
+        handleNextPage();
+      } else {
+        handlePrevPage();
+      }
+    }
+    
+    setTouchStart(null);
+    setTouchEnd(null);
   };
 
   // Navigation between pages
@@ -434,8 +406,7 @@ const LessonDetail = () => {
     
     if (currentIndex < pages.length - 1) {
       setCurrentPage(pages[currentIndex + 1]);
-      // Scroll to top when changing pages
-      window.scrollTo(0, 0);
+      scrollToPage(currentIndex + 1);
     }
   };
 
@@ -445,20 +416,72 @@ const LessonDetail = () => {
     
     if (currentIndex > 0) {
       setCurrentPage(pages[currentIndex - 1]);
-      // Scroll to top when changing pages
-      window.scrollTo(0, 0);
+      scrollToPage(currentIndex - 1);
     }
   };
 
   const goToPage = (page: LessonPage) => {
+    const pages = getAvailablePages();
+    const pageIndex = pages.indexOf(page);
     setCurrentPage(page);
-    // Scroll to top when changing pages
-    window.scrollTo(0, 0);
+    scrollToPage(pageIndex);
+  };
+
+  const scrollToPage = (pageIndex: number) => {
+    if (scrollContainerRef.current) {
+      const scrollWidth = scrollContainerRef.current.scrollWidth;
+      const containerWidth = scrollContainerRef.current.clientWidth;
+      const pages = getAvailablePages();
+      const scrollPosition = (scrollWidth / pages.length) * pageIndex;
+      
+      scrollContainerRef.current.scrollTo({
+        left: scrollPosition,
+        behavior: 'smooth'
+      });
+    }
+  };
+
+  // Get page icon
+  const getPageIcon = (page: LessonPage) => {
+    switch (page) {
+      case 'intro':
+        return <BookOpen className="w-4 h-4" />;
+      case 'content':
+        return lesson?.type === 'video' 
+          ? <PlayCircle className="w-4 h-4" /> 
+          : <FileText className="w-4 h-4" />;
+      case 'takeaways':
+        return <Lightbulb className="w-4 h-4" />;
+      case 'actions':
+        return <Target className="w-4 h-4" />;
+      case 'quiz':
+        return <FileText className="w-4 h-4" />;
+      default:
+        return null;
+    }
+  };
+
+  // Get page title
+  const getPageTitle = (page: LessonPage): string => {
+    switch (page) {
+      case 'intro':
+        return language === 'en' ? 'Introduction' : 'မိတ်ဆက်';
+      case 'content':
+        return language === 'en' ? 'Content' : 'အကြောင်းအရာ';
+      case 'takeaways':
+        return language === 'en' ? 'Takeaways' : 'အချက်များ';
+      case 'actions':
+        return language === 'en' ? 'Actions' : 'လုပ်ဆောင်ရန်';
+      case 'quiz':
+        return language === 'en' ? 'Quiz' : 'မေးခွန်းတို';
+      default:
+        return '';
+    }
   };
 
   if (pathLoading || lessonLoading) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
+      <div className="flex items-center justify-center min-h-screen bg-gray-50">
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
       </div>
     );
@@ -466,17 +489,19 @@ const LessonDetail = () => {
 
   if (!lesson || !path) {
     return (
-      <div className="text-center py-12">
-        <AlertCircle className="h-12 w-12 text-red-500 mx-auto mb-4" />
-        <h2 className="text-xl font-semibold text-gray-800 mb-2">
-          {language === 'en' ? 'Lesson not found' : 'သင်ခန်းစာ မတွေ့ရှိပါ'}
-        </h2>
-        <button
-          onClick={() => navigate(`/courses/${pathSlug}`)}
-          className="text-blue-600 hover:text-blue-700"
-        >
-          {language === 'en' ? 'Return to Course' : 'သင်တန်းသို့ ပြန်သွားရန်'}
-        </button>
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
+        <div className="text-center">
+          <AlertCircle className="h-12 w-12 text-red-500 mx-auto mb-4" />
+          <h2 className="text-xl font-semibold text-gray-800 mb-2">
+            {language === 'en' ? 'Lesson not found' : 'သင်ခန်းစာ မတွေ့ရှိပါ'}
+          </h2>
+          <button
+            onClick={() => navigate(`/courses/${pathSlug}`)}
+            className="text-blue-600 hover:text-blue-700 underline"
+          >
+            {language === 'en' ? 'Return to Course' : 'သင်တန်းသို့ ပြန်သွားရန်'}
+          </button>
+        </div>
       </div>
     );
   }
@@ -486,170 +511,396 @@ const LessonDetail = () => {
   const currentPageIndex = availablePages.indexOf(currentPage);
 
   return (
-    <div className="w-full min-h-screen overflow-x-hidden bg-gray-50" role="main" aria-labelledby="lesson-title">
-      <div className="max-w-6xl mx-auto">
-        <div className="bg-white rounded-lg border border-gray-200 shadow-sm animate-fade-in" role="article">
-          {/* Mobile Header */}
-          <LessonHeader 
-            title={lesson.title}
-            completed={completed}
-            toggleCompletion={toggleCompletion}
-            navigateBack={() => navigate(`/courses/${pathSlug}`)}
-          />
+    <div className="min-h-screen bg-gray-50 flex flex-col">
+      {/* Header */}
+      <header className="bg-white border-b border-gray-200 px-3 py-2 flex items-center justify-between sticky top-0 z-40">
+        <button
+          onClick={() => navigate(`/courses/${pathSlug}`)}
+          className="p-2 rounded-lg hover:bg-gray-100 transition-colors min-h-[44px] min-w-[44px] flex items-center justify-center"
+          aria-label={language === 'en' ? 'Go back to course' : 'သင်တန်းသို့ ပြန်သွားရန်'}
+        >
+          <ArrowLeft className="w-5 h-5 text-gray-600" />
+        </button>
+        
+        <div className="flex-1 text-center px-2">
+          <h1 className="text-sm font-semibold text-gray-900 truncate">
+            {lesson.title}
+          </h1>
+          <p className="text-xs text-gray-500">
+            {lesson.duration} • {getPageTitle(currentPage)}
+          </p>
+        </div>
+        
+        <button
+          onClick={toggleCompletion}
+          className={`p-2 rounded-lg transition-colors min-h-[44px] min-w-[44px] flex items-center justify-center ${
+            completed
+              ? 'text-green-600 bg-green-50'
+              : 'text-gray-400 hover:bg-gray-100'
+          }`}
+          aria-label={completed 
+            ? (language === 'en' ? 'Mark as incomplete' : 'မပြီးဆုံးသေးသည်ဟု မှတ်သားရန်') 
+            : (language === 'en' ? 'Mark as complete' : 'ပြီးဆုံးအဖြစ် မှတ်သားရန်')}
+        >
+          <Award className="w-5 h-5" />
+        </button>
+      </header>
 
-          {/* Navigation Tabs - Mobile specific */}
-          <div className="md:hidden">
-            <LessonNavigation 
-              availablePages={availablePages}
-              currentPage={currentPage}
-              goToPage={goToPage}
-            />
-          </div>
+      {/* Horizontal Scrolling Content */}
+      <div className="flex-1 relative">
+        <div 
+          ref={scrollContainerRef}
+          className="flex overflow-x-auto snap-x snap-mandatory h-full hide-scrollbar"
+          onTouchStart={handleTouchStart}
+          onTouchMove={handleTouchMove}
+          onTouchEnd={handleTouchEnd}
+          style={{ scrollBehavior: 'smooth' }}
+        >
+          {availablePages.map((page, index) => (
+            <div
+              key={page}
+              className="w-full flex-shrink-0 snap-center h-full overflow-y-auto"
+              style={{ minWidth: '100vw' }}
+            >
+              <div className="p-3 h-full">
+                {/* Page Content */}
+                <div className="bg-white rounded-xl shadow-sm border border-gray-200 h-full flex flex-col">
+                  {/* Page Header */}
+                  <div className="p-3 border-b border-gray-100 flex items-center">
+                    {getPageIcon(page)}
+                    <h2 className="ml-2 text-base font-semibold text-gray-800">
+                      {getPageTitle(page)}
+                    </h2>
+                  </div>
+                  
+                  {/* Page Content */}
+                  <div className="flex-1 p-3 overflow-y-auto">
+                    {page === 'intro' && (
+                      <div className="space-y-4">
+                        {lesson.introduction && (
+                          <div className="prose prose-sm max-w-none text-gray-700">
+                            <div dangerouslySetInnerHTML={{ 
+                              __html: Array.isArray(lesson.introduction) 
+                                ? lesson.introduction.map(block => block.children?.[0]?.text || '').join(' ')
+                                : lesson.introduction 
+                            }} />
+                          </div>
+                        )}
+                        
+                        {lesson.measurableDeliverables && lesson.measurableDeliverables.length > 0 && (
+                          <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
+                            <h3 className="font-semibold text-blue-800 mb-3 flex items-center text-sm">
+                              <Target className="w-4 h-4 mr-2" />
+                              {language === 'en' ? 'What You\'ll Achieve' : 'သင်ရရှိမည့်အရာများ'}
+                            </h3>
+                            <div className="space-y-2">
+                              {lesson.measurableDeliverables.map((deliverable: any) => (
+                                <label 
+                                  key={deliverable._key} 
+                                  className="flex items-start space-x-2 cursor-pointer hover:bg-blue-100 p-2 rounded-md transition-colors"
+                                >
+                                  <input
+                                    type="checkbox"
+                                    checked={completedTasks.includes(deliverable._key)}
+                                    onChange={(e) => handleTaskCompletion(deliverable._key, e.target.checked)}
+                                    className="w-4 h-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500 flex-shrink-0 mt-0.5"
+                                  />
+                                  <div className={`text-sm text-gray-700 flex-1 ${
+                                    completedTasks.includes(deliverable._key) ? 'line-through text-gray-500' : ''
+                                  }`}>
+                                    <div dangerouslySetInnerHTML={{ 
+                                      __html: Array.isArray(deliverable.description) 
+                                        ? deliverable.description.map(block => block.children?.[0]?.text || '').join(' ')
+                                        : deliverable.description 
+                                    }} />
+                                  </div>
+                                  {!deliverable.isOptional && (
+                                    <span className="px-1.5 py-0.5 bg-red-100 text-red-800 text-xs rounded-full flex-shrink-0">
+                                      {language === 'en' ? 'Required' : 'လိုအပ်သည်'}
+                                    </span>
+                                  )}
+                                </label>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    )}
 
-          {/* Desktop Navigation Tabs - Hidden on Mobile */}
-          <div className="hidden md:block border-b border-gray-200">
-            <LessonNavigation 
-              availablePages={availablePages}
-              currentPage={currentPage}
-              goToPage={goToPage}
-              isDesktop={true}
-            />
-          </div>
+                    {page === 'content' && (
+                      <div className="space-y-4">
+                        {lesson.type === 'video' && lesson.youtubeVideoId && (
+                          <div className="aspect-video rounded-lg overflow-hidden bg-gray-100 mb-4">
+                            <iframe
+                              src={`https://www.youtube.com/embed/${lesson.youtubeVideoId}?rel=0&modestbranding=1`}
+                              title={lesson.title}
+                              className="w-full h-full"
+                              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                              allowFullScreen
+                            />
+                          </div>
+                        )}
+                        
+                        {lesson.content && (
+                          <div className="prose prose-sm max-w-none text-gray-700">
+                            <div dangerouslySetInnerHTML={{ 
+                              __html: Array.isArray(lesson.content) 
+                                ? lesson.content.map(block => block.children?.[0]?.text || '').join(' ')
+                                : lesson.content 
+                            }} />
+                          </div>
+                        )}
+                      </div>
+                    )}
 
-          {/* Main Content Area */}
-          <div 
-            className="p-2 sm:p-5 focus-within:outline-none w-full max-w-full break-words overflow-x-visible"
-            onTouchStart={handleTouchStart}
-            onTouchMove={handleTouchMove}
-            onTouchEnd={handleTouchEnd}
-            ref={contentRef}
-            role="tabpanel"
-            id={`${currentPage}-panel`}
-            aria-label="Lesson content"
-          >
-            {/* Desktop Header - Hidden on Mobile */}
-            <div className="hidden md:flex items-center justify-between mb-6 animate-slide-down">
-              <button
-                onClick={() => navigate(`/courses/${pathSlug}`)}
-                className="flex items-center text-gray-600 hover:text-gray-800 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 rounded-lg p-2 press-effect"
-                aria-label={language === 'en' ? 'Return to course overview' : 'သင်တန်းခြုံငုံသုံးသပ်ချက်သို့ ပြန်သွားရန်'}
-              >
-                <ArrowLeft className="h-5 w-5 mr-2" aria-hidden="true" />
-                {language === 'en' ? 'Back to Course' : 'သင်တန်းသို့ ပြန်သွားရန်'}
-              </button>
+                    {page === 'takeaways' && (
+                      <div className="space-y-4">
+                        {lesson.keyTakeaways && (
+                          <div className="bg-green-50 border border-green-200 rounded-lg p-3">
+                            <h3 className="font-semibold text-green-800 mb-3 flex items-center text-sm">
+                              <Lightbulb className="w-4 h-4 mr-2" />
+                              {language === 'en' ? 'Key Takeaways' : 'အဓိကအချက်များ'}
+                            </h3>
+                            <div className="prose prose-sm max-w-none text-green-700">
+                              <div dangerouslySetInnerHTML={{ 
+                                __html: Array.isArray(lesson.keyTakeaways) 
+                                  ? lesson.keyTakeaways.map(block => block.children?.[0]?.text || '').join(' ')
+                                  : lesson.keyTakeaways 
+                              }} />
+                            </div>
+                          </div>
+                        )}
 
-              <button
-                onClick={toggleCompletion}
-                className={`flex items-center px-4 py-2 rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 press-effect ${
-                  completed
-                    ? 'bg-green-100 text-green-700 hover:bg-green-200 focus:ring-green-500'
-                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200 focus:ring-blue-500'
-                }`}
-                aria-pressed={completed}
-              >
-                <Award className="h-5 w-5 mr-2" aria-hidden="true" />
-                {completed
-                  ? (language === 'en' ? 'Completed' : 'ပြီးဆုံး')
-                  : (language === 'en' ? 'Mark as Complete' : 'ပြီးဆုံးအဖြစ် မှတ်သားရန်')}
-              </button>
-            </div>
+                        {lesson.reflectionPrompts && (
+                          <div className="bg-amber-50 border border-amber-200 rounded-lg p-3">
+                            <h3 className="font-semibold text-amber-800 mb-3 text-sm">
+                              {language === 'en' ? 'Reflect & Grow' : 'ပြန်လည်သုံးသပ်ပြီး တိုးတက်ပါ'}
+                            </h3>
+                            <div className="prose prose-sm max-w-none text-amber-700">
+                              <div dangerouslySetInnerHTML={{ 
+                                __html: Array.isArray(lesson.reflectionPrompts) 
+                                  ? lesson.reflectionPrompts.map(block => block.children?.[0]?.text || '').join(' ')
+                                  : lesson.reflectionPrompts 
+                              }} />
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    )}
 
-            {/* Lesson Content */}
-            <LessonContent
-              lesson={lesson}
-              currentPage={currentPage}
-              completedTasks={completedTasks}
-              handleTaskCompletion={handleTaskCompletion}
-              userAnswers={userAnswers}
-              setUserAnswers={setUserAnswers}
-              quizSubmitted={quizSubmitted}
-              setQuizSubmitted={setQuizSubmitted}
-              quizResults={quizResults}
-              setQuizResults={setQuizResults}
-              totalScore={totalScore}
-              setTotalScore={setTotalScore}
-              language={language}
-              trackEvent={trackEvent}
-              startTime={startTime}
-              toggleCompletion={toggleCompletion}
-            />
+                    {page === 'actions' && (
+                      <div className="space-y-4">
+                        {lesson.actionableTasks && lesson.actionableTasks.length > 0 && (
+                          <div className="bg-purple-50 border border-purple-200 rounded-lg p-3">
+                            <h3 className="font-semibold text-purple-800 mb-3 flex items-center text-sm">
+                              <Target className="w-4 h-4 mr-2" />
+                              {language === 'en' ? 'Your Action Plan' : 'သင့်လုပ်ဆောင်ရန် အစီအစဉ်'}
+                            </h3>
+                            <div className="space-y-2">
+                              {lesson.actionableTasks.map((task: any) => (
+                                <label 
+                                  key={task._key} 
+                                  className="flex items-start space-x-2 cursor-pointer hover:bg-purple-100 p-2 rounded-md transition-colors"
+                                >
+                                  <input
+                                    type="checkbox"
+                                    checked={completedTasks.includes(task._key)}
+                                    onChange={(e) => handleTaskCompletion(task._key, e.target.checked)}
+                                    className="w-4 h-4 text-purple-600 rounded border-gray-300 focus:ring-purple-500 flex-shrink-0 mt-0.5"
+                                  />
+                                  <div className={`text-sm text-gray-700 flex-1 ${
+                                    completedTasks.includes(task._key) ? 'line-through text-gray-500' : ''
+                                  }`}>
+                                    <div dangerouslySetInnerHTML={{ 
+                                      __html: Array.isArray(task.description) 
+                                        ? task.description.map(block => block.children?.[0]?.text || '').join(' ')
+                                        : task.description 
+                                    }} />
+                                  </div>
+                                  {!task.isOptional && (
+                                    <span className="px-1.5 py-0.5 bg-red-100 text-red-800 text-xs rounded-full flex-shrink-0">
+                                      {language === 'en' ? 'Required' : 'လိုအပ်သည်'}
+                                    </span>
+                                  )}
+                                </label>
+                              ))}
+                            </div>
+                          </div>
+                        )}
 
-            {/* Page Navigation Dots - Mobile Only */}
-            <div className="md:hidden flex justify-center mt-4 space-x-2 animate-fade-in">
-              {availablePages.map((page, index) => (
-                <button
-                  key={page}
-                  onClick={() => goToPage(page)}
-                  className={`w-2.5 h-2.5 rounded-full transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 ${
-                    currentPage === page ? 'bg-blue-600' : 'bg-gray-300'
-                  }`}
-                  aria-label={`Go to page ${index + 1}`}
-                />
-              ))}
-            </div>
+                        {lesson.lessonResources && lesson.lessonResources.length > 0 && (
+                          <div className="border border-gray-200 rounded-lg p-3">
+                            <h3 className="font-semibold text-gray-800 mb-3 text-sm">
+                              {language === 'en' ? 'Additional Resources' : 'ထပ်ဆောင်းအရင်းအမြစ်များ'}
+                            </h3>
+                            <div className="space-y-2">
+                              {lesson.lessonResources.map((resource: any, index: number) => (
+                                <a
+                                  key={index}
+                                  href={resource.url}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="flex items-center p-2 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
+                                >
+                                  <FileText className="w-4 h-4 text-gray-500 mr-2 flex-shrink-0" />
+                                  <div className="flex-1 min-w-0">
+                                    <p className="font-medium text-gray-800 text-sm truncate">{resource.title}</p>
+                                    {resource.description && (
+                                      <p className="text-xs text-gray-600 truncate">{resource.description}</p>
+                                    )}
+                                  </div>
+                                </a>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    )}
 
-            {/* Page Navigation Buttons */}
-            <div className="flex justify-between mt-4 mb-2 animate-fade-in">
-              <button
-                onClick={handlePrevPage}
-                disabled={currentPageIndex === 0}
-                className={`flex items-center px-4 py-2 rounded-lg border border-gray-300 text-gray-700 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 min-h-[44px] ${
-                  currentPageIndex === 0 
-                    ? 'opacity-50 cursor-not-allowed' 
-                    : 'hover:bg-gray-50 press-effect'
-                }`}
-                aria-label={language === 'en' ? 'Go to previous section' : 'ယခင်အပိုင်းသို့ သွားရန်'}
-              >
-                <ChevronLeft className="h-5 w-5 mr-1" aria-hidden="true" />
-                <span className="hidden md:inline">{language === 'en' ? 'Previous' : 'နောက်သို့'}</span>
-              </button>
-
-              {currentPageIndex === availablePages.length - 1 ? (
-                <div className="flex space-x-3 animate-slide-up">
-                  {nextLesson ? (
-                    <button
-                      onClick={() => navigateToLesson(nextLesson.slug)}
-                      className="flex items-center px-4 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 press-effect min-h-[44px]"
-                      aria-label={`Continue to next lesson: ${nextLesson.title}`}
-                    >
-                      <span className="hidden md:inline">{language === 'en' ? 'Next Lesson' : 'နောက်သင်ခန်းစာ'}</span>
-                      <span className="md:hidden">{language === 'en' ? 'Next' : 'ရှေ့သို့'}</span>
-                      <ChevronRight className="h-5 w-5 ml-1" aria-hidden="true" />
-                    </button>
-                  ) : (
-                    <button
-                      onClick={() => navigate(`/courses/${pathSlug}`)}
-                      className="flex items-center px-4 py-2 rounded-lg bg-green-600 text-white hover:bg-green-700 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 press-effect min-h-[44px]"
-                      aria-label={language === 'en' ? 'Complete lesson and return to course' : 'သင်ခန်းစာပြီးဆုံးပြီး သင်တန်းသို့ ပြန်သွားရန်'}
-                    >
-                      <span>{language === 'en' ? 'Finish' : 'ပြီးဆုံး'}</span>
-                      <Award className="h-5 w-5 ml-1" aria-hidden="true" />
-                    </button>
-                  )}
+                    {page === 'quiz' && lesson.quiz && (
+                      <div className="space-y-4">
+                        <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
+                          <h3 className="text-base font-semibold text-blue-800 mb-2 flex items-center">
+                            <FileText className="w-4 h-4 mr-2" />
+                            {lesson.quiz.title || (language === 'en' ? 'Knowledge Check' : 'အသိပညာ စစ်ဆေးခြင်း')}
+                          </h3>
+                          <p className="text-blue-700 text-sm">
+                            {language === 'en' 
+                              ? 'Test your understanding of the lesson material.' 
+                              : 'သင်ခန်းစာအကြောင်းအရာကို သင်နားလည်မှုကို စစ်ဆေးပါ။'}
+                          </p>
+                        </div>
+                        
+                        {lesson.quiz.questions && lesson.quiz.questions.map((question: any, questionIndex: number) => (
+                          <div key={questionIndex} className="bg-white border border-gray-200 rounded-lg p-3">
+                            <h4 className="text-sm font-medium text-gray-800 mb-3">
+                              {questionIndex + 1}. {question.questionText}
+                            </h4>
+                            
+                            {question.questionType === 'multipleChoice' && question.options && (
+                              <div className="space-y-2">
+                                {question.options.map((option: any, optionIndex: number) => (
+                                  <label 
+                                    key={optionIndex}
+                                    className="flex items-center p-2 rounded-lg border border-gray-200 hover:bg-gray-50 cursor-pointer transition-colors"
+                                  >
+                                    <input
+                                      type="radio"
+                                      name={`question-${questionIndex}`}
+                                      className="w-4 h-4 text-blue-600 border-gray-300 focus:ring-blue-500 flex-shrink-0"
+                                    />
+                                    <span className="ml-2 text-sm text-gray-700 flex-1">{option.text}</span>
+                                  </label>
+                                ))}
+                              </div>
+                            )}
+                            
+                            {question.questionType === 'trueFalse' && (
+                              <div className="space-y-2">
+                                {[true, false].map((value, index) => (
+                                  <label 
+                                    key={index}
+                                    className="flex items-center p-2 rounded-lg border border-gray-200 hover:bg-gray-50 cursor-pointer transition-colors"
+                                  >
+                                    <input
+                                      type="radio"
+                                      name={`question-${questionIndex}`}
+                                      className="w-4 h-4 text-blue-600 border-gray-300 focus:ring-blue-500 flex-shrink-0"
+                                    />
+                                    <span className="ml-2 text-sm text-gray-700 flex-1">
+                                      {value ? 'True' : 'False'}
+                                    </span>
+                                  </label>
+                                ))}
+                              </div>
+                            )}
+                          </div>
+                        ))}
+                        
+                        <div className="flex justify-center">
+                          <button className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm min-h-[44px]">
+                            {language === 'en' ? 'Submit Quiz' : 'ဆစ်ကို တင်သွင်းရန်'}
+                          </button>
+                        </div>
+                      </div>
+                    )}
+                  </div>
                 </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Navigation Dots */}
+      <div className="bg-white border-t border-gray-200 px-4 py-3">
+        <div className="flex items-center justify-center space-x-2 mb-3">
+          {availablePages.map((page, index) => (
+            <button
+              key={page}
+              onClick={() => goToPage(page)}
+              className={`w-2 h-2 rounded-full transition-all duration-200 ${
+                currentPage === page ? 'bg-blue-600 w-6' : 'bg-gray-300'
+              }`}
+              aria-label={`Go to ${getPageTitle(page)}`}
+            />
+          ))}
+        </div>
+        
+        {/* Navigation Buttons */}
+        <div className="flex items-center justify-between">
+          <button
+            onClick={handlePrevPage}
+            disabled={currentPageIndex === 0}
+            className={`flex items-center px-4 py-2 rounded-lg border border-gray-300 text-gray-700 transition-colors min-h-[44px] ${
+              currentPageIndex === 0 
+                ? 'opacity-50 cursor-not-allowed' 
+                : 'hover:bg-gray-50'
+            }`}
+          >
+            <ChevronLeft className="w-4 h-4 mr-1" />
+            <span className="text-sm">{language === 'en' ? 'Previous' : 'နောက်သို့'}</span>
+          </button>
+
+          {currentPageIndex === availablePages.length - 1 ? (
+            <div className="flex space-x-2">
+              {nextLesson ? (
+                <button
+                  onClick={() => navigateToLesson(nextLesson.slug)}
+                  className="flex items-center px-4 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition-colors min-h-[44px]"
+                >
+                  <span className="text-sm">{language === 'en' ? 'Next Lesson' : 'နောက်သင်ခန်းစာ'}</span>
+                  <ChevronRight className="w-4 h-4 ml-1" />
+                </button>
               ) : (
                 <button
-                  onClick={handleNextPage}
-                  className="flex items-center px-4 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 press-effect min-h-[44px]"
-                  aria-label={language === 'en' ? 'Continue to next section' : 'နောက်အပိုင်းသို့ ဆက်လက်သွားရန်'}
+                  onClick={() => navigate(`/courses/${pathSlug}`)}
+                  className="flex items-center px-4 py-2 rounded-lg bg-green-600 text-white hover:bg-green-700 transition-colors min-h-[44px]"
                 >
-                  <span className="hidden md:inline">{language === 'en' ? 'Continue' : 'ဆက်လက်'}</span>
-                  <span className="md:hidden">{language === 'en' ? 'Next' : 'ရှေ့သို့'}</span>
-                  <ChevronRight className="h-5 w-5 ml-1" aria-hidden="true" />
+                  <CheckCircle className="w-4 h-4 mr-1" />
+                  <span className="text-sm">{language === 'en' ? 'Complete' : 'ပြီးဆုံး'}</span>
                 </button>
               )}
             </div>
-          </div>
+          ) : (
+            <button
+              onClick={handleNextPage}
+              className="flex items-center px-4 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition-colors min-h-[44px]"
+            >
+              <span className="text-sm">{language === 'en' ? 'Next' : 'ရှေ့သို့'}</span>
+              <ChevronRight className="w-4 h-4 ml-1" />
+            </button>
+          )}
         </div>
-
-        {/* Milestone Earned Modal */}
-        <LessonMilestoneModal
-          show={showMilestoneModal}
-          onClose={() => setShowMilestoneModal(false)}
-          milestoneName={earnedMilestone}
-          language={language}
-        />
       </div>
+
+      {/* Milestone Modal */}
+      <LessonMilestoneModal
+        show={showMilestoneModal}
+        onClose={() => setShowMilestoneModal(false)}
+        milestoneName={earnedMilestone}
+        language={language}
+      />
     </div>
   );
 };

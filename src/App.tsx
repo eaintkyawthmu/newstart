@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom';
+import ErrorBoundary from './components/ErrorBoundary';
+import SkipLink from './components/SkipLink';
 import { LanguageProvider } from './contexts/LanguageContext';
 import { StepProvider } from './contexts/StepContext';
 import { AuthProvider } from './contexts/AuthContext';
@@ -335,17 +337,20 @@ const AppContent: React.FC = () => {
 
 function App() {
   return (
-    <BrowserRouter>
-      <AuthProvider>
-        <LanguageProvider>
-          <StepProvider>
-            <ToastProvider>
-              <AppContent />
-            </ToastProvider>
-          </StepProvider>
-        </LanguageProvider>
-      </AuthProvider>
-    </BrowserRouter>
+    <ErrorBoundary>
+      <BrowserRouter>
+        <SkipLink />
+        <AuthProvider>
+          <LanguageProvider>
+            <StepProvider>
+              <ToastProvider>
+                <AppContent />
+              </ToastProvider>
+            </StepProvider>
+          </LanguageProvider>
+        </AuthProvider>
+      </BrowserRouter>
+    </ErrorBoundary>
   );
 }
 

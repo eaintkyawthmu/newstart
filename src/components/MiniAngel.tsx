@@ -258,7 +258,8 @@ const MiniAngel = () => {
       ) : (
         <button
           onClick={() => setIsOpen(true)}
-          className="bg-blue-600 text-white rounded-full shadow-lg hover:bg-blue-700 transition-colors flex items-center p-3 md:px-6 md:space-x-3"
+          className="bg-blue-600 text-white rounded-full shadow-lg hover:bg-blue-700 transition-colors flex items-center p-3 md:px-6 md:space-x-3 focus-ring min-h-[56px] min-w-[56px]"
+          aria-label="Open Mini Angel chat assistant"
         >
           <MessageSquare className="h-6 w-6" />
           <span className="hidden md:block font-medium">Ask Mini Angel 💬</span>

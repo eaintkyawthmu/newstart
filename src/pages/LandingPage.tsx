@@ -108,7 +108,7 @@ const LandingPage = () => {
               </button>
               <button
                 onClick={() => navigate('/auth')}
-                className="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors"
+                className="bg-blue-600 text-white px-8 py-4 rounded-lg text-lg font-semibold hover:bg-blue-700 transition-colors flex items-center justify-center focus-ring min-h-[56px]"
               >
                 Get Started
               </button>
@@ -401,7 +401,7 @@ const LandingPage = () => {
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <button
               onClick={() => navigate('/auth')}
-              className="bg-white text-blue-600 px-8 py-4 rounded-lg text-lg font-semibold hover:bg-gray-50 transition-colors flex items-center justify-center"
+              className="bg-white text-blue-600 px-8 py-4 rounded-lg text-lg font-semibold hover:bg-gray-50 transition-colors flex items-center justify-center focus-ring min-h-[56px]"
             >
               Get Started Free
               <ArrowRight className="ml-2 h-5 w-5" />

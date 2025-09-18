@@ -73,9 +73,10 @@ const ProfileMenu = ({ isOpen, onToggle, isCollapsed }: ProfileMenuProps) => {
       {/* Profile Button */}
       <button
         onClick={onToggle}
-        className="w-full flex items-center justify-between hover:bg-gray-50 p-2 rounded-lg transition-colors"
+        className="w-full flex items-center justify-between hover:bg-gray-50 p-2 rounded-lg transition-colors focus-ring min-h-[44px]"
         aria-expanded={isOpen}
         aria-haspopup="true"
+        aria-label="Profile menu"
       >
         <div className="flex items-center justify-center min-w-0">
           <div className="flex-shrink-0">

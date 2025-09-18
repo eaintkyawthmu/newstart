@@ -346,7 +346,12 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
         </div>
 
         {/* Page Content */}
-        <main className="flex-1 overflow-auto p-4 md:p-6 lg:p-8 pb-safe pt-0 md:pt-6 hide-scrollbar">
+        <main 
+          id="main-content"
+          className="flex-1 overflow-auto p-4 md:p-6 lg:p-8 pb-safe pt-0 md:pt-6 hide-scrollbar"
+          role="main"
+          aria-label="Main content"
+        >
           <div className="max-w-7xl mx-auto">
             {/* Main Content */}
             {children}

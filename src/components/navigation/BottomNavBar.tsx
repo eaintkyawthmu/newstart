@@ -56,12 +56,13 @@ const BottomNavBar: React.FC = () => {
           <button
             key={item.path}
             onClick={() => navigate(item.path)}
-            className={`flex flex-col items-center justify-center w-full h-full min-w-[64px] min-h-[56px] ${
+            className={`flex flex-col items-center justify-center w-full h-full min-w-[64px] min-h-[56px] focus-ring rounded-lg transition-colors ${
               isActive(item.path)
                 ? 'text-blue-600'
                 : 'text-gray-500 hover:text-gray-700'
             }`}
             aria-label={item.label}
+            aria-current={isActive(item.path) ? 'page' : undefined}
           >
             <item.icon className={`h-6 w-6 ${isActive(item.path) ? 'text-blue-600' : 'text-gray-500'}`} />
             <span className="text-xs mt-1 font-medium">{item.label}</span>

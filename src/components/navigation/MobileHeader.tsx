@@ -42,7 +42,7 @@ const MobileHeader: React.FC<MobileHeaderProps> = ({
       {showBackButton ? (
         <button
           onClick={() => navigate(backPath)}
-          className="p-2 rounded-lg hover:bg-gray-100 transition-colors"
+          className="p-2 rounded-lg hover:bg-gray-100 transition-colors focus-ring min-h-[44px] min-w-[44px]"
           aria-label={language === 'en' ? 'Go back' : 'နောက်သို့ပြန်သွားရန်'}
         >
           <ArrowLeft className="h-6 w-6 text-gray-600" />
@@ -50,8 +50,10 @@ const MobileHeader: React.FC<MobileHeaderProps> = ({
       ) : (
         <button
           onClick={onMenuToggle}
-          className="p-2 rounded-lg hover:bg-gray-100 transition-colors"
+          className="p-2 rounded-lg hover:bg-gray-100 transition-colors focus-ring min-h-[44px] min-w-[44px]"
           aria-label={language === 'en' ? 'Open menu' : 'မီနူးဖွင့်ရန်'}
+          aria-expanded="false"
+          aria-controls="mobile-menu"
         >
           <Menu className="h-6 w-6 text-gray-600" />
         </button>
@@ -62,7 +64,7 @@ const MobileHeader: React.FC<MobileHeaderProps> = ({
       ) : (
         <button
           onClick={toggleLanguage}
-          className="p-2 rounded-lg hover:bg-gray-100 transition-colors"
+          className="p-2 rounded-lg hover:bg-gray-100 transition-colors focus-ring min-h-[44px] min-w-[44px]"
           aria-label={language === 'en' ? 'Switch to Burmese' : 'Switch to English'}
         >
           <Globe className="h-5 w-5 text-gray-600" />

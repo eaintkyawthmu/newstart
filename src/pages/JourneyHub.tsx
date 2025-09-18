@@ -93,15 +93,16 @@ const JourneyHub = () => {
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center min-h-[400px]">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+      <div className="flex items-center justify-center min-h-[400px]" role="status" aria-label="Loading journey paths">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600" aria-hidden="true"></div>
+        <span className="sr-only">Loading journey paths...</span>
       </div>
     );
   }
 
   if (error || !paths?.length) {
     return (
-      <div className="text-center py-12">
+      <div className="text-center py-12" role="alert">
         <AlertCircle className="h-12 w-12 text-red-500 mx-auto mb-4" />
         <h2 className="text-xl font-semibold text-gray-800 mb-2">
           {error instanceof Error ? error.message : 'No journey paths found'}
@@ -152,7 +153,7 @@ const JourneyHub = () => {
           </div>
           <button 
             onClick={() => navigate('/subscription')}
-            className="bg-white text-purple-600 px-6 sm:px-8 py-3 sm:py-4 rounded-lg text-lg font-medium hover:bg-purple-50 transition-colors shadow-md hover:shadow-lg whitespace-nowrap"
+            className="bg-white text-purple-600 px-6 sm:px-8 py-3 sm:py-4 rounded-lg text-lg font-medium hover:bg-purple-50 transition-colors shadow-md hover:shadow-lg whitespace-nowrap focus-ring min-h-[44px]"
           >
             {language === 'en' ? 'Upgrade Now' : 'ယခု အဆင့်မြှင့်ရန်'}
           </button>

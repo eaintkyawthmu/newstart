@@ -624,7 +624,7 @@ const LessonViewer: React.FC = () => {
       </div>
 
       {/* Page Content */}
-      <div className="bg-white rounded-lg border border-gray-200 p-6 shadow-sm mb-6 overflow-y-auto">
+      <div className="bg-white rounded-lg border border-gray-200 p-6 shadow-sm mb-6 overflow-y-auto max-h-[70vh]">
         {renderPageContent()}
       </div>
 

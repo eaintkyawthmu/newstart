@@ -15,10 +15,19 @@ const CourseCard: React.FC<CourseCardProps> = ({ path, onPathClick, progress = 0
   
   return (
     <div
-      className={`bg-white rounded-xl border ${
+      className={`bg-white rounded-xl border card-hover cursor-pointer ${
         path.isPremium ? 'border-purple-200' : 'border-gray-200'
-      } overflow-hidden hover:shadow-md transition-all duration-300 h-full flex flex-col`}
+      } overflow-hidden h-full flex flex-col focus-within:ring-2 focus-within:ring-blue-500 focus-within:ring-offset-2`}
       onClick={() => onPathClick(path)}
+      role="button"
+      tabIndex={0}
+      onKeyDown={(e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          onPathClick(path);
+        }
+      }}
+      aria-label={`${path.title} - ${path.isPremium ? 'Premium course' : 'Free course'}`}
     >
       {/* Image section with fixed aspect ratio */}
       <div className="relative aspect-[16/9] overflow-hidden">

@@ -87,6 +87,9 @@ const MobileMenu: React.FC<MobileMenuProps> = ({ isOpen, onClose, menuItems }) =
           isOpen ? 'translate-x-0' : '-translate-x-full'
         }`}
         aria-hidden={!isOpen}
+        id="mobile-menu"
+        role="navigation"
+        aria-label="Main navigation"
       >
         <div className="flex items-center justify-between p-4 border-b border-gray-200">
           <div className="flex items-center">

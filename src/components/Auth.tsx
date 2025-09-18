@@ -202,13 +202,16 @@ const Auth: React.FC<AuthProps> = ({ initialIsSignUp = false }) => {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="Enter your password"
-                className="block w-full pl-10 pr-10 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                className="block w-full pl-10 pr-10 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-colors"
+                aria-describedby={error ? "password-error" : undefined}
+                aria-describedby={error ? "email-error" : undefined}
                 required
               />
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 focus-ring rounded"
+                aria-label={showPassword ? "Hide password" : "Show password"}
               >
                 {showPassword ? (
                   <EyeOff className="h-5 w-5" />
@@ -228,10 +231,11 @@ const Auth: React.FC<AuthProps> = ({ initialIsSignUp = false }) => {
         <button
           type="submit"
           disabled={loading}
-          className="w-full bg-primary-600 text-white py-2 px-4 rounded-lg font-medium hover:bg-primary-700 transition-colors duration-200 flex items-center justify-center"
+          className="w-full bg-primary-600 text-white py-2 px-4 rounded-lg font-medium hover:bg-primary-700 transition-colors duration-200 flex items-center justify-center focus-ring disabled:opacity-50 disabled:cursor-not-allowed min-h-[44px]"
+          aria-describedby={error ? "form-error" : undefined}
         >
           {loading ? (
-            <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white" />
+            <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white" aria-hidden="true" />
           ) : (
             <>
               {isForgotPassword 
@@ -248,7 +252,7 @@ const Auth: React.FC<AuthProps> = ({ initialIsSignUp = false }) => {
           <button
             type="button"
             onClick={handleForgotPassword}
-            className="w-full text-primary-600 py-2 px-4 rounded-lg font-medium hover:text-primary-700 transition-colors duration-200"
+            className="w-full text-primary-600 py-2 px-4 rounded-lg font-medium hover:text-primary-700 transition-colors duration-200 focus-ring min-h-[44px]"
           >
             Forgot your password?
           </button>
@@ -258,7 +262,7 @@ const Auth: React.FC<AuthProps> = ({ initialIsSignUp = false }) => {
           <button
             type="button"
             onClick={handleBackToSignIn}
-            className="w-full text-primary-600 py-2 px-4 rounded-lg font-medium hover:text-primary-700 transition-colors duration-200"
+            className="w-full text-primary-600 py-2 px-4 rounded-lg font-medium hover:text-primary-700 transition-colors duration-200 focus-ring min-h-[44px]"
           >
             Back to Sign In
           </button>
@@ -273,7 +277,7 @@ const Auth: React.FC<AuthProps> = ({ initialIsSignUp = false }) => {
               setError(null);
               setSuccess(null);
             }}
-            className="text-primary-600 hover:text-primary-700 font-medium"
+            className="text-primary-600 hover:text-primary-700 font-medium focus-ring rounded px-2 py-1"
           >
             {isSignUp 
               ? 'Already have an account? Sign in' 

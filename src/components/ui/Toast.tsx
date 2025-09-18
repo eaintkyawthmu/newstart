@@ -83,13 +83,15 @@ const Toast: React.FC<ToastProps> = ({
   return (
     <div 
       className={`
-        fixed bottom-20 md:bottom-4 left-1/2 transform -translate-x-1/2 
+        fixed bottom-20 md:bottom-4 left-1/2 transform -translate-x-1/2 z-50
         max-w-sm w-[calc(100%-2rem)] shadow-lg rounded-lg border 
         transition-all duration-300 z-50
         ${getColors()}
         ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-2'}
       `}
       role="alert"
+      aria-live="polite"
+      aria-atomic="true"
     >
       <div className="p-4">
         <div className="flex items-start">

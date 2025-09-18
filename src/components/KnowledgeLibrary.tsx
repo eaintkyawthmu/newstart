@@ -146,8 +146,9 @@ const KnowledgeLibrary = () => {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-[200px]">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+      <div className="flex items-center justify-center min-h-[200px]" role="status" aria-label="Loading knowledge library">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600" aria-hidden="true"></div>
+        <span className="sr-only">Loading knowledge library...</span>
       </div>
     );
   }
@@ -170,11 +171,13 @@ const KnowledgeLibrary = () => {
           <button
             key={category.id}
             onClick={() => setSelectedCategory(category.id)}
-            className={`flex items-center px-4 py-2 rounded-full text-sm font-medium transition-colors duration-200 ${
+            className={`flex items-center px-4 py-2 rounded-full text-sm font-medium transition-colors duration-200 focus-ring min-h-[44px] ${
               selectedCategory === category.id
                 ? 'bg-blue-600 text-white'
                 : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
             }`}
+            aria-pressed={selectedCategory === category.id}
+            aria-label={`Filter by ${category.label}`}
           >
             <category.icon className="h-4 w-4 mr-2" />
             {category.label}

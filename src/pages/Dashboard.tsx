@@ -246,13 +246,13 @@ const Dashboard = () => {
           <div className="flex flex-col sm:flex-row gap-3">
             <button
               onClick={() => navigate('/courses/new-to-america')}
-              className="px-6 py-3 bg-white text-blue-700 rounded-lg hover:bg-blue-50 transition-colors font-medium text-center"
+              className="px-6 py-3 bg-white text-blue-700 rounded-lg hover:bg-blue-50 transition-colors font-medium text-center focus-ring min-h-[44px]"
             >
               {language === 'en' ? 'Start Your Journey' : 'သင့်ခရီးစဉ်ကို စတင်ပါ'}
             </button>
             <button
               onClick={() => navigate('/profile-setup')}
-              className="px-6 py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-400 transition-colors text-center"
+              className="px-6 py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-400 transition-colors text-center focus-ring min-h-[44px]"
             >
               {language === 'en' ? 'Edit Profile' : 'ပရိုဖိုင်ပြင်ဆင်ရန်'}
             </button>

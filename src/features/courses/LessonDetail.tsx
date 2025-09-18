@@ -466,9 +466,9 @@ const LessonDetail = () => {
   const currentPageIndex = availablePages.indexOf(currentPage);
 
   return (
-    <div className="w-full min-h-screen overflow-x-hidden bg-gray-50">
+    <div className="w-full min-h-screen overflow-x-hidden bg-gray-50" role="main">
       <div className="max-w-6xl mx-auto">
-        <div className="bg-white rounded-lg border border-gray-200 shadow-sm">
+        <div className="bg-white rounded-lg border border-gray-200 shadow-sm" role="article" aria-labelledby="lesson-title">
           {/* Mobile Header */}
           <LessonHeader 
             title={lesson.title}
@@ -498,11 +498,13 @@ const LessonDetail = () => {
 
           {/* Main Content Area */}
           <div 
-            className="p-5"
+            className="p-5 focus-within:outline-none"
             onTouchStart={handleTouchStart}
             onTouchMove={handleTouchMove}
             onTouchEnd={handleTouchEnd}
             ref={contentRef}
+            role="region"
+            aria-label="Lesson content"
           >
             {/* Desktop Header - Hidden on Mobile */}
             <div className="hidden md:flex items-center justify-between mb-6">

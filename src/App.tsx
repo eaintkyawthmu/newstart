@@ -10,6 +10,7 @@ import { useAuth } from './contexts/AuthContext';
 import { supabase } from './lib/supabaseClient';
 import { initMonitoring } from './utils/monitoring';
 import { trackCustomError } from './utils/errorTracking';
+import { useAnalytics } from './hooks/useAnalytics';
 import DashboardLayout from './layouts/DashboardLayout';
 import Dashboard from './pages/Dashboard';
 import Guide from './pages/Guide';
@@ -119,6 +120,7 @@ const AdminRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
 const AppContent: React.FC = () => {
   const { user } = useAuth();
   const location = useLocation();
+  const { trackEvent } = useAnalytics();
   
   // Initialize monitoring
   useEffect(() => {

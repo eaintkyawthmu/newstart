@@ -1,4 +1,5 @@
 // Comprehensive error tracking and monitoring
+import { supabase } from '../lib/supabaseClient';
 
 interface ErrorDetails {
   message: string;
@@ -104,31 +105,34 @@ const trackError = async (errorType: string, errorDetails: ErrorDetails) => {
       console.error(`[${errorType}]`, errorDetails);
     }
 
-    // Send to analytics
-    if (window.gtag) {
-      window.gtag('event', 'exception', {
-        description: errorDetails.message,
-        fatal: errorType === 'javascript_error',
-        custom_parameter_1: errorType,
-        custom_parameter_2: errorDetails.sessionId
-      });
-    }
 
-    // Send to Supabase for logging (if available)
-    if (import.meta.env.VITE_SUPABASE_URL && import.meta.env.VITE_SUPABASE_ANON_KEY) {
-      await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/track_error`, {
+    // Send to analytics using existing edge function
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      
+      await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/track_analytics_event`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`,
         },
         body: JSON.stringify({
-          error_type: errorType,
-          error_details: errorDetails
+          event_name: 'error_occurred',
+          event_data: {
+            error_type: errorType,
+            message: errorDetails.message,
+            stack: errorDetails.stack,
+            url: errorDetails.url,
+            user_agent: errorDetails.userAgent,
+            session_id: errorDetails.sessionId,
+            build_version: errorDetails.buildVersion,
+            user_id: user?.id || null
+          }
         })
-      }).catch((err) => {
-        console.error('Failed to send error to logging service:', err);
       });
+    } catch (analyticsError) {
+      // Silently fail analytics to prevent recursive errors
+      console.warn('Failed to send error to analytics:', analyticsError);
     }
 
     // Store in localStorage as backup

@@ -655,6 +655,62 @@
     @apply bg-gray-200 animate-pulse flex items-center justify-center;
   }
   
+  /* Fix for right-side content cutoff */
+  .prose img,
+  .prose video,
+  .prose iframe {
+    /* Prevents media from overflowing the container */
+    max-width: 100% !important;
+    width: 100% !important;
+    height: auto !important;
+    border-radius: 0.5rem; /* Optional: adds rounded corners */
+    object-fit: cover;
+  }
+  
+  .prose pre {
+    /* Makes code blocks wrap or scroll horizontally */
+    white-space: pre-wrap !important;
+    word-break: break-all !important;
+    overflow-x: auto !important;
+    max-width: 100% !important;
+    width: 100% !important;
+  }
+  
+  .prose table {
+    /* Makes tables responsive on small screens */
+    display: block !important;
+    max-width: 100% !important;
+    width: 100% !important;
+    overflow-x: auto !important;
+  }
+  
+  .prose blockquote {
+    /* Ensures blockquotes don't overflow */
+    max-width: 100% !important;
+    width: 100% !important;
+    word-wrap: break-word !important;
+    overflow-wrap: break-word !important;
+  }
+  
+  .prose code {
+    /* Inline code wrapping */
+    word-break: break-all !important;
+    overflow-wrap: break-word !important;
+    white-space: pre-wrap !important;
+  }
+  
+  /* Additional overflow fixes for lesson content */
+  .lesson-content * {
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+  }
+  
+  .lesson-section-content {
+    overflow-x: visible !important;
+    word-wrap: break-word !important;
+    overflow-wrap: break-word !important;
+  }
+  
   /* Enhanced typography */
   .heading-primary {
     @apply text-2xl md:text-3xl lg:text-4xl font-bold text-gray-900 leading-tight;

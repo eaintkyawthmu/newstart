@@ -20,7 +20,7 @@ const LessonMainContent: React.FC<LessonMainContentProps> = ({ lesson }) => {
           <iframe
             src={`https://www.youtube.com/embed/${lesson.youtubeVideoId}?rel=0&modestbranding=1&fs=1&cc_load_policy=0&iv_load_policy=3&autohide=0&controls=1&showinfo=0`}
             title={lesson.title}
-            className="w-full h-full rounded-lg shadow-sm border-0 hover-lift"
+            className="w-full h-full rounded-lg shadow-sm border-0"
             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
             allowFullScreen
             loading="lazy"
@@ -37,7 +37,7 @@ const LessonMainContent: React.FC<LessonMainContentProps> = ({ lesson }) => {
           <video
             src={lesson.selfHostedVideoUrl}
             controls
-            className="w-full h-full rounded-lg shadow-sm hover-lift"
+            className="w-full h-full rounded-lg shadow-sm"
             preload="metadata"
             poster="" // You can add a poster image URL here if available
           >
@@ -77,7 +77,7 @@ const LessonMainContent: React.FC<LessonMainContentProps> = ({ lesson }) => {
     
     return (
       <div className="space-y-6">
-        <div className="prose max-w-none overflow-x-auto">
+        <div className="prose prose-sm md:prose-base max-w-none w-full">
           <PortableText value={Array.isArray(exercise.description) ? exercise.description : [exercise.description]} />
         </div>
         
@@ -92,7 +92,7 @@ const LessonMainContent: React.FC<LessonMainContentProps> = ({ lesson }) => {
                 <h4 className="font-medium text-gray-800 mb-2">
                   {language === 'en' ? `Step ${index + 1}` : `အဆင့် ${index + 1}`}
                 </h4>
-                <div className="prose max-w-none text-gray-700 overflow-x-auto">
+                <div className="prose prose-sm md:prose-base max-w-none w-full text-gray-700">
                   <PortableText value={Array.isArray(step.instruction) ? step.instruction : [step.instruction]} />
                 </div>
                 
@@ -128,7 +128,7 @@ const LessonMainContent: React.FC<LessonMainContentProps> = ({ lesson }) => {
         {renderVideoContent()}
         
         {lesson.content && (
-          <div className="prose prose-sm md:prose-base max-w-none overflow-x-auto animate-slide-up">
+          <div className="prose prose-sm md:prose-base max-w-none w-full animate-slide-up">
             <PortableText value={Array.isArray(lesson.content) ? lesson.content : [lesson.content]} />
           </div>
         )}
@@ -138,7 +138,7 @@ const LessonMainContent: React.FC<LessonMainContentProps> = ({ lesson }) => {
     return renderExerciseContent();
   } else {
     return (
-      <div className="prose prose-sm md:prose-base max-w-none overflow-x-auto animate-fade-in">
+      <div className="prose prose-sm md:prose-base max-w-none w-full animate-fade-in">
         <PortableText value={Array.isArray(lesson.content) ? lesson.content : [lesson.content]} />
       </div>
     );

@@ -20,7 +20,7 @@ const LessonIntroContent: React.FC<LessonIntroContentProps> = ({
     <div className="space-y-6 animate-fade-in">
       {/* Introduction */}
       {lesson.introduction && (
-        <div className="prose max-w-none overflow-x-auto animate-slide-up">
+        <div className="prose prose-sm md:prose-base max-w-none w-full animate-slide-up">
           <PortableText value={Array.isArray(lesson.introduction) ? lesson.introduction : [lesson.introduction]} />
         </div>
       )}
@@ -47,7 +47,7 @@ const LessonIntroContent: React.FC<LessonIntroContentProps> = ({
                 />
                 <div 
                   id={`task-${deliverable._key}-description`}
-                  className={`text-gray-700 overflow-x-auto transition-all duration-200 ${
+                  className={`text-gray-700 transition-all duration-200 ${
                     completedTasks.includes(deliverable._key) ? 'line-through text-gray-500' : ''
                   }`}
                 >

@@ -141,7 +141,7 @@ const LessonQuizContent: React.FC<LessonQuizContentProps> = ({
         
         {/* Quiz scenario if available */}
         {lesson.quiz.scenario && (
-          <div className="mb-4 prose max-w-none text-blue-700 text-sm">
+          <div className="mb-4 prose prose-sm max-w-none text-blue-700">
             <PortableText value={Array.isArray(lesson.quiz.scenario) ? lesson.quiz.scenario : [lesson.quiz.scenario]} />
           </div>
         )}

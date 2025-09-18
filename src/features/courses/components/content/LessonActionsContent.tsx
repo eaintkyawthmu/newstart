@@ -39,7 +39,9 @@ const LessonActionsContent: React.FC<LessonActionsContentProps> = ({
                 <div className={`text-gray-700 text-sm overflow-x-auto transition-all duration-200 ${
                   completedTasks.includes(task._key) ? 'line-through text-gray-500' : ''
                 }`}>
-                  <PortableText value={Array.isArray(task.description) ? task.description : [task.description]} />
+                  <div className="prose prose-sm max-w-none">
+                    <PortableText value={Array.isArray(task.description) ? task.description : [task.description]} />
+                  </div>
                 </div>
                 {!task.isOptional && (
                   <span className="ml-auto px-2 py-0.5 bg-red-100 text-red-800 text-xs rounded-full flex-shrink-0 animate-bounce-gentle">

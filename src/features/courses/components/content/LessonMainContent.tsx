@@ -77,67 +77,67 @@ const LessonMainContent: React.FC<LessonMainContentProps> = ({ lesson }) => {
   }
 
   return (
-    <div className="w-full max-w-full">
+    <div className="w-full max-w-full break-words overflow-x-visible">
       {/* Video Content */}
       {renderVideoContent()}
       
       {/* Main Content */}
-      <div className="w-full max-w-full px-1 sm:px-4">
-        <div className="prose prose-sm sm:prose-base max-w-none w-full break-words overflow-wrap-break-word hyphens-auto">
+      <div className="w-full max-w-full px-3 sm:px-4 break-words overflow-x-visible">
+        <div className="prose prose-sm sm:prose-base max-w-none w-full break-words overflow-x-visible">
           <div className="text-sm sm:text-base leading-relaxed sm:leading-normal">
             <PortableText 
               value={lesson.content} 
               components={{
                 block: {
                   normal: ({ children }) => (
-                    <p className="mb-3 sm:mb-4 text-sm sm:text-base leading-6 sm:leading-7 break-words overflow-wrap-break-word hyphens-auto">
+                    <p className="mb-2 sm:mb-3 text-sm sm:text-base leading-6 sm:leading-7 break-words overflow-x-visible w-full max-w-full">
                       {children}
                     </p>
                   ),
                   h1: ({ children }) => (
-                    <h1 className="text-lg sm:text-2xl font-bold mb-3 sm:mb-4 text-gray-900 break-words">
+                    <h1 className="text-lg sm:text-2xl font-bold mb-2 sm:mb-3 text-gray-900 break-words w-full max-w-full">
                       {children}
                     </h1>
                   ),
                   h2: ({ children }) => (
-                    <h2 className="text-base sm:text-xl font-semibold mb-2 sm:mb-3 text-gray-900 break-words">
+                    <h2 className="text-base sm:text-xl font-semibold mb-2 text-gray-900 break-words w-full max-w-full">
                       {children}
                     </h2>
                   ),
                   h3: ({ children }) => (
-                    <h3 className="text-sm sm:text-lg font-medium mb-2 text-gray-900 break-words">
+                    <h3 className="text-sm sm:text-lg font-medium mb-1 sm:mb-2 text-gray-900 break-words w-full max-w-full">
                       {children}
                     </h3>
                   ),
                 },
                 marks: {
                   strong: ({ children }) => (
-                    <strong className="font-semibold text-gray-900">{children}</strong>
+                    <strong className="font-semibold text-gray-900 break-words">{children}</strong>
                   ),
                   em: ({ children }) => (
-                    <em className="italic text-gray-800">{children}</em>
+                    <em className="italic text-gray-800 break-words">{children}</em>
                   ),
                 },
                 list: {
                   bullet: ({ children }) => (
-                    <ul className="list-disc pl-4 sm:pl-6 mb-3 sm:mb-4 space-y-1 sm:space-y-2">
+                    <ul className="list-disc pl-3 sm:pl-4 mb-2 sm:mb-3 space-y-1 w-full max-w-full">
                       {children}
                     </ul>
                   ),
                   number: ({ children }) => (
-                    <ol className="list-decimal pl-4 sm:pl-6 mb-3 sm:mb-4 space-y-1 sm:space-y-2">
+                    <ol className="list-decimal pl-3 sm:pl-4 mb-2 sm:mb-3 space-y-1 w-full max-w-full">
                       {children}
                     </ol>
                   ),
                 },
                 listItem: {
                   bullet: ({ children }) => (
-                    <li className="text-sm sm:text-base leading-6 sm:leading-7 break-words overflow-wrap-break-word">
+                    <li className="text-sm sm:text-base leading-6 sm:leading-7 break-words w-full max-w-full">
                       {children}
                     </li>
                   ),
                   number: ({ children }) => (
-                    <li className="text-sm sm:text-base leading-6 sm:leading-7 break-words overflow-wrap-break-word">
+                    <li className="text-sm sm:text-base leading-6 sm:leading-7 break-words w-full max-w-full">
                       {children}
                     </li>
                   ),

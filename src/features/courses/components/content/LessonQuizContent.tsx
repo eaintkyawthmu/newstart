@@ -132,7 +132,7 @@ const LessonQuizContent: React.FC<LessonQuizContentProps> = ({
   }
 
   return (
-    <div className="space-y-5">
+    <div className="space-y-3 sm:space-y-5 w-full max-w-full break-words overflow-x-visible">
       <div className="bg-blue-50 border border-blue-100 rounded-lg p-4">
         <h2 className="text-lg font-semibold text-blue-800 mb-3 flex items-center">
           <FileText className="h-5 w-5 mr-2" />
@@ -141,7 +141,7 @@ const LessonQuizContent: React.FC<LessonQuizContentProps> = ({
         
         {/* Quiz scenario if available */}
         {lesson.quiz.scenario && (
-          <div className="mb-3 sm:mb-4 prose prose-sm max-w-none text-blue-700">
+          <div className="mb-3 sm:mb-4 prose prose-sm max-w-none text-blue-700 w-full break-words overflow-x-visible">
             <PortableText value={Array.isArray(lesson.quiz.scenario) ? lesson.quiz.scenario : [lesson.quiz.scenario]} />
           </div>
         )}
@@ -186,7 +186,7 @@ const LessonQuizContent: React.FC<LessonQuizContentProps> = ({
       {lesson.quiz.questions.map((question: any, questionIndex: number) => (
         <div 
           key={questionIndex} 
-          className={`p-3 sm:p-4 rounded-lg border ${
+          className={`p-3 rounded-lg border w-full max-w-full break-words overflow-x-visible ${
             quizSubmitted 
               ? quizResults[questionIndex]?.isCorrect 
                 ? 'bg-green-50 border-green-200' 
@@ -194,16 +194,16 @@ const LessonQuizContent: React.FC<LessonQuizContentProps> = ({
               : 'bg-white border-gray-200'
           }`}
         >
-          <h3 className="text-sm sm:text-base font-medium text-gray-800 mb-2 sm:mb-3">
+          <h3 className="text-sm sm:text-base font-medium text-gray-800 mb-2 w-full max-w-full break-words">
             {questionIndex + 1}. {question.questionText}
           </h3>
           
           {question.questionType === 'multipleChoice' && Array.isArray(question.options) && (
-            <div className="space-y-1 sm:space-y-2">
+            <div className="space-y-1 sm:space-y-2 w-full max-w-full">
               {question.options.map((option: any, optionIndex: number) => (
                 <label 
                   key={optionIndex}
-                  className={`flex items-center p-2 sm:p-3 rounded-lg border ${
+                  className={`flex items-center p-3 rounded-lg border w-full max-w-full break-words ${
                     quizSubmitted
                       ? option.isCorrect
                         ? 'bg-green-100 border-green-300'
@@ -223,7 +223,7 @@ const LessonQuizContent: React.FC<LessonQuizContentProps> = ({
                     className="h-4 w-4 text-blue-600 border-gray-300 focus:ring-blue-500 flex-shrink-0"
                     disabled={quizSubmitted}
                   />
-                  <span className="ml-2 sm:ml-3 text-xs sm:text-sm">{option.text}</span>
+                  <span className="ml-2 text-sm break-words w-full max-w-full">{option.text}</span>
                   
                   {quizSubmitted && option.isCorrect && (
                     <CheckCircle className="ml-auto h-4 w-4 text-green-600 flex-shrink-0" />
@@ -234,11 +234,11 @@ const LessonQuizContent: React.FC<LessonQuizContentProps> = ({
           )}
           
           {question.questionType === 'trueFalse' && (
-            <div className="space-y-1 sm:space-y-2">
+            <div className="space-y-1 sm:space-y-2 w-full max-w-full">
               {[true, false].map((value, index) => (
                 <label 
                   key={index}
-                  className={`flex items-center p-2 sm:p-3 rounded-lg border ${
+                  className={`flex items-center p-3 rounded-lg border w-full max-w-full break-words ${
                     quizSubmitted
                       ? value === question.correctAnswer
                         ? 'bg-green-100 border-green-300'
@@ -258,7 +258,7 @@ const LessonQuizContent: React.FC<LessonQuizContentProps> = ({
                     className="h-4 w-4 text-blue-600 border-gray-300 focus:ring-blue-500 flex-shrink-0"
                     disabled={quizSubmitted}
                   />
-                  <span className="ml-2 sm:ml-3 text-xs sm:text-sm">{value ? 'True' : 'False'}</span>
+                  <span className="ml-2 text-sm break-words">{value ? 'True' : 'False'}</span>
                   
                   {quizSubmitted && value === question.correctAnswer && (
                     <CheckCircle className="ml-auto h-4 w-4 text-green-600 flex-shrink-0" />
@@ -269,8 +269,8 @@ const LessonQuizContent: React.FC<LessonQuizContentProps> = ({
           )}
           
           {quizSubmitted && quizResults[questionIndex]?.feedback && (
-            <div className="mt-2 sm:mt-3 p-2 sm:p-3 bg-gray-50 rounded-lg border border-gray-200">
-              <p className="text-gray-700 text-xs sm:text-sm">
+            <div className="mt-2 sm:mt-3 p-3 bg-gray-50 rounded-lg border border-gray-200 w-full max-w-full break-words overflow-x-visible">
+              <p className="text-gray-700 text-sm break-words w-full max-w-full">
                 <strong>{language === 'en' ? 'Feedback:' : 'တုံ့ပြန်ချက်:'}</strong> {quizResults[questionIndex].feedback}
               </p>
             </div>
@@ -285,17 +285,17 @@ const LessonQuizContent: React.FC<LessonQuizContentProps> = ({
             disabled={userAnswers.some(answer => 
               !answer || (answer.selectedOptionIndex === undefined && answer.trueFalseAnswer === undefined)
             )}
-            className="px-4 sm:px-6 py-2 sm:py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center text-sm sm:text-base"
+            className="px-4 sm:px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center text-sm sm:text-base"
           >
-            <FileText className="h-4 w-4 sm:h-5 sm:w-5 mr-1 sm:mr-2" />
+            <FileText className="h-4 w-4 mr-2" />
             {language === 'en' ? 'Submit Quiz' : 'ဆစ်ကို တင်သွင်းရန်'}
           </button>
         ) : (
           <button
             onClick={handleRetakeQuiz}
-            className="px-4 sm:px-6 py-2 sm:py-3 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors flex items-center text-sm sm:text-base"
+            className="px-4 sm:px-6 py-3 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors flex items-center text-sm sm:text-base"
           >
-            <RefreshCw className="h-4 w-4 sm:h-5 sm:w-5 mr-1 sm:mr-2" />
+            <RefreshCw className="h-4 w-4 mr-2" />
             {language === 'en' ? 'Retake Quiz' : 'ဆစ်ကို ပြန်လည်ဖြေဆိုရန်'}
           </button>
         )}

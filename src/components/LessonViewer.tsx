@@ -266,27 +266,27 @@ const LessonViewer: React.FC = () => {
         return (
           <div className="space-y-6">
             {/* Introduction */}
-            <div className="prose prose-sm md:prose-base max-w-none w-full mobile-text">
+            <div className="prose prose-sm md:prose-base max-w-none w-full break-words overflow-x-visible">
               <PortableText value={sampleLesson.introduction} />
             </div>
             
             {/* Measurable Deliverables */}
-            <div className="bg-blue-50 border border-blue-100 rounded-lg p-5">
+            <div className="bg-blue-50 border border-blue-100 rounded-lg p-3 sm:p-5 w-full max-w-full break-words overflow-x-visible">
               <h2 className="font-semibold text-blue-800 mb-4 flex items-center">
                 <Target className="h-5 w-5 mr-2" />
                 What You'll Achieve
               </h2>
               <div className="space-y-3">
                 {sampleLesson.measurableDeliverables.map((deliverable) => (
-                  <label key={deliverable._key} className="flex items-start space-x-3 cursor-pointer">
+                  <label key={deliverable._key} className="flex items-start space-x-2 cursor-pointer w-full max-w-full break-words overflow-x-visible">
                     <input
                       type="checkbox"
                       checked={completedTasks.includes(deliverable._key)}
                       onChange={(e) => handleTaskCompletion(deliverable._key, e.target.checked)}
-                      className="h-5 w-5 text-blue-600 rounded border-gray-300 focus:ring-blue-500 flex-shrink-0 mt-1"
+                      className="h-4 w-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500 flex-shrink-0 mt-1"
                     />
-                    <div className={`text-gray-700 ${completedTasks.includes(deliverable._key) ? 'line-through text-gray-500' : ''}`}>
-                      <div className="prose prose-sm max-w-none mobile-text">
+                    <div className={`text-gray-700 w-full max-w-full break-words overflow-x-visible ${completedTasks.includes(deliverable._key) ? 'line-through text-gray-500' : ''}`}>
+                      <div className="prose prose-sm max-w-none w-full break-words overflow-x-visible">
                         <PortableText value={deliverable.description} />
                       </div>
                     </div>
@@ -306,7 +306,7 @@ const LessonViewer: React.FC = () => {
         return (
           <div className="space-y-6">
             {/* Main Content */}
-            <div className="prose prose-sm md:prose-base max-w-none w-full mobile-text">
+            <div className="prose prose-sm md:prose-base max-w-none w-full break-words overflow-x-visible">
               <PortableText value={sampleLesson.content} />
             </div>
           </div>
@@ -316,21 +316,21 @@ const LessonViewer: React.FC = () => {
         return (
           <div className="space-y-6">
             {/* Key Takeaways */}
-            <div className="bg-green-50 border border-green-100 rounded-lg p-5">
+            <div className="bg-green-50 border border-green-100 rounded-lg p-3 sm:p-5 w-full max-w-full break-words overflow-x-visible">
               <h2 className="font-semibold text-green-800 mb-4 flex items-center">
                 <Lightbulb className="h-5 w-5 mr-2" />
                 Key Takeaways
               </h2>
-              <div className="space-y-2 text-green-700 prose prose-sm max-w-none mobile-text">
+              <div className="space-y-2 text-green-700 prose prose-sm max-w-none w-full break-words overflow-x-visible">
                 <PortableText value={sampleLesson.keyTakeaways} />
               </div>
             </div>
             
             {/* Reflection Prompts */}
             {sampleLesson.reflectionPrompts && (
-              <div className="bg-amber-50 border border-amber-100 rounded-lg p-5 mt-6">
+              <div className="bg-amber-50 border border-amber-100 rounded-lg p-3 sm:p-5 mt-6 w-full max-w-full break-words overflow-x-visible">
                 <h2 className="font-semibold text-amber-800 mb-4">Reflect & Grow</h2>
-                <div className="space-y-3 text-amber-700 prose prose-sm max-w-none mobile-text">
+                <div className="space-y-3 text-amber-700 prose prose-sm max-w-none w-full break-words overflow-x-visible">
                   <PortableText value={sampleLesson.reflectionPrompts} />
                 </div>
               </div>
@@ -342,22 +342,22 @@ const LessonViewer: React.FC = () => {
         return (
           <div className="space-y-6">
             {/* Action Items */}
-            <div className="bg-purple-50 border border-purple-100 rounded-lg p-5">
+            <div className="bg-purple-50 border border-purple-100 rounded-lg p-3 sm:p-5 w-full max-w-full break-words overflow-x-visible">
               <h2 className="font-semibold text-purple-800 mb-4 flex items-center">
                 <Target className="h-5 w-5 mr-2" />
                 Your Action Plan
               </h2>
               <div className="space-y-3">
                 {sampleLesson.actionableTasks.map((task) => (
-                  <label key={task._key} className="flex items-start space-x-3 cursor-pointer">
+                  <label key={task._key} className="flex items-start space-x-2 cursor-pointer w-full max-w-full break-words overflow-x-visible">
                     <input
                       type="checkbox"
                       checked={completedTasks.includes(task._key)}
                       onChange={(e) => handleTaskCompletion(task._key, e.target.checked)}
-                      className="h-5 w-5 text-purple-600 rounded border-gray-300 focus:ring-purple-500 flex-shrink-0 mt-1"
+                      className="h-4 w-4 text-purple-600 rounded border-gray-300 focus:ring-purple-500 flex-shrink-0 mt-1"
                     />
-                    <div className={`text-gray-700 ${completedTasks.includes(task._key) ? 'line-through text-gray-500' : ''}`}>
-                      <div className="prose prose-sm max-w-none mobile-text">
+                    <div className={`text-gray-700 w-full max-w-full break-words overflow-x-visible ${completedTasks.includes(task._key) ? 'line-through text-gray-500' : ''}`}>
+                      <div className="prose prose-sm max-w-none w-full break-words overflow-x-visible">
                         <PortableText value={task.description} />
                       </div>
                     </div>
@@ -373,7 +373,7 @@ const LessonViewer: React.FC = () => {
 
             {/* Resources */}
             {sampleLesson.lessonResources && sampleLesson.lessonResources.length > 0 && (
-              <div className="border border-gray-200 rounded-lg p-5 mt-6">
+              <div className="border border-gray-200 rounded-lg p-3 sm:p-5 mt-6 w-full max-w-full break-words overflow-x-visible">
                 <h2 className="font-semibold text-gray-800 mb-4">Additional Resources</h2>
                 <div className="space-y-3">
                   {sampleLesson.lessonResources.map((resource, index) => (
@@ -382,17 +382,17 @@ const LessonViewer: React.FC = () => {
                       href={resource.url}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="flex items-center p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
+                      className="flex items-center p-2 sm:p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors w-full max-w-full break-words overflow-x-visible"
                     >
                       {resource.type === 'download' ? (
                         <Download className="h-5 w-5 text-gray-500 mr-3" />
                       ) : (
                         <ExternalLink className="h-5 w-5 text-gray-500 mr-3" />
                       )}
-                      <div>
+                      <div className="w-full max-w-full break-words overflow-x-visible">
                         <p className="font-medium text-gray-800">{resource.title}</p>
                         {resource.description && (
-                          <p className="text-sm text-gray-600">{resource.description}</p>
+                          <p className="text-sm text-gray-600 break-words">{resource.description}</p>
                         )}
                       </div>
                     </a>
@@ -406,7 +406,7 @@ const LessonViewer: React.FC = () => {
       case 'quiz':
         return (
           <div className="space-y-6">
-            <div className="bg-blue-50 border border-blue-100 rounded-lg p-5">
+            <div className="bg-blue-50 border border-blue-100 rounded-lg p-3 sm:p-5 w-full max-w-full break-words overflow-x-visible">
               <h2 className="text-lg font-semibold text-blue-800 mb-3 flex items-center">
                 <FileText className="h-5 w-5 mr-2" />
                 {sampleLesson.quiz?.title || 'Knowledge Check'}
@@ -416,7 +416,7 @@ const LessonViewer: React.FC = () => {
               </p>
               
               {quizSubmitted && (
-                <div className={`mt-4 p-4 rounded-lg ${
+                <div className={`mt-4 p-3 sm:p-4 rounded-lg w-full max-w-full break-words overflow-x-visible ${
                   totalScore / sampleLesson.quiz.questions.length >= 0.7 
                     ? 'bg-green-100 border border-green-200' 
                     : 'bg-amber-100 border border-amber-200'
@@ -447,7 +447,7 @@ const LessonViewer: React.FC = () => {
             {sampleLesson.quiz?.questions.map((question, questionIndex) => (
               <div 
                 key={questionIndex} 
-                className={`p-5 rounded-lg border ${
+                className={`p-3 sm:p-5 rounded-lg border w-full max-w-full break-words overflow-x-visible ${
                   quizSubmitted 
                     ? quizResults[questionIndex]?.isCorrect 
                       ? 'bg-green-50 border-green-200' 
@@ -455,16 +455,16 @@ const LessonViewer: React.FC = () => {
                     : 'bg-white border-gray-200'
                 }`}
               >
-                <h3 className="text-base font-medium text-gray-800 mb-3">
+                <h3 className="text-base font-medium text-gray-800 mb-3 w-full max-w-full break-words">
                   {questionIndex + 1}. {question.questionText}
                 </h3>
                 
                 {question.questionType === 'multipleChoice' && (
-                  <div className="space-y-2">
+                  <div className="space-y-2 w-full max-w-full">
                     {question.options.map((option, optionIndex) => (
                       <label 
                         key={optionIndex}
-                        className={`flex items-center p-3 rounded-lg border ${
+                        className={`flex items-center p-2 sm:p-3 rounded-lg border w-full max-w-full break-words overflow-x-visible ${
                           quizSubmitted
                             ? option.isCorrect
                               ? 'bg-green-100 border-green-300'
@@ -484,7 +484,7 @@ const LessonViewer: React.FC = () => {
                           className="h-4 w-4 text-blue-600 border-gray-300 focus:ring-blue-500"
                           disabled={quizSubmitted}
                         />
-                        <span className="ml-3 text-sm">{option.text}</span>
+                        <span className="ml-2 text-sm w-full max-w-full break-words">{option.text}</span>
                         
                         {quizSubmitted && option.isCorrect && (
                           <CheckCircle className="ml-auto h-4 w-4 text-green-600" />
@@ -495,11 +495,11 @@ const LessonViewer: React.FC = () => {
                 )}
                 
                 {question.questionType === 'trueFalse' && (
-                  <div className="space-y-2">
+                  <div className="space-y-2 w-full max-w-full">
                     {[true, false].map((value, index) => (
                       <label 
                         key={index}
-                        className={`flex items-center p-3 rounded-lg border ${
+                        className={`flex items-center p-2 sm:p-3 rounded-lg border w-full max-w-full break-words overflow-x-visible ${
                           quizSubmitted
                             ? value === question.correctAnswer
                               ? 'bg-green-100 border-green-300'
@@ -519,7 +519,7 @@ const LessonViewer: React.FC = () => {
                           className="h-4 w-4 text-blue-600 border-gray-300 focus:ring-blue-500"
                           disabled={quizSubmitted}
                         />
-                        <span className="ml-3 text-sm">{value ? 'True' : 'False'}</span>
+                        <span className="ml-2 text-sm w-full max-w-full break-words">{value ? 'True' : 'False'}</span>
                         
                         {quizSubmitted && value === question.correctAnswer && (
                           <CheckCircle className="ml-auto h-4 w-4 text-green-600" />
@@ -530,8 +530,8 @@ const LessonViewer: React.FC = () => {
                 )}
                 
                 {quizSubmitted && quizResults[questionIndex]?.feedback && (
-                  <div className="mt-3 p-3 bg-gray-50 rounded-lg border border-gray-200">
-                    <p className="text-gray-700 text-sm">
+                  <div className="mt-3 p-2 sm:p-3 bg-gray-50 rounded-lg border border-gray-200 w-full max-w-full break-words overflow-x-visible">
+                    <p className="text-gray-700 text-sm w-full max-w-full break-words">
                       <strong>Feedback:</strong> {quizResults[questionIndex].feedback}
                     </p>
                   </div>
@@ -544,7 +544,7 @@ const LessonViewer: React.FC = () => {
                 <button
                   onClick={handleSubmitQuiz}
                   disabled={userAnswers.some(answer => answer.answer === undefined)}
-                  className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center"
+                  className="px-4 sm:px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center text-sm sm:text-base"
                 >
                   <FileText className="h-5 w-5 mr-2" />
                   Submit Quiz
@@ -552,7 +552,7 @@ const LessonViewer: React.FC = () => {
               ) : (
                 <button
                   onClick={handleRetakeQuiz}
-                  className="px-6 py-3 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors flex items-center"
+                  className="px-4 sm:px-6 py-3 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors flex items-center text-sm sm:text-base"
                 >
                   <RefreshCw className="h-5 w-5 mr-2" />
                   Retake Quiz
@@ -629,7 +629,7 @@ const LessonViewer: React.FC = () => {
 
       {/* Page Content */}
       <div 
-        className="bg-white rounded-lg border border-gray-200 p-3 sm:p-6 shadow-sm mb-6 overflow-y-auto max-h-[70vh] animate-fade-in w-full max-w-full break-words overflow-x-visible"
+        className="bg-white rounded-lg border border-gray-200 p-2 sm:p-6 shadow-sm mb-6 overflow-y-auto max-h-[70vh] animate-fade-in w-full max-w-full break-words overflow-x-visible"
         role="tabpanel"
         id={`${currentPage}-panel`}
         aria-labelledby={`${currentPage}-tab`}

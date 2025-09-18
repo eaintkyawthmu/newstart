@@ -237,13 +237,17 @@ const LessonDetail = () => {
 
   const toggleSection = (sectionId: string) => {
     setExpandedSections(prev => {
-      const newSet = new Set(prev);
-      if (newSet.has(sectionId)) {
-        newSet.delete(sectionId);
+      const newSet = new Set();
+      
+      // If the clicked section is already expanded, collapse it (close all)
+      if (prev.has(sectionId)) {
+        // Return empty set to close all sections
+        return newSet;
       } else {
+        // Open only the clicked section (close all others)
         newSet.add(sectionId);
+        return newSet;
       }
-      return newSet;
     });
   };
 

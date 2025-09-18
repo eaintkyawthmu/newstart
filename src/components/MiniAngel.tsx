@@ -133,43 +133,47 @@ const MiniAngel = () => {
   return (
     <div className="fixed bottom-4 right-4 z-50">
       {isOpen ? (
-        <div className={`bg-white rounded-lg shadow-xl border border-gray-200 flex flex-col transition-all duration-300 ${
+        <div className={`bg-white rounded-lg shadow-xl border border-gray-200 flex flex-col transition-all duration-300 animate-scale-in ${
           isMinimized 
             ? 'w-80 h-16' 
             : 'w-[90vw] max-w-[400px] h-[70vh] max-h-[600px]'
-        }`}>
+        }`}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="mini-angel-title"
+        >
           {/* Header */}
           <div className="p-4 bg-blue-600 text-white rounded-t-lg flex justify-between items-center">
             <div className="flex items-center">
-              <MessageSquare className="h-5 w-5 mr-2" />
-              <span className="font-medium">Mini Angel</span>
+              <MessageSquare className="h-5 w-5 mr-2" aria-hidden="true" />
+              <span id="mini-angel-title" className="font-medium">Mini Angel</span>
             </div>
             <div className="flex items-center space-x-2">
               <button
                 onClick={openFullChat}
-                className="text-white hover:text-gray-200 transition-colors p-1"
+                className="text-white hover:text-gray-200 transition-all duration-200 p-1 rounded focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-blue-600"
                 aria-label="Open full chat"
                 title={language === 'en' ? 'Open full chat' : 'စကားပြောမှုအပြည့်အစုံ ဖွင့်ရန်'}
               >
-                <ExternalLink className="h-4 w-4" />
+                <ExternalLink className="h-4 w-4" aria-hidden="true" />
               </button>
               <button
                 onClick={() => setIsMinimized(!isMinimized)}
-                className="text-white hover:text-gray-200 transition-colors p-1"
+                className="text-white hover:text-gray-200 transition-all duration-200 p-1 rounded focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-blue-600"
                 aria-label={isMinimized ? "Maximize" : "Minimize"}
               >
                 {isMinimized ? (
-                  <Maximize2 className="h-4 w-4" />
+                  <Maximize2 className="h-4 w-4" aria-hidden="true" />
                 ) : (
-                  <Minimize2 className="h-4 w-4" />
+                  <Minimize2 className="h-4 w-4" aria-hidden="true" />
                 )}
               </button>
               <button
                 onClick={() => setIsOpen(false)}
-                className="text-white hover:text-gray-200 transition-colors p-1"
+                className="text-white hover:text-gray-200 transition-all duration-200 p-1 rounded focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-blue-600"
                 aria-label="Close"
               >
-                <X className="h-4 w-4" />
+                <X className="h-4 w-4" aria-hidden="true" />
               </button>
             </div>
           </div>
@@ -180,10 +184,13 @@ const MiniAngel = () => {
               <div 
                 ref={messagesContainerRef}
                 className="flex-1 overflow-y-auto p-4 space-y-4 hide-scrollbar"
+                role="log"
+                aria-live="polite"
+                aria-label="Chat messages"
               >
                 {messages.length === 0 && (
-                  <div className="text-center text-gray-500 py-8">
-                    <MessageSquare className="h-12 w-12 mx-auto mb-4 text-gray-300" />
+                  <div className="text-center text-gray-500 py-8 animate-fade-in">
+                    <MessageSquare className="h-12 w-12 mx-auto mb-4 text-gray-300" aria-hidden="true" />
                     <p className="text-sm">
                       {language === 'en' 
                         ? 'Hi! I\'m Mini Angel. Ask me anything about personal finance in the U.S.'
@@ -191,7 +198,7 @@ const MiniAngel = () => {
                     </p>
                     <button
                       onClick={openFullChat}
-                      className="mt-3 text-blue-600 hover:text-blue-700 text-sm underline"
+                      className="mt-3 text-blue-600 hover:text-blue-700 text-sm underline focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 rounded"
                     >
                       {language === 'en' ? 'Open full chat' : 'စကားပြောမှုအပြည့်အစုံ ဖွင့်ရန်'}
                     </button>
@@ -201,10 +208,10 @@ const MiniAngel = () => {
                 {messages.map((msg, idx) => (
                   <div
                     key={idx}
-                    className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
+                    className={`flex animate-slide-up ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
                   >
                     <div
-                      className={`max-w-[85%] rounded-lg p-3 ${
+                      className={`max-w-[85%] rounded-lg p-3 transition-all duration-200 ${
                         msg.role === 'user'
                           ? 'bg-blue-600 text-white'
                           : 'bg-gray-100 text-gray-800'
@@ -218,9 +225,10 @@ const MiniAngel = () => {
                 ))}
                 
                 {isLoading && (
-                  <div className="flex justify-start">
+                  <div className="flex justify-start animate-slide-up">
                     <div className="bg-gray-100 rounded-lg p-3">
-                      <Loader2 className="h-5 w-5 animate-spin text-gray-500" />
+                      <Loader2 className="h-5 w-5 animate-spin text-gray-500" aria-hidden="true" />
+                      <span className="sr-only">Mini Angel is thinking...</span>
                     </div>
                   </div>
                 )}
@@ -228,7 +236,7 @@ const MiniAngel = () => {
               </div>
 
               {/* Input */}
-              <form onSubmit={handleSubmit} className="p-4 border-t border-gray-200">
+              <form onSubmit={handleSubmit} className="p-4 border-t border-gray-200" role="search">
                 <div className="flex space-x-2">
                   <textarea
                     ref={inputRef}
@@ -238,17 +246,19 @@ const MiniAngel = () => {
                     placeholder={language === 'en' 
                       ? "Ask me about personal finance..." 
                       : "ကိုယ်ရေးကိုယ်တာ ငွေကြေးအကြောင်း မေးပါ..."}
-                    className="flex-1 resize-none rounded-lg border border-gray-300 p-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
+                    className="flex-1 resize-none rounded-lg border border-gray-300 p-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm transition-all duration-200"
                     rows={1}
                     style={{ minHeight: '44px' }}
+                    aria-label="Type your question for Mini Angel"
                   />
                   <button
                     type="submit"
                     disabled={isLoading || !input.trim()}
-                    className="bg-blue-600 text-white rounded-lg p-3 hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex-shrink-0"
+                    className="bg-blue-600 text-white rounded-lg p-3 hover:bg-blue-700 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex-shrink-0 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 press-effect"
                     style={{ minHeight: '44px', minWidth: '44px' }}
+                    aria-label="Send message"
                   >
-                    <Send className="h-5 w-5" />
+                    <Send className="h-5 w-5" aria-hidden="true" />
                   </button>
                 </div>
               </form>
@@ -258,10 +268,10 @@ const MiniAngel = () => {
       ) : (
         <button
           onClick={() => setIsOpen(true)}
-          className="bg-blue-600 text-white rounded-full shadow-lg hover:bg-blue-700 transition-colors flex items-center p-3 md:px-6 md:space-x-3 focus-ring min-h-[56px] min-w-[56px]"
+          className="bg-blue-600 text-white rounded-full shadow-lg hover:bg-blue-700 transition-all duration-200 flex items-center p-3 md:px-6 md:space-x-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 min-h-[56px] min-w-[56px] hover-lift press-effect animate-bounce-gentle"
           aria-label="Open Mini Angel chat assistant"
         >
-          <MessageSquare className="h-6 w-6" />
+          <MessageSquare className="h-6 w-6" aria-hidden="true" />
           <span className="hidden md:block font-medium">Ask Mini Angel 💬</span>
         </button>
       )}

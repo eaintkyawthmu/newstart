@@ -16,11 +16,11 @@ const LessonMainContent: React.FC<LessonMainContentProps> = ({ lesson }) => {
     // Handle YouTube videos with proper embed configuration
     if (lesson.videoType === 'youtube' && lesson.youtubeVideoId) {
       return (
-        <div className="aspect-video w-full mb-5">
+        <div className="aspect-video w-full mb-5 animate-fade-in">
           <iframe
             src={`https://www.youtube.com/embed/${lesson.youtubeVideoId}?rel=0&modestbranding=1&fs=1&cc_load_policy=0&iv_load_policy=3&autohide=0&controls=1&showinfo=0`}
             title={lesson.title}
-            className="w-full h-full rounded-lg shadow-sm border-0"
+            className="w-full h-full rounded-lg shadow-sm border-0 hover-lift"
             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
             allowFullScreen
             loading="lazy"
@@ -33,11 +33,11 @@ const LessonMainContent: React.FC<LessonMainContentProps> = ({ lesson }) => {
     // Handle self-hosted videos
     if (lesson.videoType === 'selfhosted' && lesson.selfHostedVideoUrl) {
       return (
-        <div className="aspect-video w-full mb-5">
+        <div className="aspect-video w-full mb-5 animate-fade-in">
           <video
             src={lesson.selfHostedVideoUrl}
             controls
-            className="w-full h-full rounded-lg shadow-sm"
+            className="w-full h-full rounded-lg shadow-sm hover-lift"
             preload="metadata"
             poster="" // You can add a poster image URL here if available
           >
@@ -53,9 +53,9 @@ const LessonMainContent: React.FC<LessonMainContentProps> = ({ lesson }) => {
 
     // Fallback for video lessons without proper video configuration
     return (
-      <div className="aspect-video w-full mb-5 bg-gray-100 rounded-lg flex items-center justify-center border-2 border-dashed border-gray-300">
+      <div className="aspect-video w-full mb-5 bg-gray-100 rounded-lg flex items-center justify-center border-2 border-dashed border-gray-300 animate-fade-in">
         <div className="text-center p-5">
-          <PlayCircle className="h-12 w-12 text-gray-400 mx-auto mb-3" />
+          <PlayCircle className="h-12 w-12 text-gray-400 mx-auto mb-3" aria-hidden="true" />
           <p className="text-gray-600 font-medium">
             {language === 'en' ? 'Video content not available' : 'ဗီဒီယိုအကြောင်းအရာ မရရှိနိုင်ပါ'}
           </p>
@@ -124,11 +124,11 @@ const LessonMainContent: React.FC<LessonMainContentProps> = ({ lesson }) => {
 
   if (lesson.type === 'video') {
     return (
-      <div className="space-y-5">
+      <div className="space-y-5 animate-fade-in">
         {renderVideoContent()}
         
         {lesson.content && (
-          <div className="prose prose-sm md:prose-base max-w-none overflow-x-auto">
+          <div className="prose prose-sm md:prose-base max-w-none overflow-x-auto animate-slide-up">
             <PortableText value={Array.isArray(lesson.content) ? lesson.content : [lesson.content]} />
           </div>
         )}
@@ -138,7 +138,7 @@ const LessonMainContent: React.FC<LessonMainContentProps> = ({ lesson }) => {
     return renderExerciseContent();
   } else {
     return (
-      <div className="prose prose-sm md:prose-base max-w-none overflow-x-auto">
+      <div className="prose prose-sm md:prose-base max-w-none overflow-x-auto animate-fade-in">
         <PortableText value={Array.isArray(lesson.content) ? lesson.content : [lesson.content]} />
       </div>
     );

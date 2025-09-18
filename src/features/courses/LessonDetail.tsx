@@ -466,9 +466,9 @@ const LessonDetail = () => {
   const currentPageIndex = availablePages.indexOf(currentPage);
 
   return (
-    <div className="w-full min-h-screen overflow-x-hidden bg-gray-50" role="main">
+    <div className="w-full min-h-screen overflow-x-hidden bg-gray-50" role="main" aria-labelledby="lesson-title">
       <div className="max-w-6xl mx-auto">
-        <div className="bg-white rounded-lg border border-gray-200 shadow-sm" role="article" aria-labelledby="lesson-title">
+        <div className="bg-white rounded-lg border border-gray-200 shadow-sm animate-fade-in" role="article">
           {/* Mobile Header */}
           <LessonHeader 
             title={lesson.title}
@@ -503,28 +503,31 @@ const LessonDetail = () => {
             onTouchMove={handleTouchMove}
             onTouchEnd={handleTouchEnd}
             ref={contentRef}
-            role="region"
+            role="tabpanel"
+            id={`${currentPage}-panel`}
             aria-label="Lesson content"
           >
             {/* Desktop Header - Hidden on Mobile */}
-            <div className="hidden md:flex items-center justify-between mb-6">
+            <div className="hidden md:flex items-center justify-between mb-6 animate-slide-down">
               <button
                 onClick={() => navigate(`/courses/${pathSlug}`)}
-                className="flex items-center text-gray-600 hover:text-gray-800 transition-colors"
+                className="flex items-center text-gray-600 hover:text-gray-800 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 rounded-lg p-2 press-effect"
+                aria-label={language === 'en' ? 'Return to course overview' : 'သင်တန်းခြုံငုံသုံးသပ်ချက်သို့ ပြန်သွားရန်'}
               >
-                <ArrowLeft className="h-5 w-5 mr-2" />
+                <ArrowLeft className="h-5 w-5 mr-2" aria-hidden="true" />
                 {language === 'en' ? 'Back to Course' : 'သင်တန်းသို့ ပြန်သွားရန်'}
               </button>
 
               <button
                 onClick={toggleCompletion}
-                className={`flex items-center px-4 py-2 rounded-lg transition-colors ${
+                className={`flex items-center px-4 py-2 rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 press-effect ${
                   completed
-                    ? 'bg-green-100 text-green-700 hover:bg-green-200'
-                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                    ? 'bg-green-100 text-green-700 hover:bg-green-200 focus:ring-green-500'
+                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200 focus:ring-blue-500'
                 }`}
+                aria-pressed={completed}
               >
-                <Award className="h-5 w-5 mr-2" />
+                <Award className="h-5 w-5 mr-2" aria-hidden="true" />
                 {completed
                   ? (language === 'en' ? 'Completed' : 'ပြီးဆုံး')
                   : (language === 'en' ? 'Mark as Complete' : 'ပြီးဆုံးအဖြစ် မှတ်သားရန်')}
@@ -552,12 +555,12 @@ const LessonDetail = () => {
             />
 
             {/* Page Navigation Dots - Mobile Only */}
-            <div className="md:hidden flex justify-center mt-6 space-x-2">
+            <div className="md:hidden flex justify-center mt-6 space-x-2 animate-fade-in">
               {availablePages.map((page, index) => (
                 <button
                   key={page}
                   onClick={() => goToPage(page)}
-                  className={`w-2.5 h-2.5 rounded-full ${
+                  className={`w-2.5 h-2.5 rounded-full transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 ${
                     currentPage === page ? 'bg-blue-600' : 'bg-gray-300'
                   }`}
                   aria-label={`Go to page ${index + 1}`}
@@ -566,49 +569,53 @@ const LessonDetail = () => {
             </div>
 
             {/* Page Navigation Buttons */}
-            <div className="flex justify-between mt-6 mb-4">
+            <div className="flex justify-between mt-6 mb-4 animate-fade-in">
               <button
                 onClick={handlePrevPage}
                 disabled={currentPageIndex === 0}
-                className={`flex items-center px-4 py-2 rounded-lg border border-gray-300 text-gray-700 ${
+                className={`flex items-center px-4 py-2 rounded-lg border border-gray-300 text-gray-700 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 min-h-[44px] ${
                   currentPageIndex === 0 
                     ? 'opacity-50 cursor-not-allowed' 
-                    : 'hover:bg-gray-50'
+                    : 'hover:bg-gray-50 press-effect'
                 }`}
+                aria-label={language === 'en' ? 'Go to previous section' : 'ယခင်အပိုင်းသို့ သွားရန်'}
               >
-                <ChevronLeft className="h-5 w-5 mr-1" />
+                <ChevronLeft className="h-5 w-5 mr-1" aria-hidden="true" />
                 <span className="hidden md:inline">{language === 'en' ? 'Previous' : 'နောက်သို့'}</span>
               </button>
 
               {currentPageIndex === availablePages.length - 1 ? (
-                <div className="flex space-x-3">
+                <div className="flex space-x-3 animate-slide-up">
                   {nextLesson ? (
                     <button
                       onClick={() => navigateToLesson(nextLesson.slug)}
-                      className="flex items-center px-4 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition-colors"
+                      className="flex items-center px-4 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 press-effect min-h-[44px]"
+                      aria-label={`Continue to next lesson: ${nextLesson.title}`}
                     >
                       <span className="hidden md:inline">{language === 'en' ? 'Next Lesson' : 'နောက်သင်ခန်းစာ'}</span>
                       <span className="md:hidden">{language === 'en' ? 'Next' : 'ရှေ့သို့'}</span>
-                      <ChevronRight className="h-5 w-5 ml-1" />
+                      <ChevronRight className="h-5 w-5 ml-1" aria-hidden="true" />
                     </button>
                   ) : (
                     <button
                       onClick={() => navigate(`/courses/${pathSlug}`)}
-                      className="flex items-center px-4 py-2 rounded-lg bg-green-600 text-white hover:bg-green-700 transition-colors"
+                      className="flex items-center px-4 py-2 rounded-lg bg-green-600 text-white hover:bg-green-700 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 press-effect min-h-[44px]"
+                      aria-label={language === 'en' ? 'Complete lesson and return to course' : 'သင်ခန်းစာပြီးဆုံးပြီး သင်တန်းသို့ ပြန်သွားရန်'}
                     >
                       <span>{language === 'en' ? 'Finish' : 'ပြီးဆုံး'}</span>
-                      <Award className="h-5 w-5 ml-1" />
+                      <Award className="h-5 w-5 ml-1" aria-hidden="true" />
                     </button>
                   )}
                 </div>
               ) : (
                 <button
                   onClick={handleNextPage}
-                  className="flex items-center px-4 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition-colors"
+                  className="flex items-center px-4 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 press-effect min-h-[44px]"
+                  aria-label={language === 'en' ? 'Continue to next section' : 'နောက်အပိုင်းသို့ ဆက်လက်သွားရန်'}
                 >
                   <span className="hidden md:inline">{language === 'en' ? 'Continue' : 'ဆက်လက်'}</span>
                   <span className="md:hidden">{language === 'en' ? 'Next' : 'ရှေ့သို့'}</span>
-                  <ChevronRight className="h-5 w-5 ml-1" />
+                  <ChevronRight className="h-5 w-5 ml-1" aria-hidden="true" />
                 </button>
               )}
             </div>

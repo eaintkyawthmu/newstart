@@ -50,13 +50,17 @@ const BottomNavBar: React.FC = () => {
   };
 
   return (
-    <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 z-40 safe-bottom">
+    <nav 
+      className="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 z-40 safe-bottom backdrop-blur-sm bg-white/95"
+      role="navigation"
+      aria-label="Main navigation"
+    >
       <div className="flex items-center justify-around h-16">
         {navItems.map((item) => (
           <button
             key={item.path}
             onClick={() => navigate(item.path)}
-            className={`flex flex-col items-center justify-center w-full h-full min-w-[64px] min-h-[56px] focus-ring rounded-lg transition-colors ${
+            className={`flex flex-col items-center justify-center w-full h-full min-w-[64px] min-h-[56px] focus-ring rounded-lg transition-all duration-200 press-effect ${
               isActive(item.path)
                 ? 'text-blue-600'
                 : 'text-gray-500 hover:text-gray-700'
@@ -64,7 +68,12 @@ const BottomNavBar: React.FC = () => {
             aria-label={item.label}
             aria-current={isActive(item.path) ? 'page' : undefined}
           >
-            <item.icon className={`h-6 w-6 ${isActive(item.path) ? 'text-blue-600' : 'text-gray-500'}`} />
+            <item.icon 
+              className={`h-6 w-6 transition-all duration-200 ${
+                isActive(item.path) ? 'text-blue-600 scale-110' : 'text-gray-500'
+              }`} 
+              aria-hidden="true"
+            />
             <span className="text-xs mt-1 font-medium">{item.label}</span>
           </button>
         ))}

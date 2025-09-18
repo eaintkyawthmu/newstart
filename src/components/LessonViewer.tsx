@@ -624,17 +624,22 @@ const LessonViewer: React.FC = () => {
       </div>
 
       {/* Page Content */}
-      <div className="bg-white rounded-lg border border-gray-200 p-6 shadow-sm mb-6 overflow-y-auto max-h-[70vh]">
+      <div 
+        className="bg-white rounded-lg border border-gray-200 p-6 shadow-sm mb-6 overflow-y-auto max-h-[70vh] animate-fade-in"
+        role="tabpanel"
+        id={`${currentPage}-panel`}
+        aria-labelledby={`${currentPage}-tab`}
+      >
         {renderPageContent()}
       </div>
 
       {/* Page Navigation Dots - Mobile Only */}
-      <div className="md:hidden flex justify-center mb-4 space-x-2">
+      <div className="md:hidden flex justify-center mb-4 space-x-2 animate-fade-in">
         {availablePages.map((page, index) => (
           <button
             key={page}
             onClick={() => goToPage(page)}
-            className={`w-2.5 h-2.5 rounded-full ${
+            className={`w-2.5 h-2.5 rounded-full transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 ${
               currentPage === page ? 'bg-blue-600' : 'bg-gray-300'
             }`}
             aria-label={`Go to page ${index + 1}`}
@@ -643,17 +648,17 @@ const LessonViewer: React.FC = () => {
       </div>
 
       {/* Page Navigation Buttons */}
-      <div className="flex justify-between mb-8">
+      <div className="flex justify-between mb-8 animate-fade-in">
         <button
           onClick={handlePrevPage}
           disabled={currentPageIndex === 0}
-          className={`flex items-center px-4 py-2 rounded-lg border border-gray-300 text-gray-700 ${
+          className={`flex items-center px-4 py-2 rounded-lg border border-gray-300 text-gray-700 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 min-h-[44px] ${
             currentPageIndex === 0 
               ? 'opacity-50 cursor-not-allowed' 
-              : 'hover:bg-gray-50'
+              : 'hover:bg-gray-50 press-effect'
           }`}
         >
-          <ChevronLeft className="h-5 w-5 mr-1" />
+          <ChevronLeft className="h-5 w-5 mr-1" aria-hidden="true" />
           <span className="hidden md:inline">Previous</span>
         </button>
 
@@ -661,15 +666,16 @@ const LessonViewer: React.FC = () => {
           <button
             onClick={handleMarkLessonComplete}
             disabled={lessonCompleted}
-            className={`flex items-center px-6 py-2 rounded-lg ${
+            className={`flex items-center px-6 py-2 rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 min-h-[44px] ${
               lessonCompleted
-                ? 'bg-green-100 text-green-700 cursor-not-allowed'
-                : 'bg-blue-600 text-white hover:bg-blue-700'
+                ? 'bg-green-100 text-green-700 cursor-not-allowed focus:ring-green-500'
+                : 'bg-blue-600 text-white hover:bg-blue-700 focus:ring-blue-500 press-effect'
             }`}
+            aria-pressed={lessonCompleted}
           >
             {lessonCompleted ? (
               <>
-                <CheckCircle className="h-5 w-5 mr-2" />
+                <CheckCircle className="h-5 w-5 mr-2" aria-hidden="true" />
                 Lesson Completed
               </>
             ) : (
@@ -679,11 +685,11 @@ const LessonViewer: React.FC = () => {
         ) : (
           <button
             onClick={handleNextPage}
-            className="flex items-center px-6 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition-colors"
+            className="flex items-center px-6 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 press-effect min-h-[44px]"
           >
             <span className="hidden md:inline">Continue</span>
             <span className="md:hidden">Next</span>
-            <ChevronRight className="h-5 w-5 ml-1" />
+            <ChevronRight className="h-5 w-5 ml-1" aria-hidden="true" />
           </button>
         )}
       </div>

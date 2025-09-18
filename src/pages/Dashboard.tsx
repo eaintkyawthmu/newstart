@@ -229,7 +229,7 @@ const Dashboard = () => {
   return (
     <div className="space-y-6">
       {/* Welcome Banner - Mobile optimized */}
-      <div className="bg-gradient-to-r from-blue-600 to-blue-700 rounded-xl p-6 text-white shadow-sm">
+      <div className="bg-gradient-to-r from-blue-600 to-blue-700 rounded-xl p-6 text-white shadow-sm animate-fade-in hover-lift">
         <div className="flex flex-col space-y-4">
           <div>
             <h1 className="text-2xl sm:text-3xl font-bold mb-2">
@@ -246,13 +246,15 @@ const Dashboard = () => {
           <div className="flex flex-col sm:flex-row gap-3">
             <button
               onClick={() => navigate('/courses/new-to-america')}
-              className="px-6 py-3 bg-white text-blue-700 rounded-lg hover:bg-blue-50 transition-colors font-medium text-center focus-ring min-h-[44px]"
+              className="px-6 py-3 bg-white text-blue-700 rounded-lg hover:bg-blue-50 transition-all duration-200 font-medium text-center focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-blue-600 min-h-[44px] press-effect"
+              aria-label="Start your immigration journey course"
             >
               {language === 'en' ? 'Start Your Journey' : 'သင့်ခရီးစဉ်ကို စတင်ပါ'}
             </button>
             <button
               onClick={() => navigate('/profile-setup')}
-              className="px-6 py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-400 transition-colors text-center focus-ring min-h-[44px]"
+              className="px-6 py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-400 transition-all duration-200 text-center focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-blue-500 min-h-[44px] press-effect"
+              aria-label="Edit your profile information"
             >
               {language === 'en' ? 'Edit Profile' : 'ပရိုဖိုင်ပြင်ဆင်ရန်'}
             </button>
@@ -262,10 +264,10 @@ const Dashboard = () => {
 
       {/* Subscription Status Banner (if not premium) */}
       {profile && profile.subscription_status !== 'active' && (
-        <div className="bg-gradient-to-r from-purple-600 to-indigo-600 rounded-xl p-6 text-white shadow-sm">
+        <div className="bg-gradient-to-r from-purple-600 to-indigo-600 rounded-xl p-6 text-white shadow-sm animate-slide-up hover-lift">
           <div className="flex flex-col md:flex-row md:items-center md:justify-between space-y-4 md:space-y-0">
             <div className="flex items-center">
-              <Crown className="h-8 w-8 mr-3 flex-shrink-0" />
+              <Crown className="h-8 w-8 mr-3 flex-shrink-0 animate-bounce-gentle" aria-hidden="true" />
               <div>
                 <h2 className="text-xl font-bold">
                   {language === 'en' ? 'Unlock Premium Features' : 'Premium အင်္ဂါရပ်များကို ဖွင့်လှစ်ပါ'}
@@ -279,7 +281,8 @@ const Dashboard = () => {
             </div>
             <button
               onClick={() => navigate('/subscription')}
-              className="px-6 py-3 bg-white text-purple-700 rounded-lg hover:bg-purple-50 transition-colors font-medium"
+              className="px-6 py-3 bg-white text-purple-700 rounded-lg hover:bg-purple-50 transition-all duration-200 font-medium focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-purple-600 press-effect min-h-[44px]"
+              aria-label="Upgrade to premium subscription"
             >
               {language === 'en' ? 'Upgrade Now' : 'ယခု အဆင့်မြှင့်ရန်'}
             </button>
@@ -288,11 +291,11 @@ const Dashboard = () => {
       )}
 
       {/* Quick Stats - Mobile-first grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-        <div className="bg-white rounded-lg border border-gray-200 p-6 shadow-sm">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 animate-slide-up">
+        <div className="bg-white rounded-lg border border-gray-200 p-6 shadow-sm hover-lift transition-all duration-200">
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center">
-              <Globe className="h-5 w-5 text-blue-600 mr-2" />
+              <Globe className="h-5 w-5 text-blue-600 mr-2" aria-hidden="true" />
               <h2 className="text-base font-semibold text-gray-800">
                 {language === 'en' ? 'In America Since' : 'အမေရိကန်တွင် ရောက်ရှိသည်မှာ'}
               </h2>
@@ -306,10 +309,10 @@ const Dashboard = () => {
           </p>
         </div>
 
-        <div className="bg-white rounded-lg border border-gray-200 p-6 shadow-sm">
+        <div className="bg-white rounded-lg border border-gray-200 p-6 shadow-sm hover-lift transition-all duration-200">
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center">
-              <Users className="h-5 w-5 text-blue-600 mr-2" />
+              <Users className="h-5 w-5 text-blue-600 mr-2" aria-hidden="true" />
               <h2 className="text-base font-semibold text-gray-800">
                 {language === 'en' ? 'Family Status' : 'မိသားစုအခြေအနေ'}
               </h2>
@@ -323,10 +326,10 @@ const Dashboard = () => {
           </p>
         </div>
 
-        <div className="bg-white rounded-lg border border-gray-200 p-6 shadow-sm sm:col-span-2 lg:col-span-1">
+        <div className="bg-white rounded-lg border border-gray-200 p-6 shadow-sm sm:col-span-2 lg:col-span-1 hover-lift transition-all duration-200">
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center">
-              <Briefcase className="h-5 w-5 text-purple-600 mr-2" />
+              <Briefcase className="h-5 w-5 text-purple-600 mr-2" aria-hidden="true" />
               <h2 className="text-base font-semibold text-gray-800">
                 {language === 'en' ? 'Employment' : 'အလုပ်အကိုင်'}
               </h2>

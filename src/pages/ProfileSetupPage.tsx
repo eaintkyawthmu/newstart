@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { supabase } from '../lib/supabaseClient';
+import { FormValidation } from '../components/ui';
+import { Alert } from '../components/ui';
 import {
   UserCircle,
   Globe,
@@ -132,6 +134,8 @@ const ProfileSetupPage = () => {
 
   const handleNext = () => {
     if (currentStep < totalSteps) {
+      // Add smooth transition
+      document.querySelector('.profile-setup-content')?.classList.add('animate-slide-up');
       setCurrentStep(prev => prev + 1);
     } else {
       saveProfile();
@@ -140,6 +144,8 @@ const ProfileSetupPage = () => {
 
   const handlePrevious = () => {
     if (currentStep > 1) {
+      // Add smooth transition
+      document.querySelector('.profile-setup-content')?.classList.add('animate-slide-up');
       setCurrentStep(prev => prev - 1);
     }
   };
@@ -617,21 +623,20 @@ const ProfileSetupPage = () => {
         </div>
 
         {error && (
-          <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg flex items-start">
-            <AlertCircle className="h-5 w-5 text-red-500 mt-0.5 mr-2" />
-            <p className="text-sm text-red-600">{error}</p>
-          </div>
+          <Alert type="error" dismissible onDismiss={() => setError(null)} className="mb-6">
+            {error}
+          </Alert>
         )}
 
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4 sm:p-6 mb-6">
+        <div className="profile-setup-content bg-white rounded-xl shadow-sm border border-gray-200 p-4 sm:p-6 mb-6 animate-fade-in">
           {renderStep()}
         </div>
 
-        <div className="flex justify-between">
+        <div className="flex justify-between animate-fade-in">
           <button
             onClick={handlePrevious}
-            disabled={currentStep === 1}
-            className="px-6 py-2 rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed flex items-center"
+            disabled={currentStep === 1 || loading}
+            className="px-6 py-2 rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed flex items-center transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 min-h-[44px]"
           >
             <ChevronLeft className="h-5 w-5 mr-1" />
             Previous
@@ -640,10 +645,10 @@ const ProfileSetupPage = () => {
           <button
             onClick={handleNext}
             disabled={loading || !isStepValid()}
-            className="px-6 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center"
+            className="px-6 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 min-h-[44px] press-effect"
           >
             {loading ? (
-              <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white" />
+              <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white" aria-hidden="true" />
             ) : (
               <>
                 {currentStep === totalSteps ? 'Complete Setup' : 'Next'}

@@ -518,7 +518,7 @@ const LessonDetail = () => {
 
           {/* Main Content Area */}
           <div 
-            className="p-3 sm:p-5 focus-within:outline-none w-full max-w-full break-words overflow-x-visible"
+            className="p-2 sm:p-5 focus-within:outline-none w-full max-w-full break-words overflow-x-visible"
             onTouchStart={handleTouchStart}
             onTouchMove={handleTouchMove}
             onTouchEnd={handleTouchEnd}

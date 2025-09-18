@@ -77,35 +77,35 @@ const LessonMainContent: React.FC<LessonMainContentProps> = ({ lesson }) => {
   }
 
   return (
-    <div className="w-full max-w-full break-words overflow-x-visible">
+    <div className="w-full max-w-full break-words overflow-x-visible px-2 sm:px-4">
       {/* Video Content */}
       {renderVideoContent()}
       
       {/* Main Content */}
-      <div className="w-full max-w-full px-3 sm:px-4 break-words overflow-x-visible">
-        <div className="prose prose-sm sm:prose-base max-w-none w-full break-words overflow-x-visible">
-          <div className="text-sm sm:text-base leading-relaxed sm:leading-normal">
+      <div className="w-full max-w-full break-words overflow-x-visible">
+        <div className="prose prose-sm sm:prose-base max-w-none w-full break-words overflow-x-visible mobile-prose-override">
+          <div className="text-sm sm:text-base leading-relaxed sm:leading-normal w-full max-w-full break-words overflow-x-visible">
             <PortableText 
               value={lesson.content} 
               components={{
                 block: {
                   normal: ({ children }) => (
-                    <p className="mb-2 sm:mb-3 text-sm sm:text-base leading-6 sm:leading-7 break-words overflow-x-visible w-full max-w-full">
+                    <p className="mb-2 sm:mb-3 text-sm sm:text-base leading-6 sm:leading-7 break-words overflow-x-visible w-full max-w-full mobile-text-override">
                       {children}
                     </p>
                   ),
                   h1: ({ children }) => (
-                    <h1 className="text-lg sm:text-2xl font-bold mb-2 sm:mb-3 text-gray-900 break-words w-full max-w-full">
+                    <h1 className="text-lg sm:text-2xl font-bold mb-2 sm:mb-3 text-gray-900 break-words w-full max-w-full mobile-text-override">
                       {children}
                     </h1>
                   ),
                   h2: ({ children }) => (
-                    <h2 className="text-base sm:text-xl font-semibold mb-2 text-gray-900 break-words w-full max-w-full">
+                    <h2 className="text-base sm:text-xl font-semibold mb-2 text-gray-900 break-words w-full max-w-full mobile-text-override">
                       {children}
                     </h2>
                   ),
                   h3: ({ children }) => (
-                    <h3 className="text-sm sm:text-lg font-medium mb-1 sm:mb-2 text-gray-900 break-words w-full max-w-full">
+                    <h3 className="text-sm sm:text-lg font-medium mb-1 sm:mb-2 text-gray-900 break-words w-full max-w-full mobile-text-override">
                       {children}
                     </h3>
                   ),
@@ -120,24 +120,24 @@ const LessonMainContent: React.FC<LessonMainContentProps> = ({ lesson }) => {
                 },
                 list: {
                   bullet: ({ children }) => (
-                    <ul className="list-disc pl-3 sm:pl-4 mb-2 sm:mb-3 space-y-1 w-full max-w-full">
+                    <ul className="list-disc pl-3 sm:pl-4 mb-2 sm:mb-3 space-y-1 w-full max-w-full mobile-text-override">
                       {children}
                     </ul>
                   ),
                   number: ({ children }) => (
-                    <ol className="list-decimal pl-3 sm:pl-4 mb-2 sm:mb-3 space-y-1 w-full max-w-full">
+                    <ol className="list-decimal pl-3 sm:pl-4 mb-2 sm:mb-3 space-y-1 w-full max-w-full mobile-text-override">
                       {children}
                     </ol>
                   ),
                 },
                 listItem: {
                   bullet: ({ children }) => (
-                    <li className="text-sm sm:text-base leading-6 sm:leading-7 break-words w-full max-w-full">
+                    <li className="text-sm sm:text-base leading-6 sm:leading-7 break-words w-full max-w-full mobile-text-override">
                       {children}
                     </li>
                   ),
                   number: ({ children }) => (
-                    <li className="text-sm sm:text-base leading-6 sm:leading-7 break-words w-full max-w-full">
+                    <li className="text-sm sm:text-base leading-6 sm:leading-7 break-words w-full max-w-full mobile-text-override">
                       {children}
                     </li>
                   ),

@@ -305,6 +305,40 @@
       word-wrap: break-word !important;
       overflow-wrap: break-word !important;
     }
+    
+    /* Mobile-specific overrides for lesson content */
+    .mobile-prose-override {
+      width: 100% !important;
+      max-width: 100% !important;
+      min-width: 0 !important;
+      padding-left: 0 !important;
+      padding-right: 0 !important;
+      margin-left: 0 !important;
+      margin-right: 0 !important;
+      overflow-x: visible !important;
+      word-break: break-word !important;
+      overflow-wrap: break-word !important;
+      hyphens: auto !important;
+    }
+    
+    .mobile-prose-override * {
+      width: 100% !important;
+      max-width: 100% !important;
+      min-width: 0 !important;
+      word-break: break-word !important;
+      overflow-wrap: break-word !important;
+      hyphens: auto !important;
+    }
+    
+    .mobile-text-override {
+      width: 100% !important;
+      max-width: 100% !important;
+      min-width: 0 !important;
+      word-break: break-word !important;
+      overflow-wrap: break-word !important;
+      hyphens: auto !important;
+      white-space: normal !important;
+    }
   }
 
   /* Enhanced animations */

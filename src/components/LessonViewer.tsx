@@ -629,7 +629,7 @@ const LessonViewer: React.FC = () => {
 
       {/* Page Content */}
       <div 
-        className="bg-white rounded-lg border border-gray-200 p-2 sm:p-6 shadow-sm mb-6 overflow-y-auto max-h-[70vh] animate-fade-in w-full max-w-full break-words overflow-x-visible"
+        className="bg-white rounded-lg border border-gray-200 p-1 sm:p-6 shadow-sm mb-6 overflow-y-auto max-h-[70vh] animate-fade-in w-full max-w-full break-words overflow-x-visible"
         role="tabpanel"
         id={`${currentPage}-panel`}
         aria-labelledby={`${currentPage}-tab`}

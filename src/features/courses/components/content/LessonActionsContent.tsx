@@ -17,9 +17,9 @@ const LessonActionsContent: React.FC<LessonActionsContentProps> = ({
   language
 }) => {
   return (
-    <div className="space-y-3 sm:space-y-5 animate-fade-in w-full max-w-full break-words overflow-x-visible">
+    <div className="space-y-3 sm:space-y-5 animate-fade-in w-full max-w-full break-words overflow-x-visible px-2 sm:px-4">
       {lesson.actionableTasks && lesson.actionableTasks.length > 0 && (
-        <div className="bg-purple-50 border border-purple-100 rounded-lg p-3 sm:p-4 animate-slide-up hover-lift w-full max-w-full break-words overflow-x-visible">
+        <div className="bg-purple-50 border border-purple-100 rounded-lg p-2 sm:p-4 animate-slide-up hover-lift w-full max-w-full break-words overflow-x-visible">
           <h2 className="font-semibold text-purple-800 mb-2 text-sm md:text-base flex items-center">
             <Target className="h-5 w-5 mr-2" aria-hidden="true" />
             {language === 'en' ? 'Your Action Plan' : 'သင့်လုပ်ဆောင်ရန် အစီအစဉ်'}
@@ -36,10 +36,10 @@ const LessonActionsContent: React.FC<LessonActionsContentProps> = ({
                   onChange={(e) => handleTaskCompletion(task._key, e.target.checked)}
                   className="h-4 w-4 text-purple-600 rounded border-gray-300 focus:ring-purple-500 flex-shrink-0 mt-1 transition-all duration-200"
                 />
-                <div className={`text-gray-700 text-sm transition-all duration-200 w-full max-w-full break-words overflow-x-visible ${
+                <div className={`text-gray-700 text-sm transition-all duration-200 w-full max-w-full break-words overflow-x-visible mobile-text-override ${
                   completedTasks.includes(task._key) ? 'line-through text-gray-500' : ''
                 }`}>
-                  <div className="prose prose-sm max-w-none w-full break-words overflow-x-visible">
+                  <div className="prose prose-sm max-w-none w-full break-words overflow-x-visible mobile-prose-override">
                     <PortableText value={Array.isArray(task.description) ? task.description : [task.description]} />
                   </div>
                 </div>
@@ -55,7 +55,7 @@ const LessonActionsContent: React.FC<LessonActionsContentProps> = ({
       )}
 
       {lesson.lessonResources && lesson.lessonResources.length > 0 && (
-        <div className="border border-gray-200 rounded-lg p-3 sm:p-4 animate-slide-up hover-lift w-full max-w-full break-words overflow-x-visible">
+        <div className="border border-gray-200 rounded-lg p-2 sm:p-4 animate-slide-up hover-lift w-full max-w-full break-words overflow-x-visible">
           <h2 className="font-semibold text-gray-800 mb-3 text-sm md:text-base">
             {language === 'en' ? 'Additional Resources' : 'ထပ်ဆောင်းအရင်းအမြစ်များ'}
           </h2>
@@ -77,7 +77,7 @@ const LessonActionsContent: React.FC<LessonActionsContentProps> = ({
                 <div className="w-full max-w-full break-words overflow-x-visible">
                   <p className="font-medium text-gray-800 text-sm">{resource.title}</p>
                   {resource.description && (
-                    <p className="text-xs text-gray-600 break-words">{resource.description}</p>
+                    <p className="text-xs text-gray-600 break-words mobile-text-override">{resource.description}</p>
                   )}
                 </div>
               </a>

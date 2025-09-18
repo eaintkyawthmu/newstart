@@ -17,17 +17,17 @@ const LessonIntroContent: React.FC<LessonIntroContentProps> = ({
   const { language } = useLanguage();
   
   return (
-    <div className="space-y-4 sm:space-y-6 animate-fade-in w-full max-w-full break-words overflow-x-visible">
+    <div className="space-y-4 sm:space-y-6 animate-fade-in w-full max-w-full break-words overflow-x-visible px-2 sm:px-4">
       {/* Introduction */}
       {lesson.introduction && (
-        <div className="prose prose-sm md:prose-base max-w-none w-full break-words overflow-x-visible animate-slide-up">
+        <div className="prose prose-sm md:prose-base max-w-none w-full break-words overflow-x-visible animate-slide-up mobile-prose-override">
           <PortableText value={Array.isArray(lesson.introduction) ? lesson.introduction : [lesson.introduction]} />
         </div>
       )}
       
       {/* Measurable Deliverables */}
       {lesson.measurableDeliverables && lesson.measurableDeliverables.length > 0 && (
-        <div className="bg-blue-50 border border-blue-100 rounded-lg p-3 sm:p-4 animate-slide-up hover-lift w-full max-w-full break-words overflow-x-visible">
+        <div className="bg-blue-50 border border-blue-100 rounded-lg p-2 sm:p-4 animate-slide-up hover-lift w-full max-w-full break-words overflow-x-visible">
           <h2 className="font-semibold text-blue-800 mb-4 flex items-center">
             <Target className="h-5 w-5 mr-2" aria-hidden="true" />
             {language === 'en' ? 'What You\'ll Achieve' : 'သင်ရရှိမည့်အရာများ'}
@@ -47,11 +47,11 @@ const LessonIntroContent: React.FC<LessonIntroContentProps> = ({
                 />
                 <div 
                   id={`task-${deliverable._key}-description`}
-                  className={`text-sm sm:text-base text-gray-700 transition-all duration-200 w-full max-w-full break-words overflow-x-visible ${
+                  className={`text-sm sm:text-base text-gray-700 transition-all duration-200 w-full max-w-full break-words overflow-x-visible mobile-text-override ${
                     completedTasks.includes(deliverable._key) ? 'line-through text-gray-500' : ''
                   }`}
                 >
-                  <div className="w-full max-w-full break-words overflow-x-visible">
+                  <div className="w-full max-w-full break-words overflow-x-visible mobile-prose-override">
                     <PortableText value={Array.isArray(deliverable.description) ? deliverable.description : [deliverable.description]} />
                   </div>
                 </div>

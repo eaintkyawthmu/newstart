@@ -132,8 +132,8 @@ const LessonQuizContent: React.FC<LessonQuizContentProps> = ({
   }
 
   return (
-    <div className="space-y-3 sm:space-y-5 w-full max-w-full break-words overflow-x-visible">
-      <div className="bg-blue-50 border border-blue-100 rounded-lg p-4">
+    <div className="space-y-3 sm:space-y-5 w-full max-w-full break-words overflow-x-visible px-2 sm:px-4">
+      <div className="bg-blue-50 border border-blue-100 rounded-lg p-2 sm:p-4">
         <h2 className="text-lg font-semibold text-blue-800 mb-3 flex items-center">
           <FileText className="h-5 w-5 mr-2" />
           {lesson.quiz.title || (language === 'en' ? 'Knowledge Check' : 'အသိပညာ စစ်ဆေးခြင်း')}
@@ -141,7 +141,7 @@ const LessonQuizContent: React.FC<LessonQuizContentProps> = ({
         
         {/* Quiz scenario if available */}
         {lesson.quiz.scenario && (
-          <div className="mb-3 sm:mb-4 prose prose-sm max-w-none text-blue-700 w-full break-words overflow-x-visible">
+          <div className="mb-3 sm:mb-4 prose prose-sm max-w-none text-blue-700 w-full break-words overflow-x-visible mobile-prose-override">
             <PortableText value={Array.isArray(lesson.quiz.scenario) ? lesson.quiz.scenario : [lesson.quiz.scenario]} />
           </div>
         )}

@@ -136,8 +136,7 @@ export const fetchJourneyPaths = async (slugs: string[], userType?: UserType): P
     const query = `
       *[
         _type == "journeyPath" && 
-        slug.current in $slugs &&
-        (targetAudience == "all" || targetAudience == $userType)
+        slug.current in $slugs
       ] {
         _id,
         title,

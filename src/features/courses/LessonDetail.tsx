@@ -487,7 +487,7 @@ const LessonDetail = () => {
 
       {/* Main Content - Vertical Scrolling */}
       <main className="pb-[calc(10rem+env(safe-area-inset-bottom))] md:pb-24">
-        <div className="max-w-4xl mx-auto px-3 py-4 space-y-4">
+        <div className="max-w-4xl mx-auto px-3 py-4 space-y-4 overflow-x-hidden">
           
           {/* Introduction Section */}
           <section id="intro" className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden scroll-mt-24">

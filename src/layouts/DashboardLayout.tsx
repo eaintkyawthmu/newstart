@@ -380,6 +380,7 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
             rightContent={getRightContent()}
           />
         </div>
+      )}
 
         {/* Mobile Menu (Controlled by isMobileMenuOpen, visible only on mobile) */}
         <MobileMenu

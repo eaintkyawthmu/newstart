@@ -80,10 +80,22 @@ export const fetchJourneyPath = async (slug: string, userType?: UserType): Promi
             _id,
             title,
             "slug": slug.current,
-            duration,
-            type,
             order,
-            // You have a single lesson schema, not a conditional one, so this filtering is not needed here
+            type,
+            duration,
+            whyThisLessonMatters,
+            yourKeySkill,
+            content,
+            keyTakeaways,
+            actionableTasks[] {
+              description,
+              isOptional
+            },
+            reflectionPrompts,
+            "associatedQuiz": associatedQuiz->{title, slug},
+            "associatedExercise": associatedExercise->{title, slug},
+            "parentModule": parentModule->{_id},
+            "journeyPath": journeyPath->{_id}
           }
         }
       }
@@ -166,9 +178,22 @@ export const fetchJourneyPaths = async (slugs: string[], userType?: UserType): P
             _id,
             title,
             "slug": slug.current,
-            duration,
-            type,
             order,
+            type,
+            duration,
+            whyThisLessonMatters,
+            yourKeySkill,
+            content,
+            keyTakeaways,
+            actionableTasks[] {
+              description,
+              isOptional
+            },
+            reflectionPrompts,
+            "associatedQuiz": associatedQuiz->{title, slug},
+            "associatedExercise": associatedExercise->{title, slug},
+            "parentModule": parentModule->{_id},
+            "journeyPath": journeyPath->{_id}
           }
         }
       } | order(order asc)
@@ -206,9 +231,22 @@ export const fetchFilteredModules = async (userType?: UserType) => {
           _id,
           title,
           "slug": slug.current,
-          duration,
-          type,
           order,
+          type,
+          duration,
+          whyThisLessonMatters,
+          yourKeySkill,
+          content,
+          keyTakeaways,
+          actionableTasks[] {
+            description,
+            isOptional
+          },
+          reflectionPrompts,
+          "associatedQuiz": associatedQuiz->{title, slug},
+          "associatedExercise": associatedExercise->{title, slug},
+          "parentModule": parentModule->{_id},
+          "journeyPath": journeyPath->{_id}
         }
       } | order(order asc)
     `;

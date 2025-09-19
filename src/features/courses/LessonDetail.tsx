@@ -716,7 +716,7 @@ const LessonDetail = () => {
                             href={resource.url}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="flex items-center p-2 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
+                            className="flex w-full items-center p-2 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
                           >
                             {resource.type === 'download' ? (
                               <Download className="w-4 h-4 text-gray-500 mr-2 flex-shrink-0" />

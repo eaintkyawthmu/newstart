@@ -316,6 +316,216 @@ const LessonDetail = () => {
     return { prevLesson, nextLesson };
   };
 
+  const { prevLesson, nextLesson } = findAdjacentLessons();
+
+  const handleAnswerChange = (questionIndex: number, answer: any) => {
+    setUserAnswers(prev => {
+      const newAnswers = [...prev];
+      if (typeof answer === 'boolean') {
+        newAnswers[questionIndex] = { ...newAnswers[questionIndex], trueFalseAnswer: answer };
+      } else {
+        newAnswers[questionIndex] = { ...newAnswers[questionIndex], selectedOptionIndex: answer };
+      }
+      return newAnswers;
+    });
+  };
+
+  const handleSubmitQuiz = () => {
+    if (!lesson?.quiz?.questions) return;
+
+    const results = lesson.quiz.questions.map((question: any, index: number) => {
+      const userAnswer = userAnswers[index];
+      let isCorrect = false;
+
+      if (question.questionType === 'multipleChoice') {
+        isCorrect = question.options?.[userAnswer?.selectedOptionIndex]?.isCorrect || false;
+      } else if (question.questionType === 'trueFalse') {
+        isCorrect = userAnswer?.trueFalseAnswer === question.correctAnswer;
+      }
+
+      return {
+        questionIndex: index,
+        isCorrect,
+        feedback: question.feedback || ''
+      };
+    });
+
+    setQuizResults(results);
+    setTotalScore(results.filter(r => r.isCorrect).length);
+    setQuizSubmitted(true);
+  };
+
+  const handleRetakeQuiz = () => {
+    setQuizSubmitted(false);
+    setQuizResults([]);
+    setTotalScore(0);
+    setUserAnswers(lesson?.quiz?.questions?.map((_, index) => ({
+      questionIndex: index,
+      selectedOptionIndex: undefined,
+      trueFalseAnswer: undefined
+    })) || []);
+  };
+
+  // Calculate progress based on completed tasks and quiz
+  const calculateProgress = () => {
+    if (!lesson) return 0;
+    
+    let totalItems = 0;
+    let completedItems = 0;
+    
+    // Count completion status
+    if (completed) completedItems++;
+    totalItems++;
+    
+    // Count actionable tasks
+    if (lesson.actionableTasks && lesson.actionableTasks.length > 0) {
+      totalItems += lesson.actionableTasks.length;
+      completedItems += completedTasks.length;
+    }
+    
+    // Count quiz
+    if (lesson.quiz?.questions && lesson.quiz.questions.length > 0) {
+      totalItems++;
+      if (quizSubmitted && totalScore / lesson.quiz.questions.length >= 0.7) {
+        completedItems++;
+      }
+    }
+    
+    return totalItems > 0 ? Math.round((completedItems / totalItems) * 100) : 0;
+  };
+
+  const progress = calculateProgress();
+
+  if (lessonLoading || pathLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+      </div>
+    );
+  }
+
+  if (!lesson) {
+    return (
+      <div className="text-center py-12">
+        <AlertCircle className="h-12 w-12 text-red-500 mx-auto mb-4" />
+        <h2 className="text-xl font-semibold text-gray-800 mb-2">Lesson not found</h2>
+        <p className="text-gray-600">The requested lesson could not be found.</p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen bg-gray-50">
+      <main className="pb-20 pt-4">
+        <div className="max-w-4xl mx-auto px-4 space-y-4">
+          
+          {/* Lesson Title Card */}
+          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4">
+            <div className="flex items-center justify-between mb-3">
+              <div className="flex-1">
+                <h1 className="text-lg font-bold text-gray-900 mb-1">
+                  {lesson.title}
+                </h1>
+                <div className="flex items-center text-sm text-gray-500">
+                  <Clock className="w-4 h-4 mr-1" />
+                  <span>{lesson.duration}</span>
+                  <span className="mx-2">•</span>
+                  <span>{progress}% {language === 'en' ? 'complete' : 'ပြီးဆုံး'}</span>
+                </div>
+              </div>
+              
+              <button
+                onClick={toggleCompletion}
+                className={`p-3 rounded-lg transition-colors min-h-[48px] min-w-[48px] flex items-center justify-center ${
+                  completed
+                    ? 'text-green-600 bg-green-50 border border-green-200'
+                    : 'text-gray-400 hover:bg-gray-100 border border-gray-200'
+                }`}
+                aria-label={completed 
+                  ? (language === 'en' ? 'Mark as incomplete' : 'မပြီးဆုံးသေးသည်ဟု မှတ်သားရန်') 
+                  : (language === 'en' ? 'Mark as complete' : 'ပြီးဆုံးအဖြစ် မှတ်သားရန်')}
+              >
+                <Award className="w-6 h-6" />
+              </button>
+            </div>
+            
+            {/* Progress Bar */}
+            <div className="w-full bg-gray-200 rounded-full h-2">
+              <div 
+                className="bg-blue-600 h-2 rounded-full transition-all duration-500 ease-out"
+                style={{ width: `${progress}%` }}
+              />
+            </div>
+          </div>
+
+          {/* Introduction Section */}
+          {lesson.introduction && (
+            <section id="intro" className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+              <button
+                onClick={() => toggleSection('intro')}
+                className="w-full p-4 flex items-center justify-between hover:bg-gray-50 transition-colors"
+              >
+                <div className="flex items-center">
+                  <BookOpen className="w-5 h-5 text-blue-600 mr-3" />
+                  <h2 className="text-lg font-semibold text-gray-900">
+                    {language === 'en' ? 'Introduction' : 'နိဒါန်း'}
+                  </h2>
+                </div>
+                {expandedSections.has('intro') ? (
+                  <ChevronUp className="w-5 h-5 text-gray-400" />
+                ) : (
+                  <ChevronDown className="w-5 h-5 text-gray-400" />
+                )}
+              </button>
+              
+              {expandedSections.has('intro') && (
+                <div className="px-4 pb-4 border-t border-gray-100">
+                  <div className="prose prose-sm max-w-none text-gray-700">
+                    <PortableText value={Array.isArray(lesson.introduction) ? lesson.introduction : [lesson.introduction]} />
+                  </div>
+                </div>
+              )}
+            </section>
+          )}
+
+          {/* Measurable Deliverables Section */}
+          {lesson.measurableDeliverables && lesson.measurableDeliverables.length > 0 && (
+            <section id="deliverables" className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+              <button
+                onClick={() => toggleSection('deliverables')}
+                className="w-full p-4 flex items-center justify-between hover:bg-gray-50 transition-colors"
+              >
+                <div className="flex items-center">
+                  <Target className="w-5 h-5 text-purple-600 mr-3" />
+                  <h2 className="text-lg font-semibold text-gray-900">
+                    {language === 'en' ? 'What You\'ll Be Able to Do' : 'သင်လုပ်ဆောင်နိုင်မည့်အရာများ'}
+                  </h2>
+                </div>
+                {expandedSections.has('deliverables') ? (
+                  <ChevronUp className="w-5 h-5 text-gray-400" />
+                ) : (
+                  <ChevronDown className="w-5 h-5 text-gray-400" />
+                )}
+              </button>
+              
+              {expandedSections.has('deliverables') && (
+                <div className="px-4 pb-4 border-t border-gray-100">
+                  <div className="bg-purple-50 border border-purple-200 rounded-lg p-3">
+                    <div className="space-y-2">
+                      {lesson.measurableDeliverables.map((deliverable: any) => (
+                        <div key={deliverable._key} className="flex items-start">
+                          <CheckCircle className="w-4 h-4 text-purple-600 mt-1 mr-2 flex-shrink-0" />
+                          <div className="prose prose-sm max-w-none text-purple-700">
+                            <PortableText value={Array.isArray(deliverable.description) ? deliverable.description : [deliverable.description]} />
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              )}
+            </section>
+          )}
 
           {/* Content Section */}
           {(lesson.content || lesson.type === 'video') && (
@@ -446,49 +656,55 @@ const LessonDetail = () => {
                             className="flex items-start space-x-2 cursor-pointer hover:bg-purple-100 p-2 rounded-md transition-colors"
                           >
                             <input
+                              type="checkbox"
+                              checked={completedTasks.includes(task._key)}
+                              onChange={(e) => handleTaskCompletion(task._key, e.target.checked)}
+                              className="w-4 h-4 text-purple-600 border-gray-300 rounded focus:ring-purple-500 mt-1"
+                            />
+                            <div className="flex-1">
+                              <div className="prose prose-sm max-w-none text-purple-700">
+                                <PortableText value={Array.isArray(task.description) ? task.description : [task.description]} />
+                              </div>
+                              {task.isOptional && (
+                                <span className="text-xs text-purple-500 italic">
+                                  {language === 'en' ? '(Optional)' : '(ရွေးချယ်နိုင်သော)'}
+                                </span>
                               )}
                             </div>
-      <main className="pb-20 pt-4">
+                          </label>
                         ))}
-          
-          {/* Lesson Title Card */}
-          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4">
-            <div className="flex items-center justify-between mb-3">
-              <div className="flex-1">
-                <h1 className="text-lg font-bold text-gray-900 mb-1">
-                  {lesson.title}
-                </h1>
-                <div className="flex items-center text-sm text-gray-500">
-                  <Clock className="w-4 h-4 mr-1" />
-                  <span>{lesson.duration}</span>
-                  <span className="mx-2">•</span>
-                  <span>{progress}% {language === 'en' ? 'complete' : 'ပြီးဆုံး'}</span>
-                </div>
-              </div>
-              
-              <button
-                onClick={toggleCompletion}
-                className={`p-3 rounded-lg transition-colors min-h-[48px] min-w-[48px] flex items-center justify-center ${
-                  completed
-                    ? 'text-green-600 bg-green-50 border border-green-200'
-                    : 'text-gray-400 hover:bg-gray-100 border border-gray-200'
-                }`}
-                aria-label={completed 
-                  ? (language === 'en' ? 'Mark as incomplete' : 'မပြီးဆုံးသေးသည်ဟု မှတ်သားရန်') 
-                  : (language === 'en' ? 'Mark as complete' : 'ပြီးဆုံးအဖြစ် မှတ်သားရန်')}
-              >
-                <Award className="w-6 h-6" />
-              </button>
-            </div>
-            
-            {/* Progress Bar */}
-            <div className="w-full bg-gray-200 rounded-full h-2">
-              <div 
-                className="bg-blue-600 h-2 rounded-full transition-all duration-500 ease-out"
-                style={{ width: `${progress}%` }}
-              />
-            </div>
-          </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Lesson Resources */}
+                  {lesson.lessonResources && lesson.lessonResources.length > 0 && (
+                    <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
+                      <h3 className="font-semibold text-blue-800 mb-3 text-sm">
+                        {language === 'en' ? 'Additional Resources' : 'ထပ်ဆောင်း အရင်းအမြစ်များ'}
+                      </h3>
+                      <div className="space-y-2">
+                        {lesson.lessonResources.map((resource: any, index: number) => (
+                          <a
+                            key={index}
+                            href={resource.url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="flex items-center p-2 bg-white rounded-md border border-blue-100 hover:border-blue-300 transition-colors"
+                          >
+                            {resource.type === 'download' ? (
+                              <Download className="w-4 h-4 text-blue-600 mr-2" />
+                            ) : (
+                              <ExternalLink className="w-4 h-4 text-blue-600 mr-2" />
+                            )}
+                            <div className="flex-1">
+                              <div className="font-medium text-blue-800 text-sm">{resource.title}</div>
+                              {resource.description && (
+                                <div className="text-xs text-blue-600">{resource.description}</div>
+                              )}
+                            </div>
+                          </a>
+                        ))}
                       </div>
                     </div>
                   )}

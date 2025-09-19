@@ -418,7 +418,7 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
         {/* Footer */}
         <footer className="bg-white py-4 border-t border-gray-200 mt-auto hidden md:block">
           <div className="container mx-auto px-4 text-center text-gray-500 text-sm">
-            &copy; {new Date().getFullYear()} My New Start. Build with bolt.new
+            &copy; {new Date().getFullYear()} My New Start. 
           </div>
         </footer>
 

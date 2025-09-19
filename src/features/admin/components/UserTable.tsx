@@ -106,6 +106,9 @@ const UserTable: React.FC<UserTableProps> = ({
                       <div className="ml-4">
                         <div className="text-sm font-medium text-gray-900">
                           {user.first_name} {user.last_name}
+                          <span className="ml-2 text-xs text-gray-500">
+                            ({user.user_type === 'immigrant' ? 'Immigrant' : 'Non-Immigrant'})
+                          </span>
                         </div>
                         <div className="text-sm text-gray-500">{user.email}</div>
                       </div>

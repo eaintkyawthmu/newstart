@@ -12,6 +12,7 @@ import LoadingSpinner from './components/LoadingSpinner';
 export type UserProfile = {
   id: string;
   email: string;
+  user_type: string;
   first_name: string;
   last_name: string;
   role: string;
@@ -92,6 +93,7 @@ const UserList: React.FC = () => {
         .from('profiles')
         .select(`
           id, email, first_name, last_name, role, subscription_status, 
+          user_type,
           premium_tier, total_spending, created_at, last_active_at,
           country_of_origin, employment_status, marital_status, dependents,
           phone_number, zip_code

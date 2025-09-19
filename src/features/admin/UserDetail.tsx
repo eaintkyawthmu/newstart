@@ -33,6 +33,7 @@ import {
 type UserProfile = {
   id: string;
   email: string;
+  user_type: string;
   first_name: string;
   last_name: string;
   role: string;
@@ -647,6 +648,27 @@ const UserDetail: React.FC = () => {
             </h3>
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  User Type
+                </label>
+                {isEditing ? (
+                  <select
+                    name="user_type"
+                    value={editedProfile.user_type || 'immigrant'}
+                    onChange={handleInputChange}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  >
+                    <option value="immigrant">Immigrant (Permanent/Long-term)</option>
+                    <option value="nonImmigrant">Non-Immigrant (Temporary)</option>
+                  </select>
+                ) : (
+                  <p className="text-gray-800">
+                    {profile?.user_type === 'immigrant' ? 'Immigrant (Permanent/Long-term)' : 'Non-Immigrant (Temporary)'}
+                  </p>
+                )}
+              </div>
+              
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
                   First Name

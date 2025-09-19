@@ -188,7 +188,7 @@ const UserTable: React.FC<UserTableProps> = ({
                               <span className="text-gray-700">{user.country_of_origin || 'N/A'}</span>
                             </div>
                             <div className="flex items-center text-sm">
-                              <Users className="h-4 w-4 text-gray-400 mr-2" />
+                              <User className="h-4 w-4 text-gray-400 mr-2" />
                               <span className="text-gray-700">{user.marital_status || 'N/A'}, {user.dependents || 0} dependents</span>
                             </div>
                           </div>

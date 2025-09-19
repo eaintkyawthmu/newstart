@@ -34,6 +34,20 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         
         if (error) {
           console.error('Error getting initial session:', error);
+          
+          // Handle specific refresh token errors
+          if (error.message?.includes('Refresh Token Not Found') || 
+              error.message?.includes('invalid_grant') ||
+              error.message?.includes('refresh_token_not_found')) {
+            console.log('Invalid refresh token detected, clearing session');
+            await supabase.auth.signOut();
+            setUser(null);
+            setProfileComplete(false);
+            setLoading(false);
+            window.location.href = '/';
+            return;
+          }
+          
           // Clear any invalid session and redirect to clean state
           await supabase.auth.signOut();
           setUser(null);
@@ -51,6 +65,21 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         }
       } catch (error) {
         console.error('Unexpected error getting initial session:', error);
+        
+        // Handle refresh token errors in catch block as well
+        if (error instanceof Error && 
+            (error.message?.includes('Refresh Token Not Found') || 
+             error.message?.includes('invalid_grant') ||
+             error.message?.includes('refresh_token_not_found'))) {
+          console.log('Invalid refresh token detected in catch, clearing session');
+          await supabase.auth.signOut();
+          setUser(null);
+          setProfileComplete(false);
+          setLoading(false);
+          window.location.href = '/';
+          return;
+        }
+        
         // Clear any invalid session and redirect to clean state
         await supabase.auth.signOut();
         setUser(null);
@@ -65,7 +94,18 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     // Listen for auth changes
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, session) => {
+    } = supabase.auth.onAuthStateChange(async (event, session) => {
+      // Handle token refresh errors
+      if (event === 'TOKEN_REFRESHED' && !session) {
+        console.log('Token refresh failed, clearing session');
+        await supabase.auth.signOut();
+        setUser(null);
+        setProfileComplete(false);
+        setLoading(false);
+        window.location.href = '/';
+        return;
+      }
+      
       setUser(session?.user ?? null);
       if (session?.user) {
         checkProfileComplete(session.user);
@@ -111,6 +151,18 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         if (error) {
           console.error('Error checking profile:', error);
           
+          // Handle refresh token errors
+          if (error.message?.includes('Refresh Token Not Found') || 
+              error.message?.includes('invalid_grant') ||
+              error.message?.includes('refresh_token_not_found')) {
+            console.log('Invalid refresh token detected in profile check, clearing session');
+            await supabase.auth.signOut();
+            setProfileComplete(false);
+            setUser(null);
+            window.location.href = '/';
+            return;
+          }
+          
           // Check if the error is due to an invalid session
           if (error.message?.includes('session_not_found') || 
               (error as any)?.status === 403 ||
@@ -141,6 +193,18 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       }
     } catch (error: any) {
       console.error('Error checking profile completion:', error);
+      
+      // Handle refresh token errors in catch block
+      if (error?.message?.includes('Refresh Token Not Found') || 
+          error?.message?.includes('invalid_grant') ||
+          error?.message?.includes('refresh_token_not_found')) {
+        console.log('Invalid refresh token detected in profile completion check, clearing session');
+        await supabase.auth.signOut();
+        setProfileComplete(false);
+        setUser(null);
+        window.location.href = '/';
+        return;
+      }
       
       // Check if the error is due to an invalid session
       if (error?.message?.includes('session_not_found') || 

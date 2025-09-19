@@ -409,7 +409,7 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
           role="main"
           aria-label="Main content"
         >
-          <div className={`w-full ${location.pathname.includes('/lessons/') ? '' : 'max-w-7xl mx-auto'}`}>
+          <div className={`w-full min-w-0 ${location.pathname.includes('/lessons/') ? '' : 'max-w-7xl mx-auto'}`}>
             {/* Main Content */}
             {children}
           </div>

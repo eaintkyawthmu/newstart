@@ -484,7 +484,7 @@ const LessonDetail = () => {
         <div className="max-w-4xl mx-auto px-3 py-4 space-y-4">
           
           {/* Introduction Section */}
-          <section id="intro" className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden scroll-mb-40">
+          <section id="intro" className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden scroll-mt-24">
             <button
               onClick={() => toggleSection('intro')}
               className="w-full p-4 flex items-center justify-between hover:bg-gray-50 transition-colors"

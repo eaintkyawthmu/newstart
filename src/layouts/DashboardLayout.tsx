@@ -82,7 +82,13 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
       path: '/help',
       icon: LifeBuoy,
       label: language === 'en' ? 'Help' : 'အကူအညီ'
-    }
+    },
+    // Add debug menu item in development
+    ...(process.env.NODE_ENV === 'development' ? [{
+      path: '/user-type-test',
+      icon: Settings,
+      label: 'Debug User Types'
+    }] : [])
   ];
 
   // Add admin menu item conditionally

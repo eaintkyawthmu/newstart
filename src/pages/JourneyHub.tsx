@@ -12,6 +12,7 @@ import { CourseCard } from '../features/journey-hub';
 import { useQuery } from '@tanstack/react-query';
 import { AdvancedFilters } from '../components/ui';
 import { FilteredContentDisplay } from '../features/journey-hub';
+import { UserTypeDebugPanel, ContentValidationTest } from '../components/ui';
 
 const JourneyHub = () => {
   const { language } = useLanguage();
@@ -304,6 +305,14 @@ const JourneyHub = () => {
         isOpen={isFiltersOpen}
         onClose={() => setIsFiltersOpen(false)}
       />
+      
+      {/* Debug Tools - Development Only */}
+      {process.env.NODE_ENV === 'development' && (
+        <>
+          <UserTypeDebugPanel />
+          <ContentValidationTest />
+        </>
+      )}
     </div>
   );
 };

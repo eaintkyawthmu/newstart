@@ -27,6 +27,7 @@ import AdminPage from './pages/AdminPage';
 import SubscriptionPage from './pages/SubscriptionPage';
 import MilestonesPage from './pages/MilestonesPage';
 import StripeTestPage from './pages/StripeTestPage';
+import UserTypeTestPage from './pages/UserTypeTestPage';
 import { 
   BankingCredit, 
   BudgetingSaving, 
@@ -215,6 +216,17 @@ const AppContent: React.FC = () => {
             <StripeTestPage />
           </ProtectedRoute>
         } />
+        
+        {/* User Type Testing page - Development only */}
+        {process.env.NODE_ENV === 'development' && (
+          <Route path="/user-type-test" element={
+            <ProtectedRoute>
+              <DashboardLayout>
+                <UserTypeTestPage />
+              </DashboardLayout>
+            </ProtectedRoute>
+          } />
+        )}
         
         {/* Protected routes */}
         <Route path="/dashboard" element={

@@ -18,6 +18,8 @@ import InteractiveGuide from './InteractiveGuide';
 import AdvancedFilters from './AdvancedFilters';
 import AnimatedCounter from './AnimatedCounter';
 import ContentFilter from './ContentFilter';
+import UserTypeDebugPanel from './UserTypeDebugPanel';
+import ContentValidationTest from './ContentValidationTest';
 
 export {
   Alert,
@@ -39,5 +41,7 @@ export {
   InteractiveGuide,
   AdvancedFilters,
   AnimatedCounter,
-  ContentFilter
+  ContentFilter,
+  UserTypeDebugPanel,
+  ContentValidationTest
 };

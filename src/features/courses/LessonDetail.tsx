@@ -492,7 +492,7 @@ const LessonDetail = () => {
               <div className="flex items-center">
                 <BookOpen className="w-5 h-5 text-blue-600 mr-3" />
                 <h2 className="text-lg font-semibold text-gray-900">
-                  {language === 'en' ? 'Introduction' : 'မိတ်ဆက်'}
+                  {language === 'en' ? 'Introduction' : 'မိတ်ဆက် '}
                 </h2>
               </div>
               {expandedSections.has('intro') ? (

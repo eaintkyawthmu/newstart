@@ -149,7 +149,13 @@ const LessonDetail = () => {
       }
     }
   }, [lesson?._id]);
-
+  
+  useEffect(() => {
+  setExpandedSections(new Set(['intro']));
+  // optional: jump to top when switching lessons
+  window.scrollTo({ top: 0, behavior: 'auto' }); // or 'instant' if you prefer
+  }, [lessonSlug]);
+  
   const loadProgress = async () => {
     try {
       const { data: { user } } = await supabase.auth.getUser();

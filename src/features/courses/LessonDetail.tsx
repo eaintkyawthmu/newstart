@@ -8,6 +8,7 @@ import { supabase } from '../../lib/supabaseClient';
 import { useQuery } from '@tanstack/react-query';
 import { useAnalytics } from '../../hooks/useAnalytics';
 import { useMilestones } from '../../hooks/useMilestones';
+import ReflectionPrompt from '../../components/ReflectionPrompt';
 import {
   ArrowLeft,
   AlertCircle,
@@ -649,14 +650,13 @@ const LessonDetail = () => {
                     </div>
                   </div>
                   
+                  {/* Reflection Prompt Component */}
                   {lesson.reflectionPrompts && (
-                    <div className="bg-amber-50 border border-amber-200 rounded-lg p-3 mt-4">
-                      <h3 className="font-semibold text-amber-800 mb-2 text-sm">
-                        {language === 'en' ? 'Reflect & Grow' : 'ပြန်လည်သုံးသပ်ပြီး တိုးတက်ပါ'}
-                      </h3>
-                      <div className="prose prose-sm max-w-none text-amber-700 break-words prose-a:break-all">
-                        <PortableText value={Array.isArray(lesson.reflectionPrompts) ? lesson.reflectionPrompts : [lesson.reflectionPrompts]} />
-                      </div>
+                    <div className="mt-4">
+                      <ReflectionPrompt
+                        lessonId={lesson._id}
+                        reflectionPrompts={Array.isArray(lesson.reflectionPrompts) ? lesson.reflectionPrompts : [lesson.reflectionPrompts]}
+                      />
                     </div>
                   )}
                 </div>

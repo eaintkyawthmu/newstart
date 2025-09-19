@@ -28,6 +28,7 @@ import SubscriptionPage from './pages/SubscriptionPage';
 import MilestonesPage from './pages/MilestonesPage';
 import StripeTestPage from './pages/StripeTestPage';
 import UserTypeTestPage from './pages/UserTypeTestPage';
+import ReflectionsPage from './pages/ReflectionsPage';
 import { 
   BankingCredit, 
   BudgetingSaving, 
@@ -289,6 +290,14 @@ const AppContent: React.FC = () => {
           <ProtectedRoute>
             <DashboardLayout>
               <MilestonesPage />
+            </DashboardLayout>
+          </ProtectedRoute>
+        } />
+        
+        <Route path="/reflections" element={
+          <ProtectedRoute>
+            <DashboardLayout>
+              <ReflectionsPage />
             </DashboardLayout>
           </ProtectedRoute>
         } />

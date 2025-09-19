@@ -6,7 +6,8 @@ import {
   BookOpen, 
   Map, 
   MessageSquare,
-  Award
+  Award,
+  Heart
 } from 'lucide-react';
 
 const BottomNavBar: React.FC = () => {
@@ -31,9 +32,9 @@ const BottomNavBar: React.FC = () => {
       label: language === 'en' ? 'Library' : 'စာကြည့်တိုက်'
     },
     {
-      path: '/rewards',
-      icon: Award,
-      label: language === 'en' ? 'Rewards' : 'ဆုလာဘ်များ'
+      path: '/reflections',
+      icon: Heart,
+      label: language === 'en' ? 'Reflect' : 'သုံးသပ်ရန်'
     },
     {
       path: '/chat',

@@ -26,6 +26,7 @@ import {
   RotateCcw,
   Download,
   Award,
+  Heart,
   Bell,
   Search,
   Eye
@@ -72,6 +73,11 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
       path: '/chat',
       icon: MessageSquare,
       label: language === 'en' ? 'Chat with Mini Angel' : 'Mini Angel နှင့် စကားပြောရန်'
+    },
+    {
+      path: '/reflections',
+      icon: Heart,
+      label: language === 'en' ? 'Reflections' : 'ရောင်ပြန်ဟပ်မှုများ'
     },
     {
       path: '/consultation',

@@ -444,7 +444,7 @@ const LessonDetail = () => {
   return (
     <div className="min-h-screen bg-gray-50 w-full">
       {/* Header */}
-      <header className="sticky top-0 z-40 bg-white border-b border-gray-200 shadow-sm w-full">
+      <header className="hidden md:block sticky top-0 z-40 bg-white border-b border-gray-200 shadow-sm w-full">
         <div className="flex items-center justify-between px-3 py-2 min-h-[56px]">
           <button
             onClick={() => navigate(`/courses/${pathSlug}`)}

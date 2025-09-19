@@ -78,3 +78,5 @@ export const FilteredContentDisplay: React.FC<FilteredContentDisplayProps> = ({
     </div>
   );
 };
+
+export default FilteredContentDisplay

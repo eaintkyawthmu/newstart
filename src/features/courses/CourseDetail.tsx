@@ -208,7 +208,7 @@ const CourseDetail = () => {
     return icons[moduleIndex % icons.length];
   };
 
-  if (pathLoading || lessonLoading || userTypeLoading) {
+  if (isLoading || userTypeLoading) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
         <div className="text-center">

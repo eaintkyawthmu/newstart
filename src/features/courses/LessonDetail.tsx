@@ -621,12 +621,11 @@ const LessonDetail = () => {
           )}
 
           {/* Action Plan Section */}
-          {((lesson.actionableTasks && lesson.actionableTasks.length > 0) || 
-            (lesson.lessonResources && lesson.lessonResources.length > 0)) && (
+          {(lesson.actionableTasks?.length > 0 || lesson.lessonResources?.length > 0) && (
             <section id="actions" className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden flex-shrink-0">
               <button
                 onClick={() => toggleSection('actions')}
-                className="w-full p-4 flex items-center justify-between hover:bg-gray-50 transition-colors sticky top-0 bg-white z-10 border-b border-gray-100"
+                className="w-full p-4 flex items-center justify-between hover:bg-gray-50 transition-colors bg-white border-b border-gray-100"
               >
                 <div className="flex items-center">
                   <Target className="w-5 h-5 text-purple-600 mr-3" />
@@ -642,9 +641,9 @@ const LessonDetail = () => {
               </button>
               
               {expandedSections.has('actions') && (
-                <div className="px-4 pb-4 max-h-96 overflow-y-auto space-y-4">
+                <div className="px-4 pb-4 max-h-[50vh] overflow-y-auto space-y-4">
                   {/* Action Tasks */}
-                  {lesson.actionableTasks && lesson.actionableTasks.length > 0 && (
+                  {lesson.actionableTasks?.length > 0 && (
                     <div className="bg-purple-50 border border-purple-200 rounded-lg p-3">
                       <h3 className="font-semibold text-purple-800 mb-3 text-sm">
                         {language === 'en' ? 'Tasks to Complete' : 'ပြီးဆုံးရန် လုပ်ငန်းတာဝန်များ'}
@@ -678,7 +677,7 @@ const LessonDetail = () => {
                   )}
 
                   {/* Lesson Resources */}
-                  {lesson.lessonResources && lesson.lessonResources.length > 0 && (
+                  {lesson.lessonResources?.length > 0 && (
                     <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
                       <h3 className="font-semibold text-blue-800 mb-3 text-sm">
                         {language === 'en' ? 'Additional Resources' : 'ထပ်ဆောင်း အရင်းအမြစ်များ'}
@@ -714,11 +713,11 @@ const LessonDetail = () => {
           )}
 
           {/* Quiz Section */}
-          {lesson.quiz && lesson.quiz.questions && lesson.quiz.questions.length > 0 && (
+          {lesson.quiz?.questions?.length > 0 && (
             <section id="quiz" className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden flex-shrink-0">
               <button
                 onClick={() => toggleSection('quiz')}
-                className="w-full p-4 flex items-center justify-between hover:bg-gray-50 transition-colors sticky top-0 bg-white z-10 border-b border-gray-100"
+                className="w-full p-4 flex items-center justify-between hover:bg-gray-50 transition-colors bg-white border-b border-gray-100"
               >
                 <div className="flex items-center">
                   <FileText className="w-5 h-5 text-amber-600 mr-3" />
@@ -734,7 +733,7 @@ const LessonDetail = () => {
               </button>
               
               {expandedSections.has('quiz') && (
-                <div className="px-4 pb-4 max-h-[70vh] overflow-y-auto">
+                <div className="px-4 pb-4 max-h-[60vh] overflow-y-auto">
                   <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 mb-4">
                     <h3 className="text-base font-semibold text-blue-800 mb-2">
                       {lesson.quiz.title || (language === 'en' ? 'Knowledge Check' : 'အသိပညာ စစ်ဆေးခြင်း')}

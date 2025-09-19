@@ -480,7 +480,7 @@ const LessonDetail = () => {
       </header>
 
       {/* Main Content - Vertical Scrolling */}
-      <main className="pb-20">
+      <main className="pb-[calc(10rem+env(safe-area-inset-bottom))] md:pb-24">
         <div className="max-w-4xl mx-auto px-3 py-4 space-y-4">
           
           {/* Introduction Section */}

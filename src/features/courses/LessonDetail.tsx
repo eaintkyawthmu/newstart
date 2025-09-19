@@ -238,16 +238,12 @@ const LessonDetail = () => {
   const toggleSection = (sectionId: string) => {
     setExpandedSections(prev => {
       const newSet = new Set(prev);
-      
-      // If the clicked section is already expanded, collapse it
-      if (prev.has(sectionId)) {
+      if (newSet.has(sectionId)) {
         newSet.delete(sectionId);
-        return newSet;
       } else {
-        // Open the clicked section (keep others open)
         newSet.add(sectionId);
-        return newSet;
       }
+      return newSet;
     });
   };
 
@@ -316,223 +312,247 @@ const LessonDetail = () => {
     return { prevLesson, nextLesson };
   };
 
-  const { prevLesson, nextLesson } = findAdjacentLessons();
-
-  const handleAnswerChange = (questionIndex: number, answer: any) => {
+  // Quiz handlers
+  const handleAnswerChange = (questionIndex: number, value: number | boolean) => {
     setUserAnswers(prev => {
       const newAnswers = [...prev];
-      if (typeof answer === 'boolean') {
-        newAnswers[questionIndex] = { ...newAnswers[questionIndex], trueFalseAnswer: answer };
+      
+      if (typeof value === 'number') {
+        newAnswers[questionIndex] = {
+          ...newAnswers[questionIndex],
+          selectedOptionIndex: value,
+          trueFalseAnswer: undefined
+        };
       } else {
-        newAnswers[questionIndex] = { ...newAnswers[questionIndex], selectedOptionIndex: answer };
+        newAnswers[questionIndex] = {
+          ...newAnswers[questionIndex],
+          selectedOptionIndex: undefined,
+          trueFalseAnswer: value
+        };
       }
+      
       return newAnswers;
     });
   };
 
   const handleSubmitQuiz = () => {
-    if (!lesson?.quiz?.questions) return;
-
-    const results = lesson.quiz.questions.map((question: any, index: number) => {
+    if (!lesson?.quiz?.questions || !Array.isArray(lesson.quiz.questions)) return;
+    
+    const results: any[] = [];
+    let score = 0;
+    
+    lesson.quiz.questions.forEach((question: any, index: number) => {
       const userAnswer = userAnswers[index];
       let isCorrect = false;
-
-      if (question.questionType === 'multipleChoice') {
-        isCorrect = question.options?.[userAnswer?.selectedOptionIndex]?.isCorrect || false;
-      } else if (question.questionType === 'trueFalse') {
-        isCorrect = userAnswer?.trueFalseAnswer === question.correctAnswer;
+      
+      if (question.questionType === 'multipleChoice' && userAnswer?.selectedOptionIndex !== undefined) {
+        isCorrect = question.options[userAnswer.selectedOptionIndex]?.isCorrect || false;
+      } else if (question.questionType === 'trueFalse' && userAnswer?.trueFalseAnswer !== undefined) {
+        isCorrect = userAnswer.trueFalseAnswer === question.correctAnswer;
       }
-
-      return {
+      
+      if (isCorrect) score++;
+      
+      results.push({
         questionIndex: index,
         isCorrect,
-        feedback: question.feedback || ''
-      };
+        feedback: question.feedback
+      });
     });
-
+    
     setQuizResults(results);
-    setTotalScore(results.filter(r => r.isCorrect).length);
+    setTotalScore(score);
     setQuizSubmitted(true);
+    
+    // Track quiz submission
+    trackEvent('quiz_submitted', {
+      lesson_id: lesson._id,
+      lesson_title: lesson.title,
+      score,
+      total_questions: lesson.quiz.questions.length,
+      passed: score / lesson.quiz.questions.length >= 0.7,
+      time_spent_seconds: Math.floor((new Date().getTime() - startTime.getTime()) / 1000)
+    });
+    
+    // Auto-complete lesson if quiz passed
+    if (score / lesson.quiz.questions.length >= 0.7 && !completed) {
+      toggleCompletion();
+    }
   };
 
   const handleRetakeQuiz = () => {
-    setQuizSubmitted(false);
-    setQuizResults([]);
-    setTotalScore(0);
     setUserAnswers(lesson?.quiz?.questions?.map((_, index) => ({
       questionIndex: index,
       selectedOptionIndex: undefined,
       trueFalseAnswer: undefined
     })) || []);
+    setQuizSubmitted(false);
+    setQuizResults([]);
+    setTotalScore(0);
   };
 
-  // Calculate progress based on completed tasks and quiz
+  // Calculate progress
   const calculateProgress = () => {
-    if (!lesson) return 0;
+    const totalTasks = [
+      ...(lesson?.measurableDeliverables || []),
+      ...(lesson?.actionableTasks || [])
+    ].length;
     
-    let totalItems = 0;
-    let completedItems = 0;
+    if (totalTasks === 0) return completed ? 100 : 0;
     
-    // Count completion status
-    if (completed) completedItems++;
-    totalItems++;
+    const completedCount = completedTasks.length;
+    const taskProgress = (completedCount / totalTasks) * 80; // Tasks worth 80%
+    const completionBonus = completed ? 20 : 0; // Completion worth 20%
     
-    // Count actionable tasks
-    if (lesson.actionableTasks && lesson.actionableTasks.length > 0) {
-      totalItems += lesson.actionableTasks.length;
-      completedItems += completedTasks.length;
-    }
-    
-    // Count quiz
-    if (lesson.quiz?.questions && lesson.quiz.questions.length > 0) {
-      totalItems++;
-      if (quizSubmitted && totalScore / lesson.quiz.questions.length >= 0.7) {
-        completedItems++;
-      }
-    }
-    
-    return totalItems > 0 ? Math.round((completedItems / totalItems) * 100) : 0;
+    return Math.min(Math.round(taskProgress + completionBonus), 100);
   };
 
-  const progress = calculateProgress();
-
-  if (lessonLoading || pathLoading) {
+  if (pathLoading || lessonLoading) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
       </div>
     );
   }
 
-  if (!lesson) {
+  if (!lesson || !path) {
     return (
-      <div className="text-center py-12">
-        <AlertCircle className="h-12 w-12 text-red-500 mx-auto mb-4" />
-        <h2 className="text-xl font-semibold text-gray-800 mb-2">Lesson not found</h2>
-        <p className="text-gray-600">The requested lesson could not be found.</p>
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
+        <div className="text-center">
+          <AlertCircle className="h-12 w-12 text-red-500 mx-auto mb-4" />
+          <h2 className="text-xl font-semibold text-gray-800 mb-2">
+            {language === 'en' ? 'Lesson not found' : 'သင်ခန်းစာ မတွေ့ရှိပါ'}
+          </h2>
+          <button
+            onClick={() => navigate(`/courses/${pathSlug}`)}
+            className="text-blue-600 hover:text-blue-700 underline"
+          >
+            {language === 'en' ? 'Return to Course' : 'သင်တန်းသို့ ပြန်သွားရန်'}
+          </button>
+        </div>
       </div>
     );
   }
 
+  const { prevLesson, nextLesson } = findAdjacentLessons();
+  const progress = calculateProgress();
+
   return (
     <div className="min-h-screen bg-gray-50">
-      <main className="pb-20 pt-4">
-        <div className="max-w-4xl mx-auto px-4 space-y-4">
+      {/* Header */}
+      <header className="sticky top-0 z-40 bg-white border-b border-gray-200 shadow-sm">
+        <div className="flex items-center justify-between px-3 py-2 min-h-[56px]">
           
-          {/* Lesson Title Card */}
-          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4">
-            <div className="flex items-center justify-between mb-3">
-              <div className="flex-1">
-                <h1 className="text-lg font-bold text-gray-900 mb-1">
-                  {lesson.title}
-                </h1>
-                <div className="flex items-center text-sm text-gray-500">
-                  <Clock className="w-4 h-4 mr-1" />
-                  <span>{lesson.duration}</span>
-                  <span className="mx-2">•</span>
-                  <span>{progress}% {language === 'en' ? 'complete' : 'ပြီးဆုံး'}</span>
-                </div>
-              </div>
-              
-              <button
-                onClick={toggleCompletion}
-                className={`p-3 rounded-lg transition-colors min-h-[48px] min-w-[48px] flex items-center justify-center ${
-                  completed
-                    ? 'text-green-600 bg-green-50 border border-green-200'
-                    : 'text-gray-400 hover:bg-gray-100 border border-gray-200'
-                }`}
-                aria-label={completed 
-                  ? (language === 'en' ? 'Mark as incomplete' : 'မပြီးဆုံးသေးသည်ဟု မှတ်သားရန်') 
-                  : (language === 'en' ? 'Mark as complete' : 'ပြီးဆုံးအဖြစ် မှတ်သားရန်')}
-              >
-                <Award className="w-6 h-6" />
-              </button>
-            </div>
-            
-            {/* Progress Bar */}
-            <div className="w-full bg-gray-200 rounded-full h-2">
-              <div 
-                className="bg-blue-600 h-2 rounded-full transition-all duration-500 ease-out"
-                style={{ width: `${progress}%` }}
-              />
+          <div className="flex-1 text-center px-2 min-w-0">
+            <h1 className="text-sm font-semibold text-gray-900 truncate">
+              {lesson.title}
+            </h1>
+            <div className="flex items-center justify-center text-xs text-gray-500 mt-0.5">
+              <Clock className="w-3 h-3 mr-1" />
+              <span>{lesson.duration}</span>
+              <span className="mx-2">•</span>
+              <span>{progress}% {language === 'en' ? 'complete' : 'ပြီးဆုံး'}</span>
             </div>
           </div>
+          
+          <button
+            onClick={toggleCompletion}
+            className={`p-2 rounded-lg transition-colors min-h-[44px] min-w-[44px] flex items-center justify-center ${
+              completed
+                ? 'text-green-600 bg-green-50'
+                : 'text-gray-400 hover:bg-gray-100'
+            }`}
+            aria-label={completed 
+              ? (language === 'en' ? 'Mark as incomplete' : 'မပြီးဆုံးသေးသည်ဟု မှတ်သားရန်') 
+              : (language === 'en' ? 'Mark as complete' : 'ပြီးဆုံးအဖြစ် မှတ်သားရန်')}
+          >
+            <Award className="w-5 h-5" />
+          </button>
+        </div>
+        
+        {/* Progress Bar */}
+        <div className="w-full bg-gray-200 h-1">
+          <div 
+            className="bg-blue-600 h-1 transition-all duration-500 ease-out"
+            style={{ width: `${progress}%` }}
+          />
+        </div>
+      </header>
 
+      {/* Main Content - Vertical Scrolling */}
+      <main className="pb-20">
+        <div className="max-w-4xl mx-auto px-3 py-4 space-y-4">
+          
           {/* Introduction Section */}
-          {lesson.introduction && (
-            <section id="intro" className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-              <button
-                onClick={() => toggleSection('intro')}
-                className="w-full p-4 flex items-center justify-between hover:bg-gray-50 transition-colors bg-white border-b border-gray-100"
-              >
-                <div className="flex items-center">
-                  <BookOpen className="w-5 h-5 text-blue-600 mr-3" />
-                  <h2 className="text-lg font-semibold text-gray-900">
-                    {language === 'en' ? 'Introduction' : 'နိဒါန်း'}
-                  </h2>
-                </div>
-                {expandedSections.has('intro') ? (
-                  <ChevronUp className="w-5 h-5 text-gray-400" />
-                ) : (
-                  <ChevronDown className="w-5 h-5 text-gray-400" />
-                )}
-              </button>
-              
-              {expandedSections.has('intro') && (
-                <div className="px-4 pb-4">
-                  <div className="prose prose-sm max-w-none text-gray-700">
+          <section id="intro" className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+            <button
+              onClick={() => toggleSection('intro')}
+              className="w-full p-4 flex items-center justify-between hover:bg-gray-50 transition-colors"
+            >
+              <div className="flex items-center">
+                <BookOpen className="w-5 h-5 text-blue-600 mr-3" />
+                <h2 className="text-lg font-semibold text-gray-900">
+                  {language === 'en' ? 'Introduction' : 'မိတ်ဆက်'}
+                </h2>
+              </div>
+              {expandedSections.has('intro') ? (
+                <ChevronUp className="w-5 h-5 text-gray-400" />
+              ) : (
+                <ChevronDown className="w-5 h-5 text-gray-400" />
+              )}
+            </button>
+            
+            {expandedSections.has('intro') && (
+              <div className="px-4 pb-4 border-t border-gray-100">
+                {lesson.introduction && (
+                  <div className="prose prose-sm max-w-none text-gray-700 mb-4">
                     <PortableText value={Array.isArray(lesson.introduction) ? lesson.introduction : [lesson.introduction]} />
                   </div>
-                </div>
-              )}
-            </section>
-          )}
-
-          {/* Measurable Deliverables Section */}
-          {lesson.measurableDeliverables && lesson.measurableDeliverables.length > 0 && (
-            <section id="deliverables" className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-              <button
-                onClick={() => toggleSection('deliverables')}
-                className="w-full p-4 flex items-center justify-between hover:bg-gray-50 transition-colors bg-white border-b border-gray-100"
-              >
-                <div className="flex items-center">
-                  <Target className="w-5 h-5 text-purple-600 mr-3" />
-                  <h2 className="text-lg font-semibold text-gray-900">
-                    {language === 'en' ? 'What You\'ll Be Able to Do' : 'သင်လုပ်ဆောင်နိုင်မည့်အရာများ'}
-                  </h2>
-                </div>
-                {expandedSections.has('deliverables') ? (
-                  <ChevronUp className="w-5 h-5 text-gray-400" />
-                ) : (
-                  <ChevronDown className="w-5 h-5 text-gray-400" />
                 )}
-              </button>
-              
-              {expandedSections.has('deliverables') && (
-                <div className="px-4 pb-4">
-                  <div className="bg-purple-50 border border-purple-200 rounded-lg p-3">
+                
+                {lesson.measurableDeliverables && lesson.measurableDeliverables.length > 0 && (
+                  <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
+                    <h3 className="font-semibold text-blue-800 mb-3 flex items-center text-sm">
+                      <Target className="w-4 h-4 mr-2" />
+                      {language === 'en' ? 'What You\'ll Achieve' : 'သင်ရရှိမည့်အရာများ'}
+                    </h3>
                     <div className="space-y-2">
                       {lesson.measurableDeliverables.map((deliverable: any) => (
-                        <div key={deliverable._key} className="flex items-start">
-                          <CheckCircle className="w-4 h-4 text-purple-600 mt-1 mr-2 flex-shrink-0" />
-                          <div className="prose prose-sm max-w-none text-purple-700">
+                        <label 
+                          key={deliverable._key} 
+                          className="flex items-start space-x-2 cursor-pointer hover:bg-blue-100 p-2 rounded-md transition-colors"
+                        >
+                          <input
+                            type="checkbox"
+                            checked={completedTasks.includes(deliverable._key)}
+                            onChange={(e) => handleTaskCompletion(deliverable._key, e.target.checked)}
+                            className="w-4 h-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500 flex-shrink-0 mt-0.5"
+                          />
+                          <div className={`text-sm text-gray-700 flex-1 ${
+                            completedTasks.includes(deliverable._key) ? 'line-through text-gray-500' : ''
+                          }`}>
                             <PortableText value={Array.isArray(deliverable.description) ? deliverable.description : [deliverable.description]} />
                           </div>
-                        </div>
+                          {!deliverable.isOptional && (
+                            <span className="px-1.5 py-0.5 bg-red-100 text-red-800 text-xs rounded-full flex-shrink-0">
+                              {language === 'en' ? 'Required' : 'လိုအပ်သည်'}
+                            </span>
+                          )}
+                        </label>
                       ))}
                     </div>
                   </div>
-                </div>
-              )}
-            </section>
-          )}
+                )}
+              </div>
+            )}
+          </section>
 
           {/* Content Section */}
           {(lesson.content || lesson.type === 'video') && (
             <section id="content" className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
               <button
                 onClick={() => toggleSection('content')}
-                className="w-full p-4 flex items-center justify-between hover:bg-gray-50 transition-colors bg-white border-b border-gray-100"
+                className="w-full p-4 flex items-center justify-between hover:bg-gray-50 transition-colors"
               >
                 <div className="flex items-center">
                   {lesson.type === 'video' ? (
@@ -552,7 +572,7 @@ const LessonDetail = () => {
               </button>
               
               {expandedSections.has('content') && (
-                <div className="px-4 pb-4">
+                <div className="px-4 pb-4 border-t border-gray-100">
                   {/* Video Content */}
                   {lesson.type === 'video' && lesson.youtubeVideoId && (
                     <div className="aspect-video rounded-lg overflow-hidden bg-gray-100 mb-4">
@@ -582,7 +602,7 @@ const LessonDetail = () => {
             <section id="takeaways" className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
               <button
                 onClick={() => toggleSection('takeaways')}
-                className="w-full p-4 flex items-center justify-between hover:bg-gray-50 transition-colors bg-white border-b border-gray-100"
+                className="w-full p-4 flex items-center justify-between hover:bg-gray-50 transition-colors"
               >
                 <div className="flex items-center">
                   <Lightbulb className="w-5 h-5 text-green-600 mr-3" />
@@ -598,7 +618,7 @@ const LessonDetail = () => {
               </button>
               
               {expandedSections.has('takeaways') && (
-                <div className="px-4 pb-4">
+                <div className="px-4 pb-4 border-t border-gray-100">
                   <div className="bg-green-50 border border-green-200 rounded-lg p-3">
                     <div className="prose prose-sm max-w-none text-green-700">
                       <PortableText value={Array.isArray(lesson.keyTakeaways) ? lesson.keyTakeaways : [lesson.keyTakeaways]} />
@@ -621,11 +641,12 @@ const LessonDetail = () => {
           )}
 
           {/* Action Plan Section */}
-          {(lesson.actionableTasks?.length > 0 || lesson.lessonResources?.length > 0) && (
+          {((lesson.actionableTasks && lesson.actionableTasks.length > 0) || 
+            (lesson.lessonResources && lesson.lessonResources.length > 0)) && (
             <section id="actions" className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
               <button
                 onClick={() => toggleSection('actions')}
-                className="w-full p-4 flex items-center justify-between hover:bg-gray-50 transition-colors bg-white border-b border-gray-100"
+                className="w-full p-4 flex items-center justify-between hover:bg-gray-50 transition-colors"
               >
                 <div className="flex items-center">
                   <Target className="w-5 h-5 text-purple-600 mr-3" />
@@ -641,9 +662,9 @@ const LessonDetail = () => {
               </button>
               
               {expandedSections.has('actions') && (
-                <div className="px-4 pb-4 space-y-4">
+                <div className="px-4 pb-4 border-t border-gray-100 space-y-4">
                   {/* Action Tasks */}
-                  {lesson.actionableTasks?.length > 0 && (
+                  {lesson.actionableTasks && lesson.actionableTasks.length > 0 && (
                     <div className="bg-purple-50 border border-purple-200 rounded-lg p-3">
                       <h3 className="font-semibold text-purple-800 mb-3 text-sm">
                         {language === 'en' ? 'Tasks to Complete' : 'ပြီးဆုံးရန် လုပ်ငန်းတာဝန်များ'}
@@ -658,29 +679,29 @@ const LessonDetail = () => {
                               type="checkbox"
                               checked={completedTasks.includes(task._key)}
                               onChange={(e) => handleTaskCompletion(task._key, e.target.checked)}
-                              className="w-4 h-4 text-purple-600 border-gray-300 rounded focus:ring-purple-500 mt-1"
+                              className="w-4 h-4 text-purple-600 rounded border-gray-300 focus:ring-purple-500 flex-shrink-0 mt-0.5"
                             />
-                            <div className="flex-1">
-                              <div className="prose prose-sm max-w-none text-purple-700">
-                                <PortableText value={Array.isArray(task.description) ? task.description : [task.description]} />
-                              </div>
-                              {task.isOptional && (
-                                <span className="text-xs text-purple-500 italic">
-                                  {language === 'en' ? '(Optional)' : '(ရွေးချယ်နိုင်သော)'}
-                                </span>
-                              )}
+                            <div className={`text-sm text-gray-700 flex-1 ${
+                              completedTasks.includes(task._key) ? 'line-through text-gray-500' : ''
+                            }`}>
+                              <PortableText value={Array.isArray(task.description) ? task.description : [task.description]} />
                             </div>
+                            {!task.isOptional && (
+                              <span className="px-1.5 py-0.5 bg-red-100 text-red-800 text-xs rounded-full flex-shrink-0">
+                                {language === 'en' ? 'Required' : 'လိုအပ်သည်'}
+                              </span>
+                            )}
                           </label>
                         ))}
                       </div>
                     </div>
                   )}
 
-                  {/* Lesson Resources */}
-                  {lesson.lessonResources?.length > 0 && (
-                    <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
-                      <h3 className="font-semibold text-blue-800 mb-3 text-sm">
-                        {language === 'en' ? 'Additional Resources' : 'ထပ်ဆောင်း အရင်းအမြစ်များ'}
+                  {/* Resources */}
+                  {lesson.lessonResources && lesson.lessonResources.length > 0 && (
+                    <div className="border border-gray-200 rounded-lg p-3">
+                      <h3 className="font-semibold text-gray-800 mb-3 text-sm">
+                        {language === 'en' ? 'Additional Resources' : 'ထပ်ဆောင်းအရင်းအမြစ်များ'}
                       </h3>
                       <div className="space-y-2">
                         {lesson.lessonResources.map((resource: any, index: number) => (
@@ -689,17 +710,17 @@ const LessonDetail = () => {
                             href={resource.url}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="flex items-center p-2 bg-white rounded-md border border-blue-100 hover:border-blue-300 transition-colors"
+                            className="flex items-center p-2 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
                           >
                             {resource.type === 'download' ? (
-                              <Download className="w-4 h-4 text-blue-600 mr-2" />
+                              <Download className="w-4 h-4 text-gray-500 mr-2 flex-shrink-0" />
                             ) : (
-                              <ExternalLink className="w-4 h-4 text-blue-600 mr-2" />
+                              <ExternalLink className="w-4 h-4 text-gray-500 mr-2 flex-shrink-0" />
                             )}
-                            <div className="flex-1">
-                              <div className="font-medium text-blue-800 text-sm">{resource.title}</div>
+                            <div className="flex-1 min-w-0">
+                              <p className="font-medium text-gray-800 text-sm truncate">{resource.title}</p>
                               {resource.description && (
-                                <div className="text-xs text-blue-600">{resource.description}</div>
+                                <p className="text-xs text-gray-600 truncate">{resource.description}</p>
                               )}
                             </div>
                           </a>
@@ -713,11 +734,11 @@ const LessonDetail = () => {
           )}
 
           {/* Quiz Section */}
-          {lesson.quiz?.questions?.length > 0 && (
+          {lesson.quiz && lesson.quiz.questions && lesson.quiz.questions.length > 0 && (
             <section id="quiz" className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
               <button
                 onClick={() => toggleSection('quiz')}
-                className="w-full p-4 flex items-center justify-between hover:bg-gray-50 transition-colors bg-white border-b border-gray-100"
+                className="w-full p-4 flex items-center justify-between hover:bg-gray-50 transition-colors"
               >
                 <div className="flex items-center">
                   <FileText className="w-5 h-5 text-amber-600 mr-3" />
@@ -733,7 +754,7 @@ const LessonDetail = () => {
               </button>
               
               {expandedSections.has('quiz') && (
-                <div className="px-4 pb-4">
+                <div className="px-4 pb-4 border-t border-gray-100">
                   <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 mb-4">
                     <h3 className="text-base font-semibold text-blue-800 mb-2">
                       {lesson.quiz.title || (language === 'en' ? 'Knowledge Check' : 'အသိပညာ စစ်ဆေးခြင်း')}
@@ -776,7 +797,7 @@ const LessonDetail = () => {
                   </div>
                   
                   {/* Quiz Questions */}
-                  <div className="space-y-4 pb-4">
+                  <div className="space-y-4">
                     {lesson.quiz.questions.map((question: any, questionIndex: number) => (
                       <div 
                         key={questionIndex} 
@@ -876,7 +897,7 @@ const LessonDetail = () => {
                   </div>
                   
                   {/* Quiz Actions */}
-                  <div className="flex justify-center mt-4 space-x-3 bg-white pt-4 border-t border-gray-100">
+                  <div className="flex justify-center mt-4 space-x-3">
                     {!quizSubmitted ? (
                       <button
                         onClick={handleSubmitQuiz}
@@ -907,52 +928,52 @@ const LessonDetail = () => {
       </main>
 
       {/* Bottom Navigation */}
-      <nav className="fixed bottom-16 md:bottom-0 left-0 right-0 bg-white border-t border-gray-200 shadow-lg z-40 w-full">
+      <nav className="fixed bottom-16 md:bottom-0 left-0 right-0 bg-white border-t border-gray-200 shadow-lg z-40">
         <div className="flex items-center justify-between px-4 py-3 max-w-4xl mx-auto">
           {prevLesson ? (
             <button
               onClick={() => navigate(`/courses/${pathSlug}/lessons/${prevLesson.slug}`)}
-              className="flex items-center px-4 py-3 rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-50 transition-colors min-h-[44px] text-sm font-medium"
+              className="flex items-center px-3 py-2 rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-50 transition-colors min-h-[44px] text-sm"
             >
               <ArrowLeft className="w-4 h-4 mr-1" />
-              <span>{language === 'en' ? 'Previous' : 'နောက်သို့'}</span>
+              <span className="hidden sm:inline">{language === 'en' ? 'Previous' : 'နောက်သို့'}</span>
             </button>
           ) : (
             <button
               onClick={() => navigate(`/courses/${pathSlug}`)}
-              className="flex items-center px-4 py-3 rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-50 transition-colors min-h-[44px] text-sm font-medium"
+              className="flex items-center px-3 py-2 rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-50 transition-colors min-h-[44px] text-sm"
             >
               <ArrowLeft className="w-4 h-4 mr-1" />
-              <span>{language === 'en' ? 'Course' : 'သင်တန်း'}</span>
+              <span className="hidden sm:inline">{language === 'en' ? 'Course' : 'သင်တန်း'}</span>
             </button>
           )}
 
           {/* Progress Indicator */}
-          <div className="flex items-center space-x-2">
-            <div className="w-20 h-2 bg-gray-200 rounded-full overflow-hidden">
+          <div className="flex items-center space-x-1 sm:space-x-2">
+            <div className="w-12 sm:w-16 h-2 bg-gray-200 rounded-full overflow-hidden">
               <div 
                 className="h-full bg-blue-600 transition-all duration-500 ease-out"
                 style={{ width: `${progress}%` }}
               />
             </div>
-            <span className="text-xs text-gray-600 font-medium">{progress}%</span>
+            <span className="text-xs text-gray-600 font-medium hidden sm:inline">{progress}%</span>
           </div>
 
           {nextLesson ? (
             <button
               onClick={() => navigate(`/courses/${pathSlug}/lessons/${nextLesson.slug}`)}
-              className="flex items-center px-4 py-3 rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition-colors min-h-[44px] text-sm font-medium"
+              className="flex items-center px-3 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition-colors min-h-[44px] text-sm"
             >
-              <span>{language === 'en' ? 'Next' : 'ရှေ့သို့'}</span>
+              <span className="hidden sm:inline">{language === 'en' ? 'Next' : 'ရှေ့သို့'}</span>
               <ChevronRight className="w-4 h-4 ml-1" />
             </button>
           ) : (
             <button
               onClick={() => navigate(`/courses/${pathSlug}`)}
-              className="flex items-center px-4 py-3 rounded-lg bg-green-600 text-white hover:bg-green-700 transition-colors min-h-[44px] text-sm font-medium"
+              className="flex items-center px-3 py-2 rounded-lg bg-green-600 text-white hover:bg-green-700 transition-colors min-h-[44px] text-sm"
             >
               <CheckCircle className="w-4 h-4 mr-1" />
-              <span>{language === 'en' ? 'Complete' : 'ပြီးဆုံး'}</span>
+              <span className="hidden sm:inline">{language === 'en' ? 'Complete' : 'ပြီးဆုံး'}</span>
             </button>
           )}
         </div>

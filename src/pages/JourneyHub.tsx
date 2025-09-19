@@ -21,7 +21,6 @@ const JourneyHub = () => {
   const { userType, loading: userTypeLoading } = useUserType();
   const [progress, setProgress] = useState<Record<string, number>>({});
   const [isFiltersOpen, setIsFiltersOpen] = useState(false);
-  const [filteredPaths, setFilteredPaths] = useState<JourneyPath[]>([]);
 
   // SEO optimization
   useSEO({
@@ -49,11 +48,6 @@ const JourneyHub = () => {
   const { data: paths, isLoading, error } = useQuery({
     queryKey: ['journeyPaths', userType],
     queryFn: async () => {
-      // Wait for user type to be loaded before fetching paths
-      if (userTypeLoading) {
-        return [];
-      }
-      
       console.log('Fetching journey paths for user type:', userType);
       
       const paths = await fetchJourneyPaths(pathSlugs, userType || undefined);
@@ -68,12 +62,6 @@ const JourneyHub = () => {
     },
     enabled: !userTypeLoading, // Only run query when user type is loaded
   });
-
-  useEffect(() => {
-    if (paths) {
-      setFilteredPaths(paths);
-    }
-  }, [paths]);
 
   useEffect(() => {
     if (paths) {
@@ -128,71 +116,6 @@ const JourneyHub = () => {
     navigate(`/courses/${path.slug}`);
   };
 
-  const filterGroups = [
-    {
-      id: 'level',
-      label: language === 'en' ? 'Difficulty Level' : 'ခက်ခဲမှုအဆင့်',
-      type: 'select' as const,
-      options: [
-        { id: 'beginner', label: language === 'en' ? 'Beginner' : 'အစပိုင်း', value: 'beginner' },
-        { id: 'intermediate', label: language === 'en' ? 'Intermediate' : 'အလယ်အလတ်', value: 'intermediate' },
-        { id: 'advanced', label: language === 'en' ? 'Advanced' : 'အဆင့်မြင့်', value: 'advanced' }
-      ]
-    },
-    {
-      id: 'type',
-      label: language === 'en' ? 'Course Type' : 'သင်တန်းအမျိုးအစား',
-      type: 'multiselect' as const,
-      options: [
-        { id: 'free', label: language === 'en' ? 'Free' : 'အခမဲ့', value: 'free' },
-        { id: 'premium', label: language === 'en' ? 'Premium' : 'ပရီမီယံ', value: 'premium' }
-      ]
-    },
-    {
-      id: 'progress',
-      label: language === 'en' ? 'Progress' : 'တိုးတက်မှု',
-      type: 'range' as const,
-      min: 0,
-      max: 100
-    }
-  ];
-
-  const handleFiltersChange = (filters: Record<string, any>) => {
-    if (!paths) return;
-    
-    let filtered = [...paths];
-    
-    // Apply level filter
-    if (filters.level) {
-      filtered = filtered.filter(path => path.level === filters.level);
-    }
-    
-    // Apply type filter
-    if (filters.type && filters.type.length > 0) {
-      filtered = filtered.filter(path => {
-        if (filters.type.includes('free') && !path.isPremium) return true;
-        if (filters.type.includes('premium') && path.isPremium) return true;
-        return false;
-      });
-    }
-    
-    // Apply progress filter
-    if (filters.progress) {
-      filtered = filtered.filter(path => {
-        const pathProgress = progress[path._id] || 0;
-        return pathProgress >= (filters.progress.min || 0) && pathProgress <= (filters.progress.max || 100);
-      });
-    }
-    
-    setFilteredPaths(filtered);
-  };
-
-  const handleResetFilters = () => {
-    if (paths) {
-      setFilteredPaths(paths);
-    }
-  };
-
   if (isLoading || userTypeLoading) {
     return (
       <div className="flex items-center justify-center min-h-[400px]" role="status" aria-label="Loading personalized journey paths">
@@ -202,17 +125,17 @@ const JourneyHub = () => {
     );
   }
 
-  if (error || !paths?.length) {
+  if (error) {
     return (
       <div className="text-center py-12" role="alert">
         <AlertCircle className="h-12 w-12 text-red-500 mx-auto mb-4" />
         <h2 className="text-xl font-semibold text-gray-800 mb-2">
-          {error instanceof Error ? error.message : 'No relevant journey paths found for your profile'}
+          {error instanceof Error ? error.message : 'Error loading journey paths'}
         </h2>
         <p className="text-gray-600">
           {language === 'en' 
-            ? 'Please complete your profile setup or try again later'
-            : 'သင့်ပရိုဖိုင်းစီစဉ်မှုကို ပြီးဆုံးအောင်လုပ်ပါ သို့မဟုတ် နောက်မှ ထပ်မံကြိုးစားပါ'}
+            ? 'Please try again later or contact support'
+            : 'နောက်မှ ထပ်မံကြိုးစားပါ သို့မဟုတ် ပံ့ပိုးမှုကို ဆက်သွယ်ပါ'}
         </p>
       </div>
     );
@@ -225,7 +148,7 @@ const JourneyHub = () => {
         <div className="mb-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
           <p className="text-sm text-blue-800">
             <strong>Debug:</strong> User Type: {userType || 'Not set'} | 
-            Showing {filteredPaths.length} of {paths.length} available paths
+            Showing {paths?.length || 0} available paths
           </p>
         </div>
       )}
@@ -242,38 +165,35 @@ const JourneyHub = () => {
                 : `${userType === 'immigrant' ? 'ရေရှည်နေထိုင်ရန်စီစဉ်နေသော ရွှေ့ပြောင်းအခြေချသူများ' : 'ယာယီနေထိုင်သူများ'}အတွက် အဆင့်ဆင့်လမ်းညွှန်မှုဖြင့် အမေရိကန်တွင် သင့်ဘဝသစ်ကို လမ်းညွှန်ပါ`}
             </p>
           </div>
-          
-          <button
-            onClick={() => setIsFiltersOpen(true)}
-            className="flex items-center px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500"
-          >
-            <Filter className="h-5 w-5 mr-2 text-gray-500" />
-            {language === 'en' ? 'Filter Courses' : 'သင်တန်းများ စစ်ထုတ်ရန်'}
-          </button>
         </div>
       </div>
 
-      {/* Improved responsive grid layout */}
-      <FilteredContentDisplay
-        paths={paths || []}
-        onPathClick={handlePathClick}
-        progress={progress}
-        showDebugInfo={process.env.NODE_ENV === 'development'}
-      >
-        {(filteredPaths) => (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8 mb-12 sm:mb-16">
-            {filteredPaths.map((path) => (
-              <div key={path._id} className="w-full">
-                <CourseCard 
-                  path={path}
-                  onPathClick={handlePathClick}
-                  progress={progress[path._id] || 0}
-                />
-              </div>
-            ))}
-          </div>
-        )}
-      </FilteredContentDisplay>
+      {/* Journey Paths Grid */}
+      {paths && paths.length > 0 ? (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8 mb-12 sm:mb-16">
+          {paths.map((path) => (
+            <div key={path._id} className="w-full">
+              <CourseCard 
+                path={path}
+                onPathClick={handlePathClick}
+                progress={progress[path._id] || 0}
+              />
+            </div>
+          ))}
+        </div>
+      ) : (
+        <div className="text-center py-12">
+          <AlertCircle className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+          <h2 className="text-xl font-semibold text-gray-800 mb-2">
+            {language === 'en' ? 'No journey paths available' : 'ခရီးစဉ်လမ်းကြောင်းများ မရရှိနိုင်ပါ'}
+          </h2>
+          <p className="text-gray-600">
+            {language === 'en' 
+              ? 'Journey paths will appear here once they are published in Sanity'
+              : 'Sanity တွင် ထုတ်ဝေပြီးသည်နှင့် ခရီးစဉ်လမ်းကြောင်းများ ဤနေရာတွင် ပေါ်လာမည်'}
+          </p>
+        </div>
+      )}
 
       {/* Premium upgrade section */}
       <div className="bg-gradient-to-r from-purple-600 to-indigo-600 rounded-xl p-6 sm:p-8 text-white shadow-xl">
@@ -296,15 +216,6 @@ const JourneyHub = () => {
           </button>
         </div>
       </div>
-      
-      {/* Advanced Filters */}
-      <AdvancedFilters
-        filterGroups={filterGroups}
-        onFiltersChange={handleFiltersChange}
-        onReset={handleResetFilters}
-        isOpen={isFiltersOpen}
-        onClose={() => setIsFiltersOpen(false)}
-      />
       
       {/* Debug Tools - Development Only */}
       {process.env.NODE_ENV === 'development' && (

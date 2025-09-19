@@ -934,7 +934,7 @@ const LessonDetail = () => {
       </main>
 
       {/* Bottom Navigation */}
-      <nav className="fixed bottom-16 md:bottom-0 left-0 right-0 bg-white border-t border-gray-200 shadow-lg z-40">
+      <nav className="fixed left-0 right-0 bottom-[calc(64px+env(safe-area-inset-bottom))] md:bottom-0 bg-white border-t border-gray-200 shadow-lg z-50">
         <div className="flex items-center justify-between px-4 py-3 max-w-4xl mx-auto">
           {prevLesson ? (
             <button

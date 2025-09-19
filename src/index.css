@@ -394,11 +394,18 @@
   
   /* Skip to main content link for screen readers */
   .skip-link {
-    @apply absolute -top-10 left-6 bg-blue-600 text-white px-4 py-2 rounded-md z-50 transition-all;
+    @apply absolute left-6 bg-blue-600 text-white px-4 py-2 rounded-md z-50 transition-all;
+    top: -100px;
+    transform: translateY(-100%);
+    opacity: 0;
+    pointer-events: none;
   }
   
   .skip-link:focus {
-    @apply top-6;
+    top: 6px;
+    transform: translateY(0);
+    opacity: 1;
+    pointer-events: auto;
   }
   
   /* Loading states */

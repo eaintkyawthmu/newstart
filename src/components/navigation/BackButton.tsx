@@ -1,15 +1,15 @@
 import React, { ReactNode, useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { useLanguage } from '../contexts/LanguageContext';
-import { useAuth } from '../contexts/AuthContext';
-import { usePremiumAccess } from '../hooks/usePremiumAccess';
-import { useStripe } from '../hooks/useStripe';
-import { supabase } from '../lib/supabaseClient';
-import ProfileMenu from '../components/ProfileMenu';
-import SearchBar from '../components/ui/SearchBar';
-import NotificationCenter from '../components/ui/NotificationCenter';
-import OfflineIndicator from '../components/ui/OfflineIndicator';
-import AccessibilityMenu from '../components/ui/AccessibilityMenu';
+import { useLanguage } from '../../contexts/LanguageContext';
+import { useAuth } from '../../contexts/AuthContext';
+import { usePremiumAccess } from '../../hooks/usePremiumAccess';
+import { useStripe } from '../../hooks/useStripe';
+import { supabase } from '../../lib/supabaseClient';
+import ProfileMenu from '../../components/ProfileMenu';
+import SearchBar from '../../components/ui/SearchBar';
+import NotificationCenter from '../../components/ui/NotificationCenter';
+import OfflineIndicator from '../../components/ui/OfflineIndicator';
+import AccessibilityMenu from '../../components/ui/AccessibilityMenu';
 import {
   LayoutDashboard,
   BookOpen,

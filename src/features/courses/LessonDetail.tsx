@@ -549,7 +549,7 @@ const LessonDetail = () => {
 
           {/* Content Section */}
           {(lesson.content || lesson.type === 'video') && (
-            <section id="content" className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden scroll-mb-40">
+            <section id="content" className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden scroll-mt-24">
               <button
                 onClick={() => toggleSection('content')}
                 className="w-full p-4 flex items-center justify-between hover:bg-gray-50 transition-colors"

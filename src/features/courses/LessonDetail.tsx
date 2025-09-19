@@ -128,7 +128,6 @@ const LessonDetail = () => {
           targetAudience
         }
       }
-    `, { lessonSlug, userType: userType || 'all' }),
     enabled: !!lessonSlug && !userTypeLoading
   });
 

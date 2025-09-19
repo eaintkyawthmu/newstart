@@ -79,7 +79,7 @@ export const fetchJourneyPath = async (slug: string, userType?: UserType): Promi
           ] | order(order asc) {
             _id,
             title,
-            "slug": slug.current,
+            slug,
             order,
             type,
             duration,
@@ -177,7 +177,7 @@ export const fetchJourneyPaths = async (slugs: string[], userType?: UserType): P
           ] | order(order asc) {
             _id,
             title,
-            "slug": slug.current,
+            slug,
             order,
             type,
             duration,
@@ -230,7 +230,7 @@ export const fetchFilteredModules = async (userType?: UserType) => {
         ] | order(order asc) {
           _id,
           title,
-          "slug": slug.current,
+          slug,
           order,
           type,
           duration,

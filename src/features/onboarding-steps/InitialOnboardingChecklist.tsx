@@ -25,6 +25,7 @@ import {
 type ProfileData = {
   firstName: string;
   lastName: string;
+  userType: 'immigrant' | 'nonImmigrant';
   arrivalYear: number;
   countryOfOrigin: string;
   preferredLanguage: 'en' | 'my';
@@ -53,6 +54,7 @@ const InitialOnboardingChecklist = () => {
   const [profileData, setProfileData] = useState<ProfileData>({
     firstName: '',
     lastName: '',
+    userType: 'immigrant',
     arrivalYear: new Date().getFullYear(),
     countryOfOrigin: '',
     preferredLanguage: 'en',
@@ -87,6 +89,7 @@ const InitialOnboardingChecklist = () => {
         setProfileData({
           firstName: data.first_name || '',
           lastName: data.last_name || '',
+          userType: data.user_type || 'immigrant',
           arrivalYear: data.immigration_year || new Date().getFullYear(),
           countryOfOrigin: data.country_of_origin || '',
           preferredLanguage: data.preferred_language || 'en',
@@ -145,7 +148,7 @@ const InitialOnboardingChecklist = () => {
   };
 
   const handleNext = async () => {
-    if (currentStep < 3) {
+    if (currentStep < 4) {
       await updateCompletedSteps();
       setCurrentStep(prev => prev + 1);
     } else {
@@ -171,6 +174,7 @@ const InitialOnboardingChecklist = () => {
         .update({
           first_name: profileData.firstName,
           last_name: profileData.lastName,
+          user_type: profileData.userType,
           immigration_year: profileData.arrivalYear,
           country_of_origin: profileData.countryOfOrigin,
           preferred_language: profileData.preferredLanguage,
@@ -225,7 +229,84 @@ const InitialOnboardingChecklist = () => {
           <div className="space-y-6">
             <h2 className="text-xl font-semibold text-gray-800 flex items-center">
               <UserCircle className="h-6 w-6 text-blue-600 mr-2" />
-              {language === 'en' ? 'Step 1: Personal Profile Setup' : 'အဆင့် ၁: ကိုယ်ရေးအချက်အလက် စီစဉ်ခြင်း'}
+              {language === 'en' ? 'Step 1: Your Status' : 'အဆင့် ၁: သင့်အခြေအနေ'}
+            </h2>
+            <p className="text-gray-600">
+              {language === 'en' 
+                ? 'Help us understand your situation so we can provide the most relevant guidance'
+                : 'သင့်အခြေအနေကို နားလည်ရန် ကူညီပါ၊ ထို့ကြောင့် ကျွန်ုပ်တို့သည် အသင့်လျော်ဆုံးသော လမ်းညွှန်မှုကို ပေးနိုင်မည်'}
+            </p>
+
+            <div className="space-y-4">
+              <div>
+                <h3 className="text-lg font-medium text-gray-800 mb-4">
+                  {language === 'en' ? 'What is your current status?' : 'သင့်လက်ရှိအခြေအနေက ဘာလဲ?'}
+                </h3>
+                
+                <div className="space-y-3">
+                  <label className="flex items-start space-x-3 p-4 border border-gray-200 rounded-lg cursor-pointer hover:bg-blue-50 transition-colors">
+                    <input
+                      type="radio"
+                      name="userType"
+                      value="immigrant"
+                      checked={profileData.userType === 'immigrant'}
+                      onChange={(e) => setProfileData(prev => ({
+                        ...prev,
+                        userType: e.target.value as 'immigrant' | 'nonImmigrant'
+                      }))}
+                      className="h-5 w-5 text-blue-600 border-gray-300 focus:ring-blue-500 mt-0.5"
+                    />
+                    <div>
+                      <p className="font-medium text-gray-800">
+                        {language === 'en' 
+                          ? 'I moved to the U.S. and will live here from now on.' 
+                          : 'ကျွန်တော်/ကျွန်မ အမေရိကန်သို့ ပြောင်းရွှေ့လာပြီး ယခုမှစ၍ ဤနေရာတွင် နေထိုင်မည်။'}
+                      </p>
+                      <p className="text-sm text-gray-600 mt-1">
+                        {language === 'en'
+                          ? 'This includes permanent residents, asylum seekers, and those planning to stay long-term'
+                          : 'ဤတွင် အမြဲတမ်းနေထိုင်သူများ၊ ခိုလှုံခွင့်တောင်းသူများနှင့် ရေရှည်နေထိုင်ရန် စီစဉ်နေသူများ ပါဝင်သည်'}
+                      </p>
+                    </div>
+                  </label>
+
+                  <label className="flex items-start space-x-3 p-4 border border-gray-200 rounded-lg cursor-pointer hover:bg-blue-50 transition-colors">
+                    <input
+                      type="radio"
+                      name="userType"
+                      value="nonImmigrant"
+                      checked={profileData.userType === 'nonImmigrant'}
+                      onChange={(e) => setProfileData(prev => ({
+                        ...prev,
+                        userType: e.target.value as 'immigrant' | 'nonImmigrant'
+                      }))}
+                      className="h-5 w-5 text-blue-600 border-gray-300 focus:ring-blue-500 mt-0.5"
+                    />
+                    <div>
+                      <p className="font-medium text-gray-800">
+                        {language === 'en' 
+                          ? 'No, I\'m here for a limited time.' 
+                          : 'မဟုတ်ပါ၊ ကျွန်တော်/ကျွန်မ ဤနေရာတွင် ကန့်သတ်ချိန်အတွက်သာ ရှိပါသည်။'}
+                      </p>
+                      <p className="text-sm text-gray-600 mt-1">
+                        {language === 'en'
+                          ? 'This includes students, temporary workers, tourists, and others on non-immigrant visas'
+                          : 'ဤတွင် ကျောင်းသားများ၊ ယာယီအလုပ်သမားများ၊ ခရီးသွားများနှင့် အခြား non-immigrant ဗီဇာဖြင့် ရှိနေသူများ ပါဝင်သည်'}
+                      </p>
+                    </div>
+                  </label>
+                </div>
+              </div>
+            </div>
+          </div>
+        );
+
+      case 2:
+        return (
+          <div className="space-y-6">
+            <h2 className="text-xl font-semibold text-gray-800 flex items-center">
+              <UserCircle className="h-6 w-6 text-blue-600 mr-2" />
+              {language === 'en' ? 'Step 2: Personal Profile Setup' : 'အဆင့် ၂: ကိုယ်ရေးအချက်အလက် စီစဉ်ခြင်း'}
             </h2>
             <p className="text-gray-600">
               {language === 'en' 
@@ -345,12 +426,12 @@ const InitialOnboardingChecklist = () => {
           </div>
         );
 
-      case 2:
+      case 3:
         return (
           <div className="space-y-6">
             <h2 className="text-xl font-semibold text-gray-800 flex items-center">
               <Users className="h-6 w-6 text-blue-600 mr-2" />
-              {language === 'en' ? 'Step 2: Life & Household Info' : 'အဆင့် ၂: လူနေမှုနှင့် အိမ်ထောင်စု အချက်အလက်'}
+              {language === 'en' ? 'Step 3: Life & Household Info' : 'အဆင့် ၃: လူနေမှုနှင့် အိမ်ထောင်စု အချက်အလက်'}
             </h2>
             <p className="text-gray-600">
               {language === 'en'
@@ -474,12 +555,12 @@ const InitialOnboardingChecklist = () => {
           </div>
         );
 
-      case 3:
+      case 4:
         return (
           <div className="space-y-6">
             <h2 className="text-xl font-semibold text-gray-800 flex items-center">
               <FileText className="h-6 w-6 text-blue-600 mr-2" />
-              {language === 'en' ? 'Step 3: Document Information' : 'အဆင့် ၃: စာရွက်စာတမ်း အချက်အလက်'}
+              {language === 'en' ? 'Step 4: Document Information' : 'အဆင့် ၄: စာရွက်စာတမ်း အချက်အလက်'}
             </h2>
             <p className="text-gray-600">
               {language === 'en'
@@ -664,11 +745,11 @@ const InitialOnboardingChecklist = () => {
         <div className="h-2 bg-gray-200 rounded-full">
           <div 
             className="h-2 bg-blue-600 rounded-full transition-all duration-300"
-            style={{ width: `${(currentStep / 3) * 100}%` }}
+            style={{ width: `${(currentStep / 4) * 100}%` }}
           />
         </div>
         <div className="mt-2 text-sm text-gray-600 text-right">
-          {currentStep} of 3
+          {currentStep} of 4
         </div>
       </div>
 
@@ -686,12 +767,12 @@ const InitialOnboardingChecklist = () => {
         </button>
         <button
           onClick={handleNext}
-          disabled={loading || (currentStep === 1 && !profileData.firstName)}
+          disabled={loading || (currentStep === 1 && !profileData.userType) || (currentStep === 2 && !profileData.firstName)}
           className="px-6 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
         >
           {loading ? (
             <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white" />
-          ) : currentStep === 3 ? (
+          ) : currentStep === 4 ? (
             language === 'en' ? 'Complete Setup' : 'စီစဉ်မှုပြီးဆုံးပါပြီ'
           ) : (
             language === 'en' ? 'Next' : 'ရှေ့သို့'

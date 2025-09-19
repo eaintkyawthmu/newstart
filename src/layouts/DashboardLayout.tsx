@@ -389,7 +389,7 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
           menuItems={menuItems}
         />
 
-        {/* Desktop Header (Visible only on desktop) */}
+        {/* Desktop Header (Visible only on desktop ) */}
         <div className={`hidden md:flex items-center justify-end h-16 px-8 bg-white border-b border-gray-200 ${
           location.pathname.includes('/lessons/') ? 'md:hidden' : ''
         }`}>

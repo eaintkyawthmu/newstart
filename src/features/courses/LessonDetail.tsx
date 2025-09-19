@@ -128,12 +128,13 @@ const LessonDetail = () => {
           targetAudience
         }
       }
+    `, { lessonSlug, userType: userType || 'all' }),
     enabled: !!lessonSlug && !userTypeLoading
   });
 
   // SEO optimization
   useSEO({
-    title: lesson?.title ? `${lesson.title} - Lesson` : 'Lesson',
+    title: lesson?.title ? \`${lesson.title} - Lesson` : 'Lesson',
     description: lesson?.introduction ? 
       (Array.isArray(lesson.introduction) ? 
         lesson.introduction[0]?.children?.[0]?.text || 'Learn essential skills for life in America' :
@@ -481,7 +482,7 @@ const LessonDetail = () => {
           
           <button
             onClick={toggleCompletion}
-            className={`p-2 rounded-lg transition-colors min-h-[44px] min-w-[44px] flex items-center justify-center ${
+            className={\`p-2 rounded-lg transition-colors min-h-[44px] min-w-[44px] flex items-center justify-center ${
               completed
                 ? 'text-green-600 bg-green-50'
                 : 'text-gray-400 hover:bg-gray-100'
@@ -498,7 +499,7 @@ const LessonDetail = () => {
         <div className="hidden md:block w-full bg-gray-200 h-1">
           <div 
             className="bg-blue-600 h-1 transition-all duration-500 ease-out"
-            style={{ width: `${progress}%` }}
+            style={{ width: \`${progress}%` }}
           />
         </div>
       </header>
@@ -552,7 +553,7 @@ const LessonDetail = () => {
                             onChange={(e) => handleTaskCompletion(deliverable._key, e.target.checked)}
                             className="w-4 h-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500 flex-shrink-0 mt-0.5"
                           />
-                          <div className={`text-sm text-gray-700 flex-1 ${
+                          <div className={\`text-sm text-gray-700 flex-1 ${
                             completedTasks.includes(deliverable._key) ? 'line-through text-gray-500' : ''
                           }`}>
                             <PortableText value={Array.isArray(deliverable.description) ? deliverable.description : [deliverable.description]} />
@@ -601,7 +602,7 @@ const LessonDetail = () => {
                   {lesson.type === 'video' && lesson.youtubeVideoId && (
                     <div className="aspect-video rounded-lg overflow-hidden bg-gray-100 mb-4">
                       <iframe
-                        src={`https://www.youtube.com/embed/${lesson.youtubeVideoId}?rel=0&modestbranding=1`}
+                        src={\`https://www.youtube.com/embed/${lesson.youtubeVideoId}?rel=0&modestbranding=1`}
                         title={lesson.title}
                         className="w-full h-full"
                         allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
@@ -704,7 +705,7 @@ const LessonDetail = () => {
                               onChange={(e) => handleTaskCompletion(task._key, e.target.checked)}
                               className="w-4 h-4 text-purple-600 rounded border-gray-300 focus:ring-purple-500 flex-shrink-0 mt-0.5"
                             />
-                            <div className={`text-sm text-gray-700 flex-1 ${
+                            <div className={\`text-sm text-gray-700 flex-1 ${
                               completedTasks.includes(task._key) ? 'line-through text-gray-500' : ''
                             }`}>
                               <PortableText value={Array.isArray(task.description) ? task.description : [task.description]} />
@@ -789,7 +790,7 @@ const LessonDetail = () => {
                     </p>
                     
                     {quizSubmitted && (
-                      <div className={`mt-3 p-3 rounded-lg ${
+                      <div className={\`mt-3 p-3 rounded-lg ${
                         totalScore / lesson.quiz.questions.length >= 0.7 
                           ? 'bg-green-100 border border-green-200' 
                           : 'bg-amber-100 border border-amber-200'
@@ -801,17 +802,17 @@ const LessonDetail = () => {
                             <AlertCircle className="w-4 h-4 text-amber-600 mr-2" />
                           )}
                           <div>
-                            <h4 className={`font-medium text-sm ${
+                            <h4 className={\`font-medium text-sm ${
                               totalScore / lesson.quiz.questions.length >= 0.7 ? 'text-green-800' : 'text-amber-800'
                             }`}>
                               {totalScore / lesson.quiz.questions.length >= 0.7 
                                 ? (language === 'en' ? 'Great job!' : 'အလုပ်ကောင်းပါသည်!')
                                 : (language === 'en' ? 'Keep practicing!' : 'ဆက်လက်လေ့ကျင့်ပါ!')}
                             </h4>
-                            <p className={`text-xs ${totalScore / lesson.quiz.questions.length >= 0.7 ? 'text-green-700' : 'text-amber-700'}`}>
+                            <p className={\`text-xs ${totalScore / lesson.quiz.questions.length >= 0.7 ? 'text-green-700' : 'text-amber-700'}`}>
                               {language === 'en' 
-                                ? `You scored ${totalScore} out of ${lesson.quiz.questions.length} questions.`
-                                : `သင်သည် မေးခွန်း ${lesson.quiz.questions.length} ခုအနက် ${totalScore} ခုကို မှန်ကန်စွာဖြေဆိုနိုင်ခဲ့သည်။`}
+                                ? \`You scored ${totalScore} out of ${lesson.quiz.questions.length} questions.`
+                                : \`သင်သည် မေးခွန်း ${lesson.quiz.questions.length} ခုအနက် ${totalScore} ခုကို မှန်ကန်စွာဖြေဆိုနိုင်ခဲ့သည်။`}
                             </p>
                           </div>
                         </div>
@@ -824,7 +825,7 @@ const LessonDetail = () => {
                     {lesson.quiz.questions.map((question: any, questionIndex: number) => (
                       <div 
                         key={questionIndex} 
-                        className={`p-3 rounded-lg border ${
+                        className={\`p-3 rounded-lg border ${
                           quizSubmitted 
                             ? quizResults[questionIndex]?.isCorrect 
                               ? 'bg-green-50 border-green-200' 
@@ -841,7 +842,7 @@ const LessonDetail = () => {
                             {question.options.map((option: any, optionIndex: number) => (
                               <label 
                                 key={optionIndex}
-                                className={`flex items-center p-2 rounded-lg border cursor-pointer transition-colors ${
+                                className={\`flex items-center p-2 rounded-lg border cursor-pointer transition-colors ${
                                   quizSubmitted
                                     ? option.isCorrect
                                       ? 'bg-green-100 border-green-300'
@@ -855,7 +856,7 @@ const LessonDetail = () => {
                               >
                                 <input
                                   type="radio"
-                                  name={`question-${questionIndex}`}
+                                  name={\`question-${questionIndex}`}
                                   checked={userAnswers[questionIndex]?.selectedOptionIndex === optionIndex}
                                   onChange={() => !quizSubmitted && handleAnswerChange(questionIndex, optionIndex)}
                                   className="w-4 h-4 text-blue-600 border-gray-300 focus:ring-blue-500 flex-shrink-0"
@@ -876,7 +877,7 @@ const LessonDetail = () => {
                             {[true, false].map((value, index) => (
                               <label 
                                 key={index}
-                                className={`flex items-center p-2 rounded-lg border cursor-pointer transition-colors ${
+                                className={\`flex items-center p-2 rounded-lg border cursor-pointer transition-colors ${
                                   quizSubmitted
                                     ? value === question.correctAnswer
                                       ? 'bg-green-100 border-green-300'
@@ -890,7 +891,7 @@ const LessonDetail = () => {
                               >
                                 <input
                                   type="radio"
-                                  name={`question-${questionIndex}`}
+                                  name={\`question-${questionIndex}`}
                                   checked={userAnswers[questionIndex]?.trueFalseAnswer === value}
                                   onChange={() => !quizSubmitted && handleAnswerChange(questionIndex, value)}
                                   className="w-4 h-4 text-blue-600 border-gray-300 focus:ring-blue-500 flex-shrink-0"
@@ -976,7 +977,7 @@ const LessonDetail = () => {
             <div className="w-12 sm:w-16 h-2 bg-gray-200 rounded-full overflow-hidden">
               <div 
                 className="h-full bg-blue-600 transition-all duration-500 ease-out"
-                style={{ width: `${progress}%` }}
+                style={{ width: \`${progress}%` }}
               />
             </div>
             <span className="text-xs text-gray-600 font-medium hidden sm:inline">{progress}%</span>

@@ -441,7 +441,7 @@ const LessonDetail = () => {
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
       <header className="sticky top-0 z-40 bg-white border-b border-gray-200 shadow-sm">
-        <div className="hidden md:flex items-center justify-between px-3 py-2 min-h-[56px]">
+        <div className="flex items-center justify-between px-3 py-2 min-h-[56px]">
           
           <div className="flex-1 text-center px-2 min-w-0">
             <h1 className="text-sm font-semibold text-gray-900 truncate">
@@ -471,7 +471,7 @@ const LessonDetail = () => {
         </div>
         
         {/* Progress Bar */}
-        <div className="w-full bg-gray-200 h-1">
+        <div className="hidden md:block w-full bg-gray-200 h-1">
           <div 
             className="bg-blue-600 h-1 transition-all duration-500 ease-out"
             style={{ width: `${progress}%` }}

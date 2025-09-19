@@ -17,6 +17,7 @@ import DataVisualization from './DataVisualization';
 import InteractiveGuide from './InteractiveGuide';
 import AdvancedFilters from './AdvancedFilters';
 import AnimatedCounter from './AnimatedCounter';
+import ContentFilter from './ContentFilter';
 
 export {
   Alert,
@@ -37,5 +38,6 @@ export {
   DataVisualization,
   InteractiveGuide,
   AdvancedFilters,
-  AnimatedCounter
+  AnimatedCounter,
+  ContentFilter
 };

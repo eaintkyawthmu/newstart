@@ -3,18 +3,21 @@ import { useLanguage } from '../contexts/LanguageContext';
 import { useNavigate } from 'react-router-dom';
 import { useSEO } from '../hooks/useSEO';
 import { useStripe } from '../hooks/useStripe';
-import { fetchJourneyPath } from '../lib/sanityClient';
+import { fetchJourneyPaths } from '../lib/sanityClient';
 import { supabase } from '../lib/supabaseClient';
+import { useUserType } from '../hooks/useUserType';
 import type { JourneyPath } from '../types/journey';
 import { AlertCircle, Filter } from 'lucide-react';
 import { CourseCard } from '../features/journey-hub';
 import { useQuery } from '@tanstack/react-query';
 import { AdvancedFilters } from '../components/ui';
+import { FilteredContentDisplay } from '../features/journey-hub';
 
 const JourneyHub = () => {
   const { language } = useLanguage();
   const navigate = useNavigate();
   const { subscribeToPlan } = useStripe();
+  const { userType, loading: userTypeLoading } = useUserType();
   const [progress, setProgress] = useState<Record<string, number>>({});
   const [isFiltersOpen, setIsFiltersOpen] = useState(false);
   const [filteredPaths, setFilteredPaths] = useState<JourneyPath[]>([]);
@@ -43,17 +46,26 @@ const JourneyHub = () => {
   ];
 
   const { data: paths, isLoading, error } = useQuery({
-    queryKey: ['journeyPaths'],
+    queryKey: ['journeyPaths', userType],
     queryFn: async () => {
-      const pathPromises = pathSlugs.map(slug => fetchJourneyPath(slug));
-      const paths = await Promise.all(pathPromises);
+      // Wait for user type to be loaded before fetching paths
+      if (userTypeLoading) {
+        return [];
+      }
+      
+      console.log('Fetching journey paths for user type:', userType);
+      
+      const paths = await fetchJourneyPaths(pathSlugs, userType || undefined);
+      
+      console.log('Filtered paths received:', paths.length, 'paths');
+      
       return paths
-        .filter((path): path is JourneyPath => path !== null)
         .sort((a, b) => {
           if (a.isPremium === b.isPremium) return 0;
           return a.isPremium ? 1 : -1;
         });
     },
+    enabled: !userTypeLoading, // Only run query when user type is loaded
   });
 
   useEffect(() => {
@@ -180,11 +192,11 @@ const JourneyHub = () => {
     }
   };
 
-  if (isLoading) {
+  if (isLoading || userTypeLoading) {
     return (
-      <div className="flex items-center justify-center min-h-[400px]" role="status" aria-label="Loading journey paths">
+      <div className="flex items-center justify-center min-h-[400px]" role="status" aria-label="Loading personalized journey paths">
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600" aria-hidden="true"></div>
-        <span className="sr-only">Loading journey paths...</span>
+        <span className="sr-only">Loading personalized content...</span>
       </div>
     );
   }
@@ -194,25 +206,39 @@ const JourneyHub = () => {
       <div className="text-center py-12" role="alert">
         <AlertCircle className="h-12 w-12 text-red-500 mx-auto mb-4" />
         <h2 className="text-xl font-semibold text-gray-800 mb-2">
-          {error instanceof Error ? error.message : 'No journey paths found'}
+          {error instanceof Error ? error.message : 'No relevant journey paths found for your profile'}
         </h2>
-        <p className="text-gray-600">Please try again later</p>
+        <p className="text-gray-600">
+          {language === 'en' 
+            ? 'Please complete your profile setup or try again later'
+            : 'သင့်ပရိုဖိုင်းစီစဉ်မှုကို ပြီးဆုံးအောင်လုပ်ပါ သို့မဟုတ် နောက်မှ ထပ်မံကြိုးစားပါ'}
+        </p>
       </div>
     );
   }
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-6 sm:py-8">
+      {/* User Type Debug Info (Development Only) */}
+      {process.env.NODE_ENV === 'development' && (
+        <div className="mb-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+          <p className="text-sm text-blue-800">
+            <strong>Debug:</strong> User Type: {userType || 'Not set'} | 
+            Showing {filteredPaths.length} of {paths.length} available paths
+          </p>
+        </div>
+      )}
+      
       <div className="mb-6">
         <div className="flex flex-col md:flex-row md:items-center md:justify-between">
           <div className="mb-4 md:mb-0">
             <h1 className="text-2xl font-bold text-gray-800 mb-2">
-              {language === 'en' ? 'Your Immigration Journey' : 'သင့်ရွှေ့ပြောင်းအခြေချမှုခရီးစဉ်'}
+              {language === 'en' ? 'Your Personalized Journey' : 'သင့်ကိုယ်ပိုင်ခရီးစဉ်'}
             </h1>
             <p className="text-gray-600">
               {language === 'en'
-                ? 'Navigate your new life in America with step-by-step guidance tailored for immigrants'
-                : 'ရွှေ့ပြောင်းအခြေချသူများအတွက် အဆင့်ဆင့်လမ်းညွှန်မှုဖြင့် အမေရိကန်တွင် သင့်ဘဝသစ်ကို လမ်းညွှန်ပါ'}
+                ? `Navigate your new life in America with guidance tailored for ${userType === 'immigrant' ? 'immigrants planning to stay long-term' : 'temporary residents'}`
+                : `${userType === 'immigrant' ? 'ရေရှည်နေထိုင်ရန်စီစဉ်နေသော ရွှေ့ပြောင်းအခြေချသူများ' : 'ယာယီနေထိုင်သူများ'}အတွက် အဆင့်ဆင့်လမ်းညွှန်မှုဖြင့် အမေရိကန်တွင် သင့်ဘဝသစ်ကို လမ်းညွှန်ပါ`}
             </p>
           </div>
           
@@ -227,17 +253,26 @@ const JourneyHub = () => {
       </div>
 
       {/* Improved responsive grid layout */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8 mb-12 sm:mb-16">
-        {filteredPaths.map((path) => (
-          <div key={path._id} className="w-full">
-            <CourseCard 
-              path={path}
-              onPathClick={handlePathClick}
-              progress={progress[path._id] || 0}
-            />
+      <FilteredContentDisplay
+        paths={paths || []}
+        onPathClick={handlePathClick}
+        progress={progress}
+        showDebugInfo={process.env.NODE_ENV === 'development'}
+      >
+        {(filteredPaths) => (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8 mb-12 sm:mb-16">
+            {filteredPaths.map((path) => (
+              <div key={path._id} className="w-full">
+                <CourseCard 
+                  path={path}
+                  onPathClick={handlePathClick}
+                  progress={progress[path._id] || 0}
+                />
+              </div>
+            ))}
           </div>
-        ))}
-      </div>
+        )}
+      </FilteredContentDisplay>
 
       {/* Premium upgrade section */}
       <div className="bg-gradient-to-r from-purple-600 to-indigo-600 rounded-xl p-6 sm:p-8 text-white shadow-xl">

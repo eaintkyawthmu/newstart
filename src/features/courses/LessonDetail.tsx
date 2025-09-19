@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useLanguage } from '../../contexts/LanguageContext';
 import { useSEO } from '../../hooks/useSEO';
 import { sanityClient } from '../../lib/sanityClient';
+import { useUserType } from '../../hooks/useUserType';
 import { supabase } from '../../lib/supabaseClient';
 import { useQuery } from '@tanstack/react-query';
 import { useAnalytics } from '../../hooks/useAnalytics';
@@ -32,6 +33,7 @@ const LessonDetail = () => {
   const { pathSlug, lessonSlug } = useParams();
   const navigate = useNavigate();
   const { language } = useLanguage();
+  const { userType, loading: userTypeLoading } = useUserType();
   const { trackEvent, trackLessonCompleted } = useAnalytics();
   const { checkAndAwardMilestones } = useMilestones();
   const [completed, setCompleted] = useState(false);
@@ -49,39 +51,51 @@ const LessonDetail = () => {
 
   // Fetch the entire journey path to get context for navigation
   const { data: path, isLoading: pathLoading } = useQuery({
-    queryKey: ['journeyPath', pathSlug],
+    queryKey: ['journeyPath', pathSlug, userType],
     queryFn: () => sanityClient.fetch(`
-      *[_type == "journeyPath" && slug.current == $pathSlug][0] {
+      *[
+        _type == "journeyPath" && 
+        slug.current == $pathSlug &&
+        (targetAudience == "all" || targetAudience == $userType)
+      ][0] {
         _id,
         title,
         slug,
-        modules[] {
+        targetAudience,
+        modules[targetAudience == "all" || targetAudience == $userType] {
           _id,
           title,
           order,
-          lessons[] {
+          targetAudience,
+          lessons[targetAudience == "all" || targetAudience == $userType] {
             _id,
             title,
             slug,
             type,
             duration,
-            order
+            order,
+            targetAudience
           }
         }
       }
-    `, { pathSlug }),
-    enabled: !!pathSlug
+    `, { pathSlug, userType: userType || 'all' }),
+    enabled: !!pathSlug && !userTypeLoading
   });
 
   // Fetch current lesson details
   const { data: lesson, isLoading: lessonLoading } = useQuery({
-    queryKey: ['lesson', lessonSlug],
+    queryKey: ['lesson', lessonSlug, userType],
     queryFn: () => sanityClient.fetch(`
-      *[_type == "lesson" && slug.current == $lessonSlug][0] {
+      *[
+        _type == "lesson" && 
+        slug.current == $lessonSlug &&
+        (targetAudience == "all" || targetAudience == $userType)
+      ][0] {
         _id,
         title,
         type,
         duration,
+        targetAudience,
         introduction,
         measurableDeliverables[]{
           _key,
@@ -109,11 +123,12 @@ const LessonDetail = () => {
         "module": parentModule-> {
           _id,
           title,
-          order
+          order,
+          targetAudience
         }
       }
-    `, { lessonSlug }),
-    enabled: !!lessonSlug
+    `, { lessonSlug, userType: userType || 'all' }),
+    enabled: !!lessonSlug && !userTypeLoading
   });
 
   // SEO optimization
@@ -413,10 +428,13 @@ const LessonDetail = () => {
     return Math.min(Math.round(taskProgress + completionBonus), 100);
   };
 
-  if (pathLoading || lessonLoading) {
+  if (pathLoading || lessonLoading || userTypeLoading) {
     return (
       <div className="min-h-screen bg-gray-50 overflow-x-hidden flex items-center justify-center">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-2"></div>
+          <p className="text-sm text-gray-600">Loading personalized lesson...</p>
+        </div>
       </div>
     );
   }

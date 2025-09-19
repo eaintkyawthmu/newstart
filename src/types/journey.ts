@@ -21,6 +21,7 @@ export interface JourneyPath {
   enrolled?: number;
   completionCriteria?: string[];
   practicalApplications?: PortableTextBlock[];
+  targetAudience?: 'all' | 'immigrant' | 'nonImmigrant';
 }
 
 export interface Module {
@@ -31,6 +32,7 @@ export interface Module {
   duration: string;
   lessons: Lesson[];
   isCompleted?: boolean;
+  targetAudience?: 'all' | 'immigrant' | 'nonImmigrant';
 }
 
 export interface Task {
@@ -49,6 +51,7 @@ export interface Lesson {
   duration: string;
   slug: string;
   isCompleted?: boolean;
+  targetAudience?: 'all' | 'immigrant' | 'nonImmigrant';
   
   // Video-specific fields
   videoType?: 'youtube' | 'selfhosted';

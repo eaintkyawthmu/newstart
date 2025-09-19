@@ -4,6 +4,7 @@ import { useLanguage } from '../../contexts/LanguageContext';
 import { useSEO } from '../../hooks/useSEO';
 import { useStripe } from '../../hooks/useStripe';
 import { fetchJourneyPath } from '../../lib/sanityClient';
+import { useUserType } from '../../hooks/useUserType';
 import { supabase } from '../../lib/supabaseClient';
 import type { JourneyPath, Module, Lesson } from '../../types/journey';
 import { 
@@ -37,6 +38,7 @@ const CourseDetail = () => {
   const navigate = useNavigate();
   const { subscribeToPlan } = useStripe();
   const { slug } = useParams();
+  const { userType, loading: userTypeLoading } = useUserType();
   const [activeTab, setActiveTab] = useState<'overview' | 'curriculum' | 'reviews'>('curriculum');
   const [expandedModule, setExpandedModule] = useState<string | null>(null);
   const [progress, setProgress] = useState<Record<string, boolean>>({});
@@ -44,9 +46,16 @@ const CourseDetail = () => {
 
   // Update the query to explicitly request all module fields and lessons for progress calculation
   const { data: path, isLoading, error } = useQuery({
-    queryKey: ['journeyPath', slug],
+    queryKey: ['journeyPath', slug, userType],
     queryFn: async () => {
-      const data = await fetchJourneyPath(slug || '');
+      // Wait for user type to be loaded
+      if (userTypeLoading) {
+        return null;
+      }
+      
+      console.log('Fetching course detail for user type:', userType);
+      const data = await fetchJourneyPath(slug || '', userType || undefined);
+      
       // Ensure modules and lessons are sorted right after fetching for reliable navigation
       if (data && data.modules) {
         data.modules.sort((a, b) => (a.order || 0) - (b.order || 0));
@@ -55,10 +64,16 @@ const CourseDetail = () => {
             module.lessons.sort((a, b) => (a.order || 0) - (b.order || 0));
           }
         });
+        
+        console.log('Filtered course data:', {
+          title: data.title,
+          totalModules: data.modules.length,
+          targetAudience: data.targetAudience
+        });
       }
       return data;
     },
-    enabled: !!slug,
+    enabled: !!slug && !userTypeLoading,
   });
 
   // SEO optimization
@@ -193,10 +208,13 @@ const CourseDetail = () => {
     return icons[moduleIndex % icons.length];
   };
 
-  if (isLoading) {
+  if (pathLoading || lessonLoading || userTypeLoading) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-2"></div>
+          <p className="text-sm text-gray-600">Loading personalized content...</p>
+        </div>
       </div>
     );
   }

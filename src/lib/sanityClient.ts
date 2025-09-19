@@ -1,5 +1,6 @@
 import { createClient } from '@sanity/client';
 import type { JourneyPath } from '../types/journey';
+import type { UserType } from '../types/user';
 
 // Debug environment variables
 console.log('Sanity Project ID:', import.meta.env.VITE_SANITY_PROJECT_ID);
@@ -36,9 +37,10 @@ export const sanityClient = createClient({
   perspective: 'published'
 });
 
-export const fetchJourneyPath = async (slug: string): Promise<JourneyPath | null> => {
+export const fetchJourneyPath = async (slug: string, userType?: UserType): Promise<JourneyPath | null> => {
   try {
-    const data = await sanityClient.fetch(`
+    // Build the query with optional user type filtering
+    const query = `
       *[_type == "journeyPath" && slug.current == $slug][0] {
         _id,
         title,
@@ -54,28 +56,44 @@ export const fetchJourneyPath = async (slug: string): Promise<JourneyPath | null
         objectives,
         completionCriteria,
         practicalApplications,
+        targetAudience,
         "coverImage": {
           "url": coverImage.asset->url,
           "alt": coverImage.alt
         },
-        "modules": *[_type == "module" && references(^._id)] | order(order asc) {
+        "modules": *[
+          _type == "module" && 
+          references(^._id) &&
+          (targetAudience == "all" || targetAudience == $userType)
+        ] | order(order asc) {
           _id,
           title,
           description,
           duration,
           order,
-          "lessons": *[_type == "lesson" && references(^._id)] | order(order asc) {
+          targetAudience,
+          "lessons": *[
+            _type == "lesson" && 
+            references(^._id) &&
+            (targetAudience == "all" || targetAudience == $userType)
+          ] | order(order asc) {
             _id,
             title,
             "slug": slug.current,
             description,
             duration,
             type,
-            order
+            order,
+            targetAudience
           }
         }
       }
-    `, { slug });
+    `;
+
+    const data = await sanityClient.fetch(query, { 
+      slug, 
+      userType: userType || 'all' 
+    });
 
     if (!data) {
       console.warn(`No journey path found for slug: ${slug}`);
@@ -108,6 +126,112 @@ export const fetchJourneyPath = async (slug: string): Promise<JourneyPath | null
       );
     }
     
+    throw error;
+  }
+};
+
+// Fetch multiple journey paths with user type filtering
+export const fetchJourneyPaths = async (slugs: string[], userType?: UserType): Promise<JourneyPath[]> => {
+  try {
+    const query = `
+      *[
+        _type == "journeyPath" && 
+        slug.current in $slugs &&
+        (targetAudience == "all" || targetAudience == $userType)
+      ] {
+        _id,
+        title,
+        description,
+        "slug": slug.current,
+        duration,
+        level,
+        rating,
+        enrolled,
+        isPremium,
+        targetAudience,
+        "coverImage": {
+          "url": coverImage.asset->url,
+          "alt": coverImage.alt
+        },
+        "modules": *[
+          _type == "module" && 
+          references(^._id) &&
+          (targetAudience == "all" || targetAudience == $userType)
+        ] | order(order asc) {
+          _id,
+          title,
+          description,
+          duration,
+          order,
+          targetAudience,
+          "lessons": *[
+            _type == "lesson" && 
+            references(^._id) &&
+            (targetAudience == "all" || targetAudience == $userType)
+          ] | order(order asc) {
+            _id,
+            title,
+            "slug": slug.current,
+            description,
+            duration,
+            type,
+            order,
+            targetAudience
+          }
+        }
+      } | order(order asc)
+    `;
+
+    const data = await sanityClient.fetch(query, { 
+      slugs, 
+      userType: userType || 'all' 
+    });
+
+    return data || [];
+  } catch (error: any) {
+    console.error(`Error fetching journey paths:`, error);
+    throw error;
+  }
+};
+
+// Fetch all modules with user type filtering
+export const fetchFilteredModules = async (userType?: UserType) => {
+  try {
+    const query = `
+      *[
+        _type == "module" &&
+        (targetAudience == "all" || targetAudience == $userType)
+      ] {
+        _id,
+        title,
+        description,
+        duration,
+        order,
+        targetAudience,
+        "lessons": *[
+          _type == "lesson" && 
+          references(^._id) &&
+          (targetAudience == "all" || targetAudience == $userType)
+        ] | order(order asc) {
+          _id,
+          title,
+          "slug": slug.current,
+          description,
+          duration,
+          type,
+          order,
+          targetAudience
+        }
+      } | order(order asc)
+    `;
+
+    const data = await sanityClient.fetch(query, { 
+      userType: userType || 'all' 
+    });
+
+    return data || [];
+  } catch (error: any) {
+    console.error(`Error fetching filtered modules:`, error);
     throw error;
   }
 };

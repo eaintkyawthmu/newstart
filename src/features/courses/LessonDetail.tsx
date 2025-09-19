@@ -949,7 +949,7 @@ const LessonDetail = () => {
           )}
 
           {/* Progress Indicator */}
-          <div className="flex items-center space-x-1 sm:space-x-2">
+          <div className="hidden md:flex items-center space-x-1 sm:space-x-2">
             <div className="w-12 sm:w-16 h-2 bg-gray-200 rounded-full overflow-hidden">
               <div 
                 className="h-full bg-blue-600 transition-all duration-500 ease-out"

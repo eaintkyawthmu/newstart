@@ -422,8 +422,10 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
           </div>
         </footer>
 
-        {/* Mobile Bottom Navigation (Visible only on mobile) */}
-        <BottomNavBar />
+    
+        {/* Mobile Bottom Navigation (Visible only on mobilehide on lesson pages) */}
+        {!location.pathname.includes('/lessons/') && <BottomNavBar />}
+
       </div>
       
       {/* Global UI Components */}

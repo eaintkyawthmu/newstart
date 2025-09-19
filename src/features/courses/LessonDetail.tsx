@@ -626,7 +626,7 @@ const LessonDetail = () => {
               {expandedSections.has('takeaways') && (
                 <div className="px-4 pb-4 border-t border-gray-100">
                   <div className="bg-green-50 border border-green-200 rounded-lg p-3">
-                    <div className="prose prose-sm max-w-none text-green-700">
+                    <div className="prose prose-sm max-w-none text-green-700 break-words prose-a:break-all">
                       <PortableText value={Array.isArray(lesson.keyTakeaways) ? lesson.keyTakeaways : [lesson.keyTakeaways]} />
                     </div>
                   </div>

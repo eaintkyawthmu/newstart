@@ -1,7 +1,7 @@
 import React from 'react';
 import { useUserType } from '../../hooks/useUserType';
 import { JourneyPath } from '../../types/journey';
-import { LoadingSpinner } from '../../components/LoadingSpinner';
+import LoadingSpinner from '../../components/LoadingSpinner';
 import EmptyState from '../../components/EmptyState';
 import JourneyCardList from './JourneyCardList';
 

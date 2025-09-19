@@ -3,7 +3,7 @@ import { useUserType } from '../../hooks/useUserType';
 import { JourneyPath } from '../../types/journey';
 import { LoadingSpinner } from '../../components/LoadingSpinner';
 import EmptyState from '../../components/EmptyState';
-import { JourneyCardList } from './JourneyCardList';
+import JourneyCardList from './JourneyCardList';
 
 interface FilteredContentDisplayProps {
   journeyPaths: JourneyPath[];

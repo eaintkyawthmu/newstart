@@ -643,7 +643,7 @@ const LessonDetail = () => {
           {/* Action Plan Section */}
           {((lesson.actionableTasks && lesson.actionableTasks.length > 0) || 
             (lesson.lessonResources && lesson.lessonResources.length > 0)) && (
-            <section id="actions" className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden scroll-mb-40">
+            <section id="actions" className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden scroll-mt-24">
               <button
                 onClick={() => toggleSection('actions')}
                 className="w-full p-4 flex items-center justify-between hover:bg-gray-50 transition-colors"

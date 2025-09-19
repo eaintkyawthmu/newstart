@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { supabase } from '../lib/supabaseClient';
+import { UserType, OnboardingData } from '../types/user';
 import { FormValidation } from '../components/ui';
 import { Alert } from '../components/ui';
 import {
@@ -17,29 +18,6 @@ import {
   GraduationCap
 } from 'lucide-react';
 
-type ProfileData = {
-  userType: 'immigrant' | 'nonImmigrant';
-  firstName: string;
-  lastName: string;
-  arrivalYear: number;
-  countryOfOrigin: string;
-  preferredLanguage: 'en' | 'my';
-  zipCode: string;
-  maritalStatus: string;
-  dependents: number;
-  employmentStatus: string;
-  lifeGoals: string[];
-  otherGoal?: string;
-  ssnLastFour?: string;
-  idLastFour?: string;
-  phoneNumber?: string;
-  streetAddress?: string;
-  hasSsn: boolean;
-  hasPhone: boolean;
-  hasHousing: boolean;
-  concerns?: string;
-};
-
 const ProfileSetupPage = () => {
   const navigate = useNavigate();
   const { user, refreshProfileStatus } = useAuth();
@@ -47,7 +25,7 @@ const ProfileSetupPage = () => {
   const [loading, setLoading] = useState(false);
   const [initialLoading, setInitialLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [data, setData] = useState<ProfileData>({
+  const [data, setData] = useState<OnboardingData>({
     userType: 'immigrant',
     firstName: '',
     lastName: '',
@@ -59,9 +37,15 @@ const ProfileSetupPage = () => {
     dependents: 0,
     employmentStatus: 'Not working yet',
     lifeGoals: [],
+  });
+  const [documentStatus, setDocumentStatus] = useState({
     hasSsn: false,
     hasPhone: false,
-    hasHousing: false
+    hasHousing: false,
+    ssnLastFour: '',
+    idLastFour: '',
+    phoneNumber: '',
+    streetAddress: ''
   });
 
   useEffect(() => {
@@ -94,14 +78,17 @@ const ProfileSetupPage = () => {
             employmentStatus: profile.employment_status || 'Not working yet',
             lifeGoals: profile.life_goals || [],
             otherGoal: profile.other_goal || '',
-            ssnLastFour: profile.ssn_last_four || '',
-            idLastFour: profile.id_last_four || '',
-            phoneNumber: profile.phone_number || '',
-            streetAddress: profile.street_address || '',
+            concerns: profile.concerns || ''
+          });
+          
+          setDocumentStatus({
             hasSsn: profile.has_ssn || false,
             hasPhone: profile.has_phone || false,
             hasHousing: profile.has_housing || false,
-            concerns: profile.concerns || ''
+            ssnLastFour: profile.ssn_last_four || '',
+            idLastFour: profile.id_last_four || '',
+            phoneNumber: profile.phone_number || '',
+            streetAddress: profile.street_address || ''
           });
         }
       } catch (err) {
@@ -175,6 +162,14 @@ const ProfileSetupPage = () => {
           employment_status: data.employmentStatus,
           life_goals: data.lifeGoals,
           other_goal: data.otherGoal,
+          concerns: data.concerns,
+          ssn_last_four: documentStatus.ssnLastFour,
+          id_last_four: documentStatus.idLastFour,
+          phone_number: documentStatus.phoneNumber,
+          street_address: documentStatus.streetAddress,
+          has_ssn: documentStatus.hasSsn,
+          has_phone: documentStatus.hasPhone,
+          has_housing: documentStatus.hasHousing,
           ssn_last_four: data.ssnLastFour,
           id_last_four: data.idLastFour,
           phone_number: data.phoneNumber,
@@ -234,7 +229,7 @@ const ProfileSetupPage = () => {
                       checked={data.userType === 'immigrant'}
                       onChange={(e) => setData(prev => ({
                         ...prev,
-                        userType: e.target.value as 'immigrant' | 'nonImmigrant'
+                        userType: e.target.value as UserType
                       }))}
                       className="h-5 w-5 text-blue-600 border-gray-300 focus:ring-blue-500 mt-0.5"
                     />
@@ -256,7 +251,7 @@ const ProfileSetupPage = () => {
                       checked={data.userType === 'nonImmigrant'}
                       onChange={(e) => setData(prev => ({
                         ...prev,
-                        userType: e.target.value as 'immigrant' | 'nonImmigrant'
+                        userType: e.target.value as UserType
                       }))}
                       className="h-5 w-5 text-blue-600 border-gray-300 focus:ring-blue-500 mt-0.5"
                     />

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useLanguage } from '../../contexts/LanguageContext';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '../../lib/supabaseClient';
+import { UserType, OnboardingData } from '../../types/user';
 import {
   UserCircle,
   ArrowLeft,
@@ -22,39 +23,16 @@ import {
   HelpCircle
 } from 'lucide-react';
 
-type ProfileData = {
-  firstName: string;
-  lastName: string;
-  userType: 'immigrant' | 'nonImmigrant';
-  arrivalYear: number;
-  countryOfOrigin: string;
-  preferredLanguage: 'en' | 'my';
-  zipCode: string;
-  maritalStatus: string;
-  dependents: number;
-  employmentStatus: string;
-  lifeGoals: string[];
-  otherGoal?: string;
-  ssnLastFour?: string;
-  idLastFour?: string;
-  phoneNumber?: string;
-  streetAddress?: string;
-  hasSsn: boolean;
-  hasPhone: boolean;
-  hasHousing: boolean;
-  concerns?: string;
-};
-
 const InitialOnboardingChecklist = () => {
   const { language } = useLanguage();
   const navigate = useNavigate();
   const [currentStep, setCurrentStep] = useState(1);
   const [loading, setLoading] = useState(false);
   const [initialLoading, setInitialLoading] = useState(true);
-  const [profileData, setProfileData] = useState<ProfileData>({
+  const [onboardingData, setOnboardingData] = useState<OnboardingData>({
+    userType: 'immigrant',
     firstName: '',
     lastName: '',
-    userType: 'immigrant',
     arrivalYear: new Date().getFullYear(),
     countryOfOrigin: '',
     preferredLanguage: 'en',
@@ -63,9 +41,15 @@ const InitialOnboardingChecklist = () => {
     dependents: 0,
     employmentStatus: 'Not working yet',
     lifeGoals: [],
+  });
+  const [documentStatus, setDocumentStatus] = useState({
     hasSsn: false,
     hasPhone: false,
-    hasHousing: false
+    hasHousing: false,
+    ssnLastFour: '',
+    idLastFour: '',
+    phoneNumber: '',
+    streetAddress: ''
   });
 
   useEffect(() => {
@@ -86,10 +70,10 @@ const InitialOnboardingChecklist = () => {
       if (error) throw error;
 
       if (data) {
-        setProfileData({
+        setOnboardingData({
+          userType: data.user_type || 'immigrant',
           firstName: data.first_name || '',
           lastName: data.last_name || '',
-          userType: data.user_type || 'immigrant',
           arrivalYear: data.immigration_year || new Date().getFullYear(),
           countryOfOrigin: data.country_of_origin || '',
           preferredLanguage: data.preferred_language || 'en',
@@ -99,14 +83,17 @@ const InitialOnboardingChecklist = () => {
           employmentStatus: data.employment_status || 'Not working yet',
           lifeGoals: data.life_goals || [],
           otherGoal: data.other_goal || '',
-          ssnLastFour: data.ssn_last_four || '',
-          idLastFour: data.id_last_four || '',
-          phoneNumber: data.phone_number || '',
-          streetAddress: data.street_address || '',
+          concerns: data.concerns || ''
+        });
+        
+        setDocumentStatus({
           hasSsn: data.has_ssn || false,
           hasPhone: data.has_phone || false,
           hasHousing: data.has_housing || false,
-          concerns: data.concerns || ''
+          ssnLastFour: data.ssn_last_four || '',
+          idLastFour: data.id_last_four || '',
+          phoneNumber: data.phone_number || '',
+          streetAddress: data.street_address || ''
         });
       }
     } catch (error) {
@@ -172,26 +159,26 @@ const InitialOnboardingChecklist = () => {
       const { error } = await supabase
         .from('profiles')
         .update({
-          first_name: profileData.firstName,
-          last_name: profileData.lastName,
-          user_type: profileData.userType,
-          immigration_year: profileData.arrivalYear,
-          country_of_origin: profileData.countryOfOrigin,
-          preferred_language: profileData.preferredLanguage,
-          zip_code: profileData.zipCode,
-          marital_status: profileData.maritalStatus,
-          dependents: profileData.dependents,
-          employment_status: profileData.employmentStatus,
-          life_goals: profileData.lifeGoals,
-          other_goal: profileData.otherGoal,
-          ssn_last_four: profileData.ssnLastFour,
-          id_last_four: profileData.idLastFour,
-          phone_number: profileData.phoneNumber,
-          street_address: profileData.streetAddress,
-          has_ssn: profileData.hasSsn,
-          has_phone: profileData.hasPhone,
-          has_housing: profileData.hasHousing,
-          concerns: profileData.concerns,
+          user_type: onboardingData.userType,
+          first_name: onboardingData.firstName,
+          last_name: onboardingData.lastName,
+          immigration_year: onboardingData.arrivalYear,
+          country_of_origin: onboardingData.countryOfOrigin,
+          preferred_language: onboardingData.preferredLanguage,
+          zip_code: onboardingData.zipCode,
+          marital_status: onboardingData.maritalStatus,
+          dependents: onboardingData.dependents,
+          employment_status: onboardingData.employmentStatus,
+          life_goals: onboardingData.lifeGoals,
+          other_goal: onboardingData.otherGoal,
+          concerns: onboardingData.concerns,
+          ssn_last_four: documentStatus.ssnLastFour,
+          id_last_four: documentStatus.idLastFour,
+          phone_number: documentStatus.phoneNumber,
+          street_address: documentStatus.streetAddress,
+          has_ssn: documentStatus.hasSsn,
+          has_phone: documentStatus.hasPhone,
+          has_housing: documentStatus.hasHousing,
           updated_at: new Date().toISOString()
         })
         .eq('id', user.id);
@@ -222,6 +209,17 @@ const InitialOnboardingChecklist = () => {
     { value: '1099', label: language === 'en' ? '1099/Gig/Business Owner' : '၁၀၉၉/စီးပွားရေးပိုင်ရှင်' }
   ];
 
+  const isStepValid = () => {
+    switch (currentStep) {
+      case 1:
+        return onboardingData.userType;
+      case 2:
+        return onboardingData.firstName && onboardingData.lastName && onboardingData.countryOfOrigin && onboardingData.zipCode;
+      default:
+        return true;
+    }
+  };
+
   const renderStep = () => {
     switch (currentStep) {
       case 1:
@@ -249,10 +247,10 @@ const InitialOnboardingChecklist = () => {
                       type="radio"
                       name="userType"
                       value="immigrant"
-                      checked={profileData.userType === 'immigrant'}
-                      onChange={(e) => setProfileData(prev => ({
+                      checked={onboardingData.userType === 'immigrant'}
+                      onChange={(e) => setOnboardingData(prev => ({
                         ...prev,
-                        userType: e.target.value as 'immigrant' | 'nonImmigrant'
+                        userType: e.target.value as UserType
                       }))}
                       className="h-5 w-5 text-blue-600 border-gray-300 focus:ring-blue-500 mt-0.5"
                     />
@@ -275,10 +273,10 @@ const InitialOnboardingChecklist = () => {
                       type="radio"
                       name="userType"
                       value="nonImmigrant"
-                      checked={profileData.userType === 'nonImmigrant'}
-                      onChange={(e) => setProfileData(prev => ({
+                      checked={onboardingData.userType === 'nonImmigrant'}
+                      onChange={(e) => setOnboardingData(prev => ({
                         ...prev,
-                        userType: e.target.value as 'immigrant' | 'nonImmigrant'
+                        userType: e.target.value as UserType
                       }))}
                       className="h-5 w-5 text-blue-600 border-gray-300 focus:ring-blue-500 mt-0.5"
                     />
@@ -323,8 +321,8 @@ const InitialOnboardingChecklist = () => {
                   <input
                     type="text"
                     required
-                    value={profileData.firstName}
-                    onChange={(e) => setProfileData(prev => ({
+                    value={onboardingData.firstName}
+                    onChange={(e) => setOnboardingData(prev => ({
                       ...prev,
                       firstName: e.target.value
                     }))}
@@ -339,8 +337,8 @@ const InitialOnboardingChecklist = () => {
                   <input
                     type="text"
                     required
-                    value={profileData.lastName}
-                    onChange={(e) => setProfileData(prev => ({
+                    value={onboardingData.lastName}
+                    onChange={(e) => setOnboardingData(prev => ({
                       ...prev,
                       lastName: e.target.value
                     }))}
@@ -358,8 +356,8 @@ const InitialOnboardingChecklist = () => {
                   required
                   min="1900"
                   max={new Date().getFullYear()}
-                  value={profileData.arrivalYear}
-                  onChange={(e) => setProfileData(prev => ({
+                  value={onboardingData.arrivalYear}
+                  onChange={(e) => setOnboardingData(prev => ({
                     ...prev,
                     arrivalYear: parseInt(e.target.value) || new Date().getFullYear()
                   }))}
@@ -374,8 +372,8 @@ const InitialOnboardingChecklist = () => {
                 <input
                   type="text"
                   required
-                  value={profileData.countryOfOrigin}
-                  onChange={(e) => setProfileData(prev => ({
+                  value={onboardingData.countryOfOrigin}
+                  onChange={(e) => setOnboardingData(prev => ({
                     ...prev,
                     countryOfOrigin: e.target.value
                   }))}
@@ -388,8 +386,8 @@ const InitialOnboardingChecklist = () => {
                   {language === 'en' ? 'Preferred Language' : 'နှစ်သက်ရာ ဘာသာစကား'}*
                 </label>
                 <select
-                  value={profileData.preferredLanguage}
-                  onChange={(e) => setProfileData(prev => ({
+                  value={onboardingData.preferredLanguage}
+                  onChange={(e) => setOnboardingData(prev => ({
                     ...prev,
                     preferredLanguage: e.target.value as 'en' | 'my'
                   }))}
@@ -409,8 +407,8 @@ const InitialOnboardingChecklist = () => {
                   <input
                     type="text"
                     required
-                    value={profileData.zipCode}
-                    onChange={(e) => setProfileData(prev => ({
+                    value={onboardingData.zipCode}
+                    onChange={(e) => setOnboardingData(prev => ({
                       ...prev,
                       zipCode: e.target.value
                     }))}
@@ -450,8 +448,8 @@ const InitialOnboardingChecklist = () => {
                       {language === 'en' ? 'Marital Status' : 'အိမ်ထောင်ရေးအခြေအနေ'}
                     </label>
                     <select
-                      value={profileData.maritalStatus}
-                      onChange={(e) => setProfileData(prev => ({
+                      value={onboardingData.maritalStatus}
+                      onChange={(e) => setOnboardingData(prev => ({
                         ...prev,
                         maritalStatus: e.target.value
                       }))}
@@ -471,8 +469,8 @@ const InitialOnboardingChecklist = () => {
                     <input
                       type="number"
                       min="0"
-                      value={profileData.dependents}
-                      onChange={(e) => setProfileData(prev => ({
+                      value={onboardingData.dependents}
+                      onChange={(e) => setOnboardingData(prev => ({
                         ...prev,
                         dependents: parseInt(e.target.value) || 0
                       }))}
@@ -494,8 +492,8 @@ const InitialOnboardingChecklist = () => {
                     {language === 'en' ? 'Current Status' : 'လက်ရှိအခြေအနေ'}
                   </label>
                   <select
-                    value={profileData.employmentStatus}
-                    onChange={(e) => setProfileData(prev => ({
+                    value={onboardingData.employmentStatus}
+                    onChange={(e) => setOnboardingData(prev => ({
                       ...prev,
                       employmentStatus: e.target.value
                     }))}
@@ -519,9 +517,9 @@ const InitialOnboardingChecklist = () => {
                     <label key={goal.id} className="flex items-center space-x-3">
                       <input
                         type="checkbox"
-                        checked={profileData.lifeGoals.includes(goal.id)}
+                        checked={onboardingData.lifeGoals.includes(goal.id)}
                         onChange={(e) => {
-                          setProfileData(prev => ({
+                          setOnboardingData(prev => ({
                             ...prev,
                             lifeGoals: e.target.checked
                               ? [...prev.lifeGoals, goal.id]
@@ -540,8 +538,8 @@ const InitialOnboardingChecklist = () => {
                     </label>
                     <input
                       type="text"
-                      value={profileData.otherGoal || ''}
-                      onChange={(e) => setProfileData(prev => ({
+                      value={onboardingData.otherGoal || ''}
+                      onChange={(e) => setOnboardingData(prev => ({
                         ...prev,
                         otherGoal: e.target.value
                       }))}
@@ -578,10 +576,10 @@ const InitialOnboardingChecklist = () => {
                     type="text"
                     maxLength={4}
                     pattern="[0-9]*"
-                    value={profileData.ssnLastFour || ''}
+                    value={documentStatus.ssnLastFour}
                     onChange={(e) => {
                       const value = e.target.value.replace(/\D/g, '');
-                      setProfileData(prev => ({
+                      setDocumentStatus(prev => ({
                         ...prev,
                         ssnLastFour: value
                       }));
@@ -598,10 +596,10 @@ const InitialOnboardingChecklist = () => {
                     type="text"
                     maxLength={4}
                     pattern="[0-9]*"
-                    value={profileData.idLastFour || ''}
+                    value={documentStatus.idLastFour}
                     onChange={(e) => {
                       const value = e.target.value.replace(/\D/g, '');
-                      setProfileData(prev => ({
+                      setDocumentStatus(prev => ({
                         ...prev,
                         idLastFour: value
                       }));
@@ -616,8 +614,8 @@ const InitialOnboardingChecklist = () => {
                   </label>
                   <input
                     type="tel"
-                    value={profileData.phoneNumber || ''}
-                    onChange={(e) => setProfileData(prev => ({
+                    value={documentStatus.phoneNumber}
+                    onChange={(e) => setDocumentStatus(prev => ({
                       ...prev,
                       phoneNumber: e.target.value
                     }))}
@@ -632,8 +630,8 @@ const InitialOnboardingChecklist = () => {
                   </label>
                   <input
                     type="text"
-                    value={profileData.streetAddress || ''}
-                    onChange={(e) => setProfileData(prev => ({
+                    value={documentStatus.streetAddress}
+                    onChange={(e) => setDocumentStatus(prev => ({
                       ...prev,
                       streetAddress: e.target.value
                     }))}
@@ -652,8 +650,8 @@ const InitialOnboardingChecklist = () => {
                   <label className="flex items-center space-x-3">
                     <input
                       type="checkbox"
-                      checked={profileData.hasSsn}
-                      onChange={(e) => setProfileData(prev => ({
+                      checked={documentStatus.hasSsn}
+                      onChange={(e) => setDocumentStatus(prev => ({
                         ...prev,
                         hasSsn: e.target.checked
                       }))}
@@ -667,8 +665,8 @@ const InitialOnboardingChecklist = () => {
                   <label className="flex items-center space-x-3">
                     <input
                       type="checkbox"
-                      checked={profileData.hasPhone}
-                      onChange={(e) => setProfileData(prev => ({
+                      checked={documentStatus.hasPhone}
+                      onChange={(e) => setDocumentStatus(prev => ({
                         ...prev,
                         hasPhone: e.target.checked
                       }))}
@@ -682,8 +680,8 @@ const InitialOnboardingChecklist = () => {
                   <label className="flex items-center space-x-3">
                     <input
                       type="checkbox"
-                      checked={profileData.hasHousing}
-                      onChange={(e) => setProfileData(prev => ({
+                      checked={documentStatus.hasHousing}
+                      onChange={(e) => setDocumentStatus(prev => ({
                         ...prev,
                         hasHousing: e.target.checked
                       }))}
@@ -701,8 +699,8 @@ const InitialOnboardingChecklist = () => {
                   {language === 'en' ? 'Is there anything you\'re worried about or unsure of?' : 'သင်စိုးရိမ်နေသော သို့မဟုတ် မသေချာသော အရာများ ရှိပါသလား။'}
                 </label>
                 <textarea
-                  value={profileData.concerns || ''}
-                  onChange={(e) => setProfileData(prev => ({
+                  value={onboardingData.concerns || ''}
+                  onChange={(e) => setOnboardingData(prev => ({
                     ...prev,
                     concerns: e.target.value
                   }))}
@@ -767,7 +765,7 @@ const InitialOnboardingChecklist = () => {
         </button>
         <button
           onClick={handleNext}
-          disabled={loading || (currentStep === 1 && !profileData.userType) || (currentStep === 2 && !profileData.firstName)}
+          disabled={loading || !isStepValid()}
           className="px-6 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
         >
           {loading ? (

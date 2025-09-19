@@ -65,7 +65,7 @@ const Auth: React.FC<AuthProps> = ({ initialIsSignUp = false }) => {
             .from('profiles')
             .insert({
               id: data.user.id,
-              user_type: 'immigrant', // Default to immigrant, user can change during onboarding
+              user_type: 'immigrant', // Default value, user will set this during onboarding
               full_name: fullName,
               email: email,
               created_at: new Date().toISOString(),

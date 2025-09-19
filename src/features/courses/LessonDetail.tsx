@@ -417,7 +417,7 @@ const LessonDetail = () => {
   return (
     <div className="min-h-screen bg-gray-50">
       <main className="pb-20 pt-4">
-        <div className="max-w-4xl mx-auto px-4 space-y-4">
+        <div className="max-w-4xl mx-auto px-4 space-y-4 min-h-screen">
           
           {/* Lesson Title Card */}
           <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4">
@@ -460,10 +460,10 @@ const LessonDetail = () => {
 
           {/* Introduction Section */}
           {lesson.introduction && (
-            <section id="intro" className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+            <section id="intro" className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden flex-shrink-0">
               <button
                 onClick={() => toggleSection('intro')}
-                className="w-full p-4 flex items-center justify-between hover:bg-gray-50 transition-colors"
+                className="w-full p-4 flex items-center justify-between hover:bg-gray-50 transition-colors sticky top-0 bg-white z-10 border-b border-gray-100"
               >
                 <div className="flex items-center">
                   <BookOpen className="w-5 h-5 text-blue-600 mr-3" />
@@ -479,7 +479,7 @@ const LessonDetail = () => {
               </button>
               
               {expandedSections.has('intro') && (
-                <div className="px-4 pb-4 border-t border-gray-100">
+                <div className="px-4 pb-4 max-h-96 overflow-y-auto">
                   <div className="prose prose-sm max-w-none text-gray-700">
                     <PortableText value={Array.isArray(lesson.introduction) ? lesson.introduction : [lesson.introduction]} />
                   </div>
@@ -490,10 +490,10 @@ const LessonDetail = () => {
 
           {/* Measurable Deliverables Section */}
           {lesson.measurableDeliverables && lesson.measurableDeliverables.length > 0 && (
-            <section id="deliverables" className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+            <section id="deliverables" className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden flex-shrink-0">
               <button
                 onClick={() => toggleSection('deliverables')}
-                className="w-full p-4 flex items-center justify-between hover:bg-gray-50 transition-colors"
+                className="w-full p-4 flex items-center justify-between hover:bg-gray-50 transition-colors sticky top-0 bg-white z-10 border-b border-gray-100"
               >
                 <div className="flex items-center">
                   <Target className="w-5 h-5 text-purple-600 mr-3" />
@@ -509,7 +509,7 @@ const LessonDetail = () => {
               </button>
               
               {expandedSections.has('deliverables') && (
-                <div className="px-4 pb-4 border-t border-gray-100">
+                <div className="px-4 pb-4 max-h-96 overflow-y-auto">
                   <div className="bg-purple-50 border border-purple-200 rounded-lg p-3">
                     <div className="space-y-2">
                       {lesson.measurableDeliverables.map((deliverable: any) => (
@@ -529,10 +529,10 @@ const LessonDetail = () => {
 
           {/* Content Section */}
           {(lesson.content || lesson.type === 'video') && (
-            <section id="content" className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+            <section id="content" className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden flex-shrink-0">
               <button
                 onClick={() => toggleSection('content')}
-                className="w-full p-4 flex items-center justify-between hover:bg-gray-50 transition-colors"
+                className="w-full p-4 flex items-center justify-between hover:bg-gray-50 transition-colors sticky top-0 bg-white z-10 border-b border-gray-100"
               >
                 <div className="flex items-center">
                   {lesson.type === 'video' ? (
@@ -552,7 +552,7 @@ const LessonDetail = () => {
               </button>
               
               {expandedSections.has('content') && (
-                <div className="px-4 pb-4 border-t border-gray-100">
+                <div className="px-4 pb-4 max-h-[60vh] overflow-y-auto">
                   {/* Video Content */}
                   {lesson.type === 'video' && lesson.youtubeVideoId && (
                     <div className="aspect-video rounded-lg overflow-hidden bg-gray-100 mb-4">
@@ -579,10 +579,10 @@ const LessonDetail = () => {
 
           {/* Key Takeaways Section */}
           {lesson.keyTakeaways && (
-            <section id="takeaways" className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+            <section id="takeaways" className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden flex-shrink-0">
               <button
                 onClick={() => toggleSection('takeaways')}
-                className="w-full p-4 flex items-center justify-between hover:bg-gray-50 transition-colors"
+                className="w-full p-4 flex items-center justify-between hover:bg-gray-50 transition-colors sticky top-0 bg-white z-10 border-b border-gray-100"
               >
                 <div className="flex items-center">
                   <Lightbulb className="w-5 h-5 text-green-600 mr-3" />
@@ -598,7 +598,7 @@ const LessonDetail = () => {
               </button>
               
               {expandedSections.has('takeaways') && (
-                <div className="px-4 pb-4 border-t border-gray-100">
+                <div className="px-4 pb-4 max-h-96 overflow-y-auto">
                   <div className="bg-green-50 border border-green-200 rounded-lg p-3">
                     <div className="prose prose-sm max-w-none text-green-700">
                       <PortableText value={Array.isArray(lesson.keyTakeaways) ? lesson.keyTakeaways : [lesson.keyTakeaways]} />
@@ -623,10 +623,10 @@ const LessonDetail = () => {
           {/* Action Plan Section */}
           {((lesson.actionableTasks && lesson.actionableTasks.length > 0) || 
             (lesson.lessonResources && lesson.lessonResources.length > 0)) && (
-            <section id="actions" className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+            <section id="actions" className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden flex-shrink-0">
               <button
                 onClick={() => toggleSection('actions')}
-                className="w-full p-4 flex items-center justify-between hover:bg-gray-50 transition-colors"
+                className="w-full p-4 flex items-center justify-between hover:bg-gray-50 transition-colors sticky top-0 bg-white z-10 border-b border-gray-100"
               >
                 <div className="flex items-center">
                   <Target className="w-5 h-5 text-purple-600 mr-3" />
@@ -642,7 +642,7 @@ const LessonDetail = () => {
               </button>
               
               {expandedSections.has('actions') && (
-                <div className="px-4 pb-4 border-t border-gray-100 space-y-4">
+                <div className="px-4 pb-4 max-h-96 overflow-y-auto space-y-4">
                   {/* Action Tasks */}
                   {lesson.actionableTasks && lesson.actionableTasks.length > 0 && (
                     <div className="bg-purple-50 border border-purple-200 rounded-lg p-3">
@@ -715,10 +715,10 @@ const LessonDetail = () => {
 
           {/* Quiz Section */}
           {lesson.quiz && lesson.quiz.questions && lesson.quiz.questions.length > 0 && (
-            <section id="quiz" className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+            <section id="quiz" className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden flex-shrink-0">
               <button
                 onClick={() => toggleSection('quiz')}
-                className="w-full p-4 flex items-center justify-between hover:bg-gray-50 transition-colors"
+                className="w-full p-4 flex items-center justify-between hover:bg-gray-50 transition-colors sticky top-0 bg-white z-10 border-b border-gray-100"
               >
                 <div className="flex items-center">
                   <FileText className="w-5 h-5 text-amber-600 mr-3" />
@@ -734,7 +734,7 @@ const LessonDetail = () => {
               </button>
               
               {expandedSections.has('quiz') && (
-                <div className="px-4 pb-4 border-t border-gray-100">
+                <div className="px-4 pb-4 max-h-[70vh] overflow-y-auto">
                   <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 mb-4">
                     <h3 className="text-base font-semibold text-blue-800 mb-2">
                       {lesson.quiz.title || (language === 'en' ? 'Knowledge Check' : 'အသိပညာ စစ်ဆေးခြင်း')}
@@ -777,7 +777,7 @@ const LessonDetail = () => {
                   </div>
                   
                   {/* Quiz Questions */}
-                  <div className="space-y-4">
+                  <div className="space-y-4 pb-4">
                     {lesson.quiz.questions.map((question: any, questionIndex: number) => (
                       <div 
                         key={questionIndex} 
@@ -877,7 +877,7 @@ const LessonDetail = () => {
                   </div>
                   
                   {/* Quiz Actions */}
-                  <div className="flex justify-center mt-4 space-x-3">
+                  <div className="flex justify-center mt-4 space-x-3 sticky bottom-0 bg-white pt-4 border-t border-gray-100">
                     {!quizSubmitted ? (
                       <button
                         onClick={handleSubmitQuiz}

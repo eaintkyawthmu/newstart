@@ -18,6 +18,7 @@ import {
 } from 'lucide-react';
 
 type ProfileData = {
+  userType: 'immigrant' | 'nonImmigrant';
   firstName: string;
   lastName: string;
   arrivalYear: number;
@@ -47,6 +48,7 @@ const ProfileSetupPage = () => {
   const [initialLoading, setInitialLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [data, setData] = useState<ProfileData>({
+    userType: 'immigrant',
     firstName: '',
     lastName: '',
     arrivalYear: new Date().getFullYear(),
@@ -80,6 +82,7 @@ const ProfileSetupPage = () => {
 
         if (profile) {
           setData({
+            userType: profile.user_type || 'immigrant',
             firstName: profile.first_name || '',
             lastName: profile.last_name || '',
             arrivalYear: profile.immigration_year || new Date().getFullYear(),
@@ -112,7 +115,7 @@ const ProfileSetupPage = () => {
     loadProfile();
   }, [user, navigate]);
 
-  const totalSteps = 4;
+  const totalSteps = 5;
   const progress = (currentStep / totalSteps) * 100;
 
   const lifeGoalsOptions = [
@@ -160,6 +163,7 @@ const ProfileSetupPage = () => {
       const { error: updateError } = await supabase
         .from('profiles')
         .update({
+          user_type: data.userType,
           first_name: data.firstName,
           last_name: data.lastName,
           immigration_year: data.arrivalYear,
@@ -204,6 +208,74 @@ const ProfileSetupPage = () => {
   const renderStep = () => {
     switch (currentStep) {
       case 1:
+        return (
+          <div className="space-y-6">
+            <div className="flex items-center space-x-3 mb-6">
+              <UserCircle className="h-8 w-8 text-blue-600" />
+              <h2 className="text-2xl font-semibold text-gray-800">Your Status</h2>
+            </div>
+
+            <div className="space-y-4">
+              <p className="text-gray-600 text-lg">
+                Help us understand your situation so we can provide the most relevant guidance.
+              </p>
+              
+              <div>
+                <h3 className="text-lg font-medium text-gray-800 mb-4">
+                  What is your current status?
+                </h3>
+                
+                <div className="space-y-3">
+                  <label className="flex items-start space-x-3 p-4 border border-gray-200 rounded-lg cursor-pointer hover:bg-blue-50 transition-colors">
+                    <input
+                      type="radio"
+                      name="userType"
+                      value="immigrant"
+                      checked={data.userType === 'immigrant'}
+                      onChange={(e) => setData(prev => ({
+                        ...prev,
+                        userType: e.target.value as 'immigrant' | 'nonImmigrant'
+                      }))}
+                      className="h-5 w-5 text-blue-600 border-gray-300 focus:ring-blue-500 mt-0.5"
+                    />
+                    <div>
+                      <p className="font-medium text-gray-800">
+                        I moved to the U.S. and will live here from now on.
+                      </p>
+                      <p className="text-sm text-gray-600 mt-1">
+                        This includes permanent residents, asylum seekers, and those planning to stay long-term
+                      </p>
+                    </div>
+                  </label>
+
+                  <label className="flex items-start space-x-3 p-4 border border-gray-200 rounded-lg cursor-pointer hover:bg-blue-50 transition-colors">
+                    <input
+                      type="radio"
+                      name="userType"
+                      value="nonImmigrant"
+                      checked={data.userType === 'nonImmigrant'}
+                      onChange={(e) => setData(prev => ({
+                        ...prev,
+                        userType: e.target.value as 'immigrant' | 'nonImmigrant'
+                      }))}
+                      className="h-5 w-5 text-blue-600 border-gray-300 focus:ring-blue-500 mt-0.5"
+                    />
+                    <div>
+                      <p className="font-medium text-gray-800">
+                        No, I'm here for a limited time.
+                      </p>
+                      <p className="text-sm text-gray-600 mt-1">
+                        This includes students, temporary workers, tourists, and others on non-immigrant visas
+                      </p>
+                    </div>
+                  </label>
+                </div>
+              </div>
+            </div>
+          </div>
+        );
+
+      case 2:
         return (
           <div className="space-y-6">
             <div className="flex items-center space-x-3 mb-6">
@@ -311,7 +383,7 @@ const ProfileSetupPage = () => {
           </div>
         );
 
-      case 2:
+      case 3:
         return (
           <div className="space-y-6">
             <div className="flex items-center space-x-3 mb-6">
@@ -379,7 +451,7 @@ const ProfileSetupPage = () => {
           </div>
         );
 
-      case 3:
+      case 4:
         return (
           <div className="space-y-6">
             <div className="flex items-center space-x-3 mb-6">
@@ -527,7 +599,7 @@ const ProfileSetupPage = () => {
           </div>
         );
 
-      case 4:
+      case 5:
         return (
           <div className="space-y-6">
             <div className="flex items-center space-x-3 mb-6">
@@ -588,6 +660,8 @@ const ProfileSetupPage = () => {
   const isStepValid = () => {
     switch (currentStep) {
       case 1:
+        return data.userType;
+      case 2:
         return data.firstName && data.lastName && data.countryOfOrigin && data.zipCode;
       default:
         return true;

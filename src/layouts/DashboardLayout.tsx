@@ -401,7 +401,7 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
         {/* Page Content */}
         <main 
           id="main-content"
-          className={`flex-1 overflow-auto hide-scrollbar ${
+          className={`flex-1 overflow-auto hide-scrollbar [scrollbar-gutter:stable] ${
             location.pathname.includes('/lessons/') 
               ? 'p-0 pt-0' 
               : 'p-4 md:p-6 lg:p-8 pb-safe pt-0 md:pt-6'

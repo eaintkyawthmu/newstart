@@ -594,7 +594,7 @@ const LessonDetail = () => {
                   
                   {/* Text Content */}
                   {lesson.content && (
-                    <div className="prose prose-sm max-w-none text-gray-700">
+                    <div className="prose prose-sm max-w-none text-gray-700 break-words prose-a:break-all">
                       <PortableText value={Array.isArray(lesson.content) ? lesson.content : [lesson.content]} />
                     </div>
                   )}

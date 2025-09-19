@@ -484,7 +484,7 @@ const LessonDetail = () => {
         <div className="max-w-4xl mx-auto px-3 py-4 space-y-4">
           
           {/* Introduction Section */}
-          <section id="intro" className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+          <section id="intro" className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden scroll-mb-40">
             <button
               onClick={() => toggleSection('intro')}
               className="w-full p-4 flex items-center justify-between hover:bg-gray-50 transition-colors"
@@ -549,7 +549,7 @@ const LessonDetail = () => {
 
           {/* Content Section */}
           {(lesson.content || lesson.type === 'video') && (
-            <section id="content" className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+            <section id="content" className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden scroll-mb-40">
               <button
                 onClick={() => toggleSection('content')}
                 className="w-full p-4 flex items-center justify-between hover:bg-gray-50 transition-colors"
@@ -599,7 +599,7 @@ const LessonDetail = () => {
 
           {/* Key Takeaways Section */}
           {lesson.keyTakeaways && (
-            <section id="takeaways" className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+            <section id="takeaways" className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden scroll-mb-40">
               <button
                 onClick={() => toggleSection('takeaways')}
                 className="w-full p-4 flex items-center justify-between hover:bg-gray-50 transition-colors"
@@ -643,7 +643,7 @@ const LessonDetail = () => {
           {/* Action Plan Section */}
           {((lesson.actionableTasks && lesson.actionableTasks.length > 0) || 
             (lesson.lessonResources && lesson.lessonResources.length > 0)) && (
-            <section id="actions" className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+            <section id="actions" className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden scroll-mb-40">
               <button
                 onClick={() => toggleSection('actions')}
                 className="w-full p-4 flex items-center justify-between hover:bg-gray-50 transition-colors"
@@ -735,7 +735,7 @@ const LessonDetail = () => {
 
           {/* Quiz Section */}
           {lesson.quiz && lesson.quiz.questions && lesson.quiz.questions.length > 0 && (
-            <section id="quiz" className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+            <section id="quiz" className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden scroll-mb-40">
               <button
                 onClick={() => toggleSection('quiz')}
                 className="w-full p-4 flex items-center justify-between hover:bg-gray-50 transition-colors"

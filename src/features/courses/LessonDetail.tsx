@@ -915,7 +915,7 @@ const LessonDetail = () => {
                         className="px-4 py-3 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors flex items-center text-sm min-h-[44px]"
                       >
                         <RefreshCw className="w-4 h-4 mr-2" />
-                        {language === 'en' ? 'Retake Quiz' : 'ဆစ်ကို ပြန်လည်ဖြေဆိုရန်'}
+                        {language === 'en' ? 'Retake Quiz' : 'ပြန်လည်ဖြေဆိုရန်'}
                       </button>
                     )}
                   </div>

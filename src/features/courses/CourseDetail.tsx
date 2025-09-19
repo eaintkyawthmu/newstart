@@ -569,7 +569,10 @@ const CourseDetail = () => {
                               {module.lessons.map((lesson, lessonIndex) => (
                                 <button
                                   key={lesson._id}
-                                  onClick={() => navigate(`/courses/${path.slug}/lessons/${lesson.slug}`)}
+                                  onClick={() => {
+                                    console.log('Navigating to lesson:', lesson.slug, 'in path:', path.slug);
+                                    navigate(`/courses/${path.slug}/lessons/${lesson.slug}`);
+                                  }}
                                   className={`w-full text-left p-2 rounded-lg hover:bg-gray-50 transition-colors flex items-center justify-between ${
                                     moduleStatus === 'locked' ? 'cursor-not-allowed opacity-50' : ''
                                   }`}
@@ -589,6 +592,9 @@ const CourseDetail = () => {
                                       <span className={`text-sm ${moduleStatus === 'locked' ? 'text-gray-400' : 'text-gray-700'}`}>
                                         {lesson.title}
                                       </span>
+                                      <div className="text-xs text-gray-500">
+                                        Slug: {lesson.slug}
+                                      </div>
                                       {lesson.duration && (
                                         <div className="flex items-center text-xs text-gray-500 mt-0.5">
                                           <Clock className="h-3 w-3 mr-1" />

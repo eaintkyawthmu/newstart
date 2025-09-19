@@ -31,7 +31,7 @@ import {
   Search,
   Eye
 } from 'lucide-react';
-import { BottomNavBar, MobileHeader, MobileMenu } from '../components/navigation';
+import { BottomNavBar, MobileHeader, MobileMenu } from '../../components/navigation';
 
 type DashboardLayoutProps = {
   children: ReactNode;

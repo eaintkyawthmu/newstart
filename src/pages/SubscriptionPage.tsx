@@ -1,12 +1,22 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useLanguage } from '../contexts/LanguageContext';
+import { useStripe } from '../hooks/useStripe';
+import { validateStripeConfig } from '../lib/stripeClient';
 import { ArrowLeft, Shield, CreditCard, CheckCircle } from 'lucide-react';
 import SubscriptionManager from '../components/SubscriptionManager';
 
 const SubscriptionPage: React.FC = () => {
   const { language } = useLanguage();
   const navigate = useNavigate();
+  const { loading } = useStripe();
+
+  // Validate Stripe configuration on component mount
+  React.useEffect(() => {
+    if (!validateStripeConfig()) {
+      console.warn('Stripe configuration is incomplete. Some features may not work.');
+    }
+  }, []);
 
   return (
     <div className="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
@@ -71,6 +81,19 @@ const SubscriptionPage: React.FC = () => {
         </div>
 
         <SubscriptionManager />
+        
+        {loading && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center">
+            <div className="bg-white rounded-lg p-6 shadow-xl">
+              <div className="flex items-center space-x-3">
+                <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-600"></div>
+                <span className="text-gray-700">
+                  {language === 'en' ? 'Processing...' : 'လုပ်ဆောင်နေသည်...'}
+                </span>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

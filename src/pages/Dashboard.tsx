@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useLanguage } from '../contexts/LanguageContext';
 import { useStep } from '../contexts/StepContext';
 import { useSEO } from '../hooks/useSEO';
+import { useStripe } from '../hooks/useStripe';
 import LazyImage from '../components/LazyImage';
 import { supabase } from '../lib/supabaseClient';
 import {
@@ -36,6 +37,7 @@ const Dashboard = () => {
   const { currentStep, isCompleted } = useStep();
   const navigate = useNavigate();
   const { showToast } = useToast();
+  const { subscribeToPlan } = useStripe();
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState(true);
   const { milestones, userMilestones, getBadgeImage } = useMilestones();
@@ -294,7 +296,7 @@ const Dashboard = () => {
               </div>
             </div>
             <button
-              onClick={() => navigate('/subscription')}
+              onClick={() => subscribeToPlan('monthly')}
               className="px-6 py-3 bg-white text-purple-700 rounded-lg hover:bg-purple-50 transition-all duration-200 font-medium focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-purple-600 press-effect min-h-[44px]"
               aria-label="Upgrade to premium subscription"
             >

@@ -1,5 +1,6 @@
 import React from 'react';
 import { useLanguage } from '../../contexts/LanguageContext';
+import { useStripe } from '../../hooks/useStripe';
 import { JourneyPath } from '../../types/journey';
 import { Lock, ChevronRight, Star, Users, Clock, FileText, CheckCircle } from 'lucide-react';
 import { PortableText } from '@portabletext/react';
@@ -12,19 +13,28 @@ interface CourseCardProps {
 
 const CourseCard: React.FC<CourseCardProps> = ({ path, onPathClick, progress = 0 }) => {
   const { language } = useLanguage();
+  const { subscribeToPlan } = useStripe();
+  
+  const handleClick = () => {
+    if (path.isPremium) {
+      subscribeToPlan('monthly');
+    } else {
+      onPathClick(path);
+    }
+  };
   
   return (
     <div
       className={`bg-white rounded-xl border cursor-pointer transition-all duration-300 hover-lift press-effect ${
         path.isPremium ? 'border-purple-200' : 'border-gray-200'
       } overflow-hidden h-full flex flex-col focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 animate-fade-in`}
-      onClick={() => onPathClick(path)}
+      onClick={handleClick}
       role="button"
       tabIndex={0}
       onKeyDown={(e) => {
         if (e.key === 'Enter' || e.key === ' ') {
           e.preventDefault();
-          onPathClick(path);
+          handleClick();
         }
       }}
       aria-label={`${path.title} - ${path.isPremium ? 'Premium course' : 'Free course'}`}

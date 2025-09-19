@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useLanguage } from '../../contexts/LanguageContext';
 import { useSEO } from '../../hooks/useSEO';
+import { useStripe } from '../../hooks/useStripe';
 import { fetchJourneyPath } from '../../lib/sanityClient';
 import { supabase } from '../../lib/supabaseClient';
 import type { JourneyPath, Module, Lesson } from '../../types/journey';
@@ -34,6 +35,7 @@ import { useQuery } from '@tanstack/react-query';
 const CourseDetail = () => {
   const { language } = useLanguage();
   const navigate = useNavigate();
+  const { subscribeToPlan } = useStripe();
   const { slug } = useParams();
   const [activeTab, setActiveTab] = useState<'overview' | 'curriculum' | 'reviews'>('curriculum');
   const [expandedModule, setExpandedModule] = useState<string | null>(null);
@@ -123,6 +125,12 @@ const CourseDetail = () => {
   // Function to handle "Start Learning" / "Continue Learning" button click
   const handleStartContinueLearning = () => {
       if (!path || !slug) return;
+      
+      // Check if this is a premium path and user doesn't have access
+      if (path.isPremium) {
+        subscribeToPlan('monthly');
+        return;
+      }
 
       let targetLessonSlug: string | null = null;
 

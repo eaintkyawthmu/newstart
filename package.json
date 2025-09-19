@@ -17,7 +17,7 @@
     "@portabletext/react": "^3.0.11",
     "@portabletext/types": "^2.0.8",
     "@sanity/client": "^6.12.3",
-    "@stripe/stripe-js": "^2.4.0",
+    "@stripe/stripe-js": "^7.9.0",
     "@supabase/supabase-js": "^2.39.7",
     "@tanstack/react-query": "^5.89.0",
     "intersection-observer": "^0.12.2",

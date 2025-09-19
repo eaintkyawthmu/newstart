@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useLanguage } from '../contexts/LanguageContext';
 import { usePremiumAccess } from '../hooks/usePremiumAccess';
+import { useStripe } from '../hooks/useStripe';
 import { supabase } from '../lib/supabaseClient';
 import { useToast } from '../contexts/ToastContext';
 import { 
@@ -32,10 +33,10 @@ interface SubscriptionTier {
 const SubscriptionManager: React.FC = () => {
   const { language } = useLanguage();
   const { hasPremiumAccess, subscriptionStatus, premiumTier, premiumAccessUntil } = usePremiumAccess();
+  const { loading: stripeLoading, subscribeToPlan, createPortalSession } = useStripe();
   const { showToast } = useToast();
   const [tiers, setTiers] = useState<SubscriptionTier[]>([]);
   const [loading, setLoading] = useState(true);
-  const [processingPayment, setProcessingPayment] = useState(false);
   const [billingInterval, setBillingInterval] = useState<'monthly' | 'yearly'>('monthly');
 
   useEffect(() => {
@@ -63,64 +64,14 @@ const SubscriptionManager: React.FC = () => {
   };
 
   const handleUpgrade = async (tierName: string) => {
-    setProcessingPayment(true);
-    
-    try {
-      // This would be replaced with actual Stripe price IDs from your Stripe dashboard
-      const priceIds = {
-        premium_monthly: import.meta.env.VITE_STRIPE_PRICE_MONTHLY,
-        premium_yearly: import.meta.env.VITE_STRIPE_PRICE_YEARLY,
-        lifetime: import.meta.env.VITE_STRIPE_PRICE_LIFETIME,
-      };
-
-      const priceId = tierName === 'lifetime' 
-        ? priceIds.lifetime 
-        : billingInterval === 'monthly' 
-          ? priceIds.premium_monthly 
-          : priceIds.premium_yearly;
-
-      const mode = tierName === 'lifetime' ? 'payment' : 'subscription';
-
-      const { data, error } = await supabase.functions.invoke('create-checkout-session', {
-        body: { priceId, mode }
-      });
-
-      if (error) {
-        console.error('Error creating checkout session:', error);
-        throw new Error(`Edge Function returned a non-2xx status code: ${error.message}`);
-      }
-
-      if (data.url) {
-        window.location.href = data.url;
-      } else {
-        throw new Error('No checkout URL returned from server');
-      }
-    } catch (error) {
-      console.error('Error creating checkout session:', error);
-      showToast('error', language === 'en' 
-        ? 'Failed to start checkout process. Please try again.' 
-        : 'ငွေပေးချေမှုလုပ်ငန်းစဉ်ကို စတင်ရန် မအောင်မြင်ပါ။ ထပ်မံကြိုးစားပါ။');
-    } finally {
-      setProcessingPayment(false);
+    if (tierName === 'lifetime') {
+      await subscribeToPlan('lifetime');
+    } else {
+      await subscribeToPlan(billingInterval);
     }
   };
 
-  const handleManageSubscription = async () => {
-    try {
-      const { data, error } = await supabase.functions.invoke('create-portal-session');
-
-      if (error) throw error;
-
-      if (data.url) {
-        window.open(data.url, '_blank');
-      }
-    } catch (error) {
-      console.error('Error creating portal session:', error);
-      showToast('error', language === 'en' 
-        ? 'Failed to open billing portal. Please try again.' 
-        : 'ငွေပေးချေမှုပေါ်တယ်ကို ဖွင့်ရန် မအောင်မြင်ပါ။ ထပ်မံကြိုးစားပါ။');
-    }
-  };
+  const handleManageSubscription = createPortalSession;
 
   if (loading) {
     return (
@@ -189,7 +140,7 @@ const SubscriptionManager: React.FC = () => {
             
             {premiumTier !== 'lifetime' && (
               <button
-                onClick={handleManageSubscription}
+                onClick={createPortalSession}
                 className="flex items-center px-4 py-2 border border-purple-300 text-purple-700 rounded-lg hover:bg-purple-50 transition-colors"
               >
                 <CreditCard className="h-4 w-4 mr-2" />
@@ -323,10 +274,10 @@ const SubscriptionManager: React.FC = () => {
             ) : (
               <button
                 onClick={() => handleUpgrade('premium')}
-                disabled={processingPayment}
+                disabled={stripeLoading}
                 className="w-full bg-purple-600 text-white px-4 py-3 rounded-lg font-medium hover:bg-purple-700 transition-colors"
               >
-                {processingPayment ? (
+                {stripeLoading ? (
                   <Loader2 className="h-5 w-5 animate-spin mx-auto" />
                 ) : (
                   <>

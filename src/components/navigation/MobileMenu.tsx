@@ -4,6 +4,7 @@ import { X, CreditCard, UserCircle, Settings, LogOut, Crown } from 'lucide-react
 import { useLanguage } from '../../contexts/LanguageContext';
 import { useAuth } from '../../contexts/AuthContext';
 import { usePremiumAccess } from '../../hooks/usePremiumAccess';
+import { useStripe } from '../../hooks/useStripe';
 
 interface MobileMenuProps {
   isOpen: boolean;
@@ -20,6 +21,7 @@ const MobileMenu: React.FC<MobileMenuProps> = ({ isOpen, onClose, menuItems }) =
   const { language } = useLanguage();
   const { user, signOut } = useAuth();
   const { hasPremiumAccess } = usePremiumAccess();
+  const { subscribeToPlan } = useStripe();
   const menuRef = useRef<HTMLDivElement>(null);
 
   // Close menu when clicking outside
@@ -159,7 +161,10 @@ const MobileMenu: React.FC<MobileMenuProps> = ({ isOpen, onClose, menuItems }) =
             
             {!hasPremiumAccess && (
               <button
-                onClick={() => handleNavigation('/subscription')}
+                onClick={() => {
+                  subscribeToPlan('monthly');
+                  onClose();
+                }}
                 className="w-full flex items-center p-3 rounded-lg bg-purple-50 hover:bg-purple-100 transition-colors touch-target"
               >
                 <Crown className="h-5 w-5 text-purple-600 mr-3" />

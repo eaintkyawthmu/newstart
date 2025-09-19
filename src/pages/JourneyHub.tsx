@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useLanguage } from '../contexts/LanguageContext';
 import { useNavigate } from 'react-router-dom';
 import { useSEO } from '../hooks/useSEO';
+import { useStripe } from '../hooks/useStripe';
 import { fetchJourneyPath } from '../lib/sanityClient';
 import { supabase } from '../lib/supabaseClient';
 import type { JourneyPath } from '../types/journey';
@@ -13,6 +14,7 @@ import { AdvancedFilters } from '../components/ui';
 const JourneyHub = () => {
   const { language } = useLanguage();
   const navigate = useNavigate();
+  const { subscribeToPlan } = useStripe();
   const [progress, setProgress] = useState<Record<string, number>>({});
   const [isFiltersOpen, setIsFiltersOpen] = useState(false);
   const [filteredPaths, setFilteredPaths] = useState<JourneyPath[]>([]);
@@ -107,7 +109,7 @@ const JourneyHub = () => {
 
   const handlePathClick = (path: JourneyPath) => {
     if (path.isPremium) {
-      navigate('/subscription');
+      subscribeToPlan('monthly');
       return;
     }
     navigate(`/courses/${path.slug}`);
@@ -251,7 +253,7 @@ const JourneyHub = () => {
             </p>
           </div>
           <button 
-            onClick={() => navigate('/subscription')}
+            onClick={() => subscribeToPlan('monthly')}
             className="bg-white text-purple-600 px-6 sm:px-8 py-3 sm:py-4 rounded-lg text-lg font-medium hover:bg-purple-50 transition-colors shadow-md hover:shadow-lg whitespace-nowrap focus-ring min-h-[44px]"
           >
             {language === 'en' ? 'Upgrade Now' : 'ယခု အဆင့်မြှင့်ရန်'}

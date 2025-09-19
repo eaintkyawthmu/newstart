@@ -3,6 +3,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { useLanguage } from '../contexts/LanguageContext';
 import { useAuth } from '../contexts/AuthContext';
 import { usePremiumAccess } from '../hooks/usePremiumAccess';
+import { useStripe } from '../hooks/useStripe';
 import { supabase } from '../lib/supabaseClient';
 import ProfileMenu from '../components/ProfileMenu';
 import SearchBar from '../components/ui/SearchBar';
@@ -39,6 +40,7 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
   const { language, toggleLanguage } = useLanguage();
   const { user } = useAuth();
   const { hasPremiumAccess, premiumTier } = usePremiumAccess();
+  const { subscribeToPlan } = useStripe();
   const navigate = useNavigate();
   const location = useLocation();
   const [isCollapsed, setIsCollapsed] = useState(false);
@@ -337,7 +339,7 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
           {!isCollapsed && !hasPremiumAccess && (
             <div className="mt-6 pt-6 border-t border-gray-200">
               <button
-                onClick={() => navigate('/subscription')}
+                onClick={() => subscribeToPlan('monthly')}
                 className="w-full flex items-center px-4 py-3 bg-gradient-to-r from-purple-600 to-indigo-600 text-white rounded-lg hover:from-purple-700 hover:to-indigo-700 transition-colors"
               >
                 <Crown className="h-5 w-5 mr-3 flex-shrink-0" />

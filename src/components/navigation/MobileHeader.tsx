@@ -1,15 +1,15 @@
 import React, { ReactNode, useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { useLanguage } from '../contexts/LanguageContext';
-import { useAuth } from '../contexts/AuthContext';
-import { usePremiumAccess } from '../hooks/usePremiumAccess';
-import { useStripe } from '../hooks/useStripe';
-import { supabase } from '../lib/supabaseClient';
-import ProfileMenu from '../components/ProfileMenu';
-import SearchBar from '../components/ui/SearchBar';
-import NotificationCenter from '../components/ui/NotificationCenter';
-import OfflineIndicator from '../components/ui/OfflineIndicator';
-import AccessibilityMenu from '../components/ui/AccessibilityMenu';
+import { useLanguage } from '../../contexts/LanguageContext';
+import { useAuth } from '../../contexts/AuthContext';
+import { usePremiumAccess } from '../../hooks/usePremiumAccess';
+import { useStripe } from '../../hooks/useStripe';
+import { supabase } from '../../lib/supabaseClient';
+import ProfileMenu from '../../components/ProfileMenu';
+import SearchBar from '../../components/ui/SearchBar';
+import NotificationCenter from '../../components/ui/NotificationCenter';
+import OfflineIndicator from '../../components/ui/OfflineIndicator';
+import AccessibilityMenu from '../../components/ui/AccessibilityMenu';
 import {
   LayoutDashboard,
   BookOpen,
@@ -31,7 +31,7 @@ import {
   Search,
   Eye
 } from 'lucide-react';
-import { BottomNavBar, MobileHeader, MobileMenu } from '../components/navigation';
+import { BottomNavBar, MobileHeader, MobileMenu } from '../../components/navigation';
 
 type DashboardLayoutProps = {
   children: ReactNode;
@@ -268,214 +268,4 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
               {unreadNotifications}
             </span>
           )}
-        </button>
         
-        <button
-          onClick={() => setIsAccessibilityOpen(true)}
-          className="p-2 rounded-lg hover:bg-gray-100 transition-colors"
-          title={language === 'en' ? 'Accessibility settings' : 'အသုံးပြုနိုင်မှု ဆက်တင်များ'}
-        >
-          <Eye className="h-5 w-5 text-gray-600" />
-        </button>
-        
-        <button
-          onClick={toggleLanguage}
-          className="p-2 rounded-lg hover:bg-gray-100 transition-colors"
-          aria-label={language === 'en' ? 'Switch to Burmese' : 'Switch to English'}
-        >
-          <Globe className="h-5 w-5 text-gray-600" />
-        </button>
-      </div>
-    );
-  };
-
-  return (
-    <div className="min-h-screen bg-gray-50 flex">
-      {/* Desktop Sidebar - Visible only on md and larger screens */}
-      <aside
-        className={`hidden md:flex flex-col fixed top-0 h-screen bg-white border-r border-gray-200 z-40 transition-all duration-300 ease-in-out ${
-          isCollapsed ? 'w-16' : 'w-64'
-        }`}
-      >
-        {/* Sidebar Header with Logo */}
-        <div className="h-16 border-b border-gray-100 flex items-center justify-center">
-          {isCollapsed ? (
-            <img src="/icons/logo.svg" alt="MyNewStart" className="h-8 w-8" />
-          ) : (
-            <img src="/icons/logo.svg" alt="MyNewStart" className="h-8" />
-          )}
-        </div>
-
-        {/* Collapse/Expand Button */}
-        <button
-          onClick={() => setIsCollapsed(!isCollapsed)}
-          className="absolute top-16 -right-3 bg-white border border-gray-200 rounded-full p-1 shadow-soft-sm"
-          aria-label={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
-        >
-          {isCollapsed ? (
-            <ChevronRight className="h-4 w-4 text-gray-500" />
-          ) : (
-            <ChevronLeft className="h-4 w-4 text-gray-500" />
-          )}
-        </button>
-
-        {/* Navigation Menu */}
-        <nav className="flex-1 p-4 min-h-0 overflow-y-auto hide-scrollbar">
-          <div className="space-y-2">
-            {menuItems.map((item) => {
-              const isActive = location.pathname === item.path || 
-                (location.pathname.startsWith(`${item.path}/`) && item.path !== '/') ||
-                (item.path === '/journey' && location.pathname.startsWith('/courses'));
-                
-              return (
-                <button
-                  key={item.path}
-                  onClick={() => handleMenuItemClick(item.path)}
-                  className={`w-full flex items-center ${isCollapsed ? 'justify-center' : ''} px-3 py-3 rounded-md transition-colors text-left ${
-                    isActive
-                      ? 'bg-blue-50 text-blue-600'
-                      : 'text-gray-700 hover:bg-gray-50'
-                  }`}
-                  aria-current={isActive ? 'page' : undefined}
-                >
-                  <item.icon className={`h-5 w-5 flex-shrink-0 ${isActive ? 'text-blue-600' : 'text-gray-500'}`} />
-                  {!isCollapsed && (
-                    <span className="ml-3 font-medium truncate">{item.label}</span>
-                  )}
-                </button>
-              );
-            })}
-          </div>
-
-          {/* Premium Upgrade Button */}
-          {!isCollapsed && !hasPremiumAccess && (
-            <div className="mt-6 pt-6 border-t border-gray-200">
-              <button
-                onClick={() => subscribeToPlan('monthly')}
-                className="w-full flex items-center px-4 py-3 bg-gradient-to-r from-purple-600 to-indigo-600 text-white rounded-lg hover:from-purple-700 hover:to-indigo-700 transition-colors"
-              >
-                <Crown className="h-5 w-5 mr-3 flex-shrink-0" />
-                <span className="font-medium">
-                  {language === 'en' ? 'Upgrade to Premium' : 'Premium သို့ အဆင့်မြှင့်ရန်'}
-                </span>
-              </button>
-            </div>
-          )}
-        </nav>
-
-        {/* Sidebar Footer with Profile */}
-        <div className="mt-auto border-t border-gray-200 p-4">
-          <ProfileMenu
-            isOpen={isProfileMenuOpen}
-            onToggle={toggleProfileMenu}
-            isCollapsed={isCollapsed}
-          />
-        </div>
-      </aside>
-
-      {/* Overlay for mobile - only visible when mobile menu is open */}
-      {isMobileMenuOpen && (
-        <div
-          className="fixed inset-0 bg-black bg-opacity-50 z-30 md:hidden"
-          onClick={toggleMobileMenu}
-          aria-hidden="true"
-        />
-      )}
-
-      {/* Main Content Area */}
-      <div className={`flex-1 flex flex-col min-h-screen min-w-0 ${isCollapsed ? 'md:ml-16' : 'md:ml-64'}`}>
-        {/* Mobile Header (Visible only on mobile ) */}
-        {!location.pathname.includes('/lessons/') && (
-        <div className="md:hidden">
-          <MobileHeader
-            onMenuToggle={toggleMobileMenu}
-            showBackButton={showBackButton()}
-            backPath={getBackPath()}
-            rightContent={getRightContent()}
-          />
-        </div>
-      )}
-
-        {/* Mobile Menu (Controlled by isMobileMenuOpen, visible only on mobile) */}
-        <MobileMenu
-          isOpen={isMobileMenuOpen}
-          onClose={() => setIsMobileMenuOpen(false)}
-          menuItems={menuItems}
-        />
-
-        {/* Desktop Header (Visible only on desktop ) */}
-        <div className={`hidden md:flex items-center justify-end h-16 px-8 bg-white border-b border-gray-200 ${
-          location.pathname.includes('/lessons/') ? 'md:hidden' : ''
-        }`}>
-          <div className="flex items-center space-x-4">
-            {getRightContent()}
-          </div>
-        </div>
-
-        {/* Page Content */}
-        <main 
-          id="main-content"
-          className={`flex-1 min-w-0 overflow-y-scroll md:overflow-auto overflow-x-hidden hide-scrollbar [scrollbar-gutter:stable] ${
-            location.pathname.includes('/lessons/') 
-              ? 'p-0 pt-0' 
-              : 'p-4 md:p-6 lg:p-8 pb-safe pt-0 md:pt-6'
-          }`}
-          role="main"
-          aria-label="Main content"
-        >
-          <div className={`w-full min-w-0 ${location.pathname.includes('/lessons/') ? '' : 'max-w-7xl mx-auto'}`}>
-            {/* Main Content */}
-            {children}
-          </div>
-        </main>
-
-        {/* Footer */}
-        <footer className="bg-white py-4 border-t border-gray-200 mt-auto hidden md:block">
-          <div className="container mx-auto px-4 text-center text-gray-500 text-sm">
-            &copy; {new Date().getFullYear()} My New Start. 
-          </div>
-        </footer>
-
-        {/* Mobile Bottom Navigation  (Visible only on mobile) */}
-        <BottomNavBar />
-      </div>
-      
-      {/* Global UI Components */}
-      <OfflineIndicator />
-      
-      {/* Search Modal */}
-      {isSearchOpen && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-start justify-center pt-20 px-4">
-          <div className="bg-white rounded-lg shadow-xl max-w-2xl w-full">
-            <div className="p-4">
-              <SearchBar 
-                autoFocus={true}
-                onResultClick={() => setIsSearchOpen(false)}
-              />
-              <button
-                onClick={() => setIsSearchOpen(false)}
-                className="mt-4 w-full text-center text-gray-600 hover:text-gray-800 py-2"
-              >
-                {language === 'en' ? 'Close' : 'ပိတ်ရန်'}
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-      
-      {/* Notifications */}
-      <NotificationCenter 
-        isOpen={isNotificationsOpen}
-        onClose={() => setIsNotificationsOpen(false)}
-      />
-      
-      {/* Accessibility Menu */}
-      <AccessibilityMenu 
-        isOpen={isAccessibilityOpen}
-        onClose={() => setIsAccessibilityOpen(false)}
-      />
-    </div>
-  );
-};
-
-export default DashboardLayout;

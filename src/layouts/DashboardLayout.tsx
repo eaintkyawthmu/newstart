@@ -1,6 +1,5 @@
 import React, { ReactNode, useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { useLanguage } from '../contexts/LanguageContext';
 import { useAuth } from '../contexts/AuthContext';
 import { usePremiumAccess } from '../hooks/usePremiumAccess';
 import { useStripe } from '../hooks/useStripe';
@@ -38,7 +37,6 @@ type DashboardLayoutProps = {
 };
 
 const DashboardLayout = ({ children }: DashboardLayoutProps) => {
-  const { language, toggleLanguage } = useLanguage();
   const { user } = useAuth();
   const { hasPremiumAccess, premiumTier } = usePremiumAccess();
   const { subscribeToPlan } = useStripe();
@@ -57,37 +55,37 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
     {
       path: '/dashboard',
       icon: LayoutDashboard,
-      label: language === 'en' ? 'Dashboard' : 'ဒက်ရှ်ဘုတ်'
+      label: 'Dashboard'
     },
     {
       path: '/journey',
       icon: Map,
-      label: language === 'en' ? 'Journey Hub' : 'ခရီးစဉ်စင်တာ'
+      label: 'Journey Hub'
     },
     {
       path: '/library',
       icon: BookOpen,
-      label: language === 'en' ? 'Library' : 'စာကြည့်တိုက်'
+      label: 'Library'
     },
     {
       path: '/chat',
       icon: MessageSquare,
-      label: language === 'en' ? 'Chat with Mini Angel' : 'Mini Angel နှင့် စကားပြောရန်'
+      label: 'Chat with Mini Angel'
     },
     {
       path: '/reflections',
       icon: Heart,
-      label: language === 'en' ? 'Reflections' : 'ရောင်ပြန်ဟပ်မှုများ'
+      label: 'Reflections'
     },
     {
       path: '/consultation',
       icon: Users,
-      label: language === 'en' ? 'Community' : 'အသိုင်းအဝိုင်း'
+      label: 'Community'
     },
     {
       path: '/help',
       icon: LifeBuoy,
-      label: language === 'en' ? 'Help' : 'အကူအညီ'
+      label: 'Help'
     },
     // Add debug menu item in development
     ...(process.env.NODE_ENV === 'development' ? [{
@@ -203,7 +201,7 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
           <button
             onClick={() => setIsAccessibilityOpen(true)}
             className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
-            title={language === 'en' ? 'Accessibility settings' : 'အသုံးပြုနိုင်မှု ဆက်တင်များ'}
+            title="Accessibility settings"
           >
             <Eye className="h-5 w-5 text-gray-600" />
           </button>
@@ -213,7 +211,7 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
               window.dispatchEvent(new CustomEvent('clear-chat'));
             }}
             className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
-            title={language === 'en' ? 'Clear conversation' : 'စကားပြောမှုကို ရှင်းလင်းရန်'}
+            title="Clear conversation"
           >
             <RotateCcw className="h-5 w-5 text-gray-600" />
           </button>
@@ -223,7 +221,7 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
               window.dispatchEvent(new CustomEvent('export-chat'));
             }}
             className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
-            title={language === 'en' ? 'Export conversation' : 'စကားပြောမှုကို ထုတ်ယူရန်'}
+            title="Export conversation"
           >
             <Download className="h-5 w-5 text-gray-600" />
           </button>
@@ -252,7 +250,7 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
         <button
           onClick={() => setIsSearchOpen(true)}
           className="p-2 rounded-lg hover:bg-gray-100 transition-colors"
-          title={language === 'en' ? 'Search' : 'ရှာဖွေရန်'}
+          title="Search"
         >
           <Search className="h-5 w-5 text-gray-600" />
         </button>
@@ -260,7 +258,7 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
         <button
           onClick={() => setIsNotificationsOpen(true)}
           className="relative p-2 rounded-lg hover:bg-gray-100 transition-colors"
-          title={language === 'en' ? 'Notifications' : 'အကြောင်းကြားချက်များ'}
+          title="Notifications"
         >
           <Bell className="h-5 w-5 text-gray-600" />
           {unreadNotifications > 0 && (
@@ -273,17 +271,9 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
         <button
           onClick={() => setIsAccessibilityOpen(true)}
           className="p-2 rounded-lg hover:bg-gray-100 transition-colors"
-          title={language === 'en' ? 'Accessibility settings' : 'အသုံးပြုနိုင်မှု ဆက်တင်များ'}
+          title="Accessibility settings"
         >
           <Eye className="h-5 w-5 text-gray-600" />
-        </button>
-        
-        <button
-          onClick={toggleLanguage}
-          className="p-2 rounded-lg hover:bg-gray-100 transition-colors"
-          aria-label={language === 'en' ? 'Switch to Burmese' : 'Switch to English'}
-        >
-          <Globe className="h-5 w-5 text-gray-600" />
         </button>
       </div>
     );
@@ -356,7 +346,7 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
               >
                 <Crown className="h-5 w-5 mr-3 flex-shrink-0" />
                 <span className="font-medium">
-                  {language === 'en' ? 'Upgrade to Premium' : 'Premium သို့ အဆင့်မြှင့်ရန်'}
+                  Upgrade to Premium
                 </span>
               </button>
             </div>
@@ -456,7 +446,7 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
                 onClick={() => setIsSearchOpen(false)}
                 className="mt-4 w-full text-center text-gray-600 hover:text-gray-800 py-2"
               >
-                {language === 'en' ? 'Close' : 'ပိတ်ရန်'}
+                Close
               </button>
             </div>
           </div>

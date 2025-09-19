@@ -1,231 +1,481 @@
-import React, { useState, useEffect } from 'react';
+import React, { ReactNode, useState, useEffect } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { useLanguage } from '../contexts/LanguageContext';
-import { useNavigate } from 'react-router-dom';
-import { useSEO } from '../hooks/useSEO';
+import { useAuth } from '../contexts/AuthContext';
+import { usePremiumAccess } from '../hooks/usePremiumAccess';
 import { useStripe } from '../hooks/useStripe';
-import { fetchJourneyPaths } from '../lib/sanityClient';
 import { supabase } from '../lib/supabaseClient';
-import { useUserType } from '../hooks/useUserType';
-import type { JourneyPath } from '../types/journey';
-import { AlertCircle, Filter } from 'lucide-react';
-import { CourseCard } from '../features/journey-hub';
-import { useQuery } from '@tanstack/react-query';
-import { AdvancedFilters } from '../components/ui';
-import { FilteredContentDisplay } from '../features/journey-hub';
-import { UserTypeDebugPanel, ContentValidationTest } from '../components/ui';
+import ProfileMenu from '../components/ProfileMenu';
+import SearchBar from '../components/ui/SearchBar';
+import NotificationCenter from '../components/ui/NotificationCenter';
+import OfflineIndicator from '../components/ui/OfflineIndicator';
+import AccessibilityMenu from '../components/ui/AccessibilityMenu';
+import {
+  LayoutDashboard,
+  BookOpen,
+  LifeBuoy,
+  ChevronRight,
+  ChevronLeft,
+  Map,
+  Users,
+  MessageSquare,
+  Crown,
+  Settings,
+  CreditCard,
+  Globe,
+  RotateCcw,
+  Download,
+  Award,
+  Heart,
+  Bell,
+  Search,
+  Eye
+} from 'lucide-react';
+import { BottomNavBar, MobileHeader, MobileMenu } from '../components/navigation';
 
-const JourneyHub = () => {
-  const { language } = useLanguage();
-  const navigate = useNavigate();
+type DashboardLayoutProps = {
+  children: ReactNode;
+};
+
+const DashboardLayout = ({ children }: DashboardLayoutProps) => {
+  const { language, toggleLanguage } = useLanguage();
+  const { user } = useAuth();
+  const { hasPremiumAccess, premiumTier } = usePremiumAccess();
   const { subscribeToPlan } = useStripe();
-  const { userType, loading: userTypeLoading } = useUserType();
-  const [progress, setProgress] = useState<Record<string, number>>({});
-  const [isFiltersOpen, setIsFiltersOpen] = useState(false);
+  const navigate = useNavigate();
+  const location = useLocation();
+  const [isCollapsed, setIsCollapsed] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
+  const [isAccessibilityOpen, setIsAccessibilityOpen] = useState(false);
+  const [unreadNotifications, setUnreadNotifications] = useState(3);
 
-  // SEO optimization
-  useSEO({
-    title: 'Journey Hub - Immigration Learning Paths',
-    description: 'Explore comprehensive learning paths designed specifically for immigrants to navigate life in America successfully.',
-    keywords: ['immigration courses', 'learning paths', 'financial education', 'U.S. immigrants'],
-    breadcrumbs: [
-      { name: 'Home', url: '/' },
-      { name: 'Dashboard', url: '/dashboard' },
-      { name: 'Journey Hub', url: '/journey' }
-    ]
-  });
-
-  // Updated path slugs to reflect immigrant journey
-  const pathSlugs = [
-    'new-to-america',
-    'build-credit',
-    'housing-utilities',
-    'us-taxes',
-    'health-insurance',
-    'education-family',
-    'self-employment'
+  const baseMenuItems = [
+    {
+      path: '/dashboard',
+      icon: LayoutDashboard,
+      label: language === 'en' ? 'Dashboard' : 'ဒက်ရှ်ဘုတ်'
+    },
+    {
+      path: '/journey',
+      icon: Map,
+      label: language === 'en' ? 'Journey Hub' : 'ခရီးစဉ်စင်တာ'
+    },
+    {
+      path: '/library',
+      icon: BookOpen,
+      label: language === 'en' ? 'Library' : 'စာကြည့်တိုက်'
+    },
+    {
+      path: '/chat',
+      icon: MessageSquare,
+      label: language === 'en' ? 'Chat with Mini Angel' : 'Mini Angel နှင့် စကားပြောရန်'
+    },
+    {
+      path: '/reflections',
+      icon: Heart,
+      label: language === 'en' ? 'Reflections' : 'ရောင်ပြန်ဟပ်မှုများ'
+    },
+    {
+      path: '/consultation',
+      icon: Users,
+      label: language === 'en' ? 'Community' : 'အသိုင်းအဝိုင်း'
+    },
+    {
+      path: '/help',
+      icon: LifeBuoy,
+      label: language === 'en' ? 'Help' : 'အကူအညီ'
+    },
+    // Add debug menu item in development
+    ...(process.env.NODE_ENV === 'development' ? [{
+      path: '/user-type-test',
+      icon: Settings,
+      label: 'Debug User Types'
+    }] : [])
   ];
 
-  const { data: paths, isLoading, error } = useQuery({
-    queryKey: ['journeyPaths', userType],
-    queryFn: async () => {
-      console.log('Fetching journey paths for user type:', userType);
-      
-      const paths = await fetchJourneyPaths(pathSlugs, userType || undefined);
-      
-      console.log('Filtered paths received:', paths.length, 'paths');
-      
-      return paths
-        .sort((a, b) => {
-          if (a.isPremium === b.isPremium) return 0;
-          return a.isPremium ? 1 : -1;
-        });
-    },
-    enabled: !userTypeLoading, // Only run query when user type is loaded
-  });
+  // Add admin menu item conditionally
+  const menuItems = isAdmin
+    ? [...baseMenuItems, {
+        path: '/admin',
+        icon: Settings,
+        label: 'Admin Dashboard'
+      }]
+    : baseMenuItems;
 
+  // Check admin status
   useEffect(() => {
-    if (paths) {
-      loadProgress(paths);
-    }
-  }, [paths]);
+    const checkAdminStatus = async () => {
+      if (!user) {
+        setIsAdmin(false);
+        return;
+      }
 
-  const loadProgress = async (journeyPaths: JourneyPath[]) => {
-    try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
+      try {
+        const { data, error } = await supabase
+          .from('profiles')
+          .select('role')
+          .eq('id', user.id)
+          .maybeSingle();
 
-      const pathLessons = journeyPaths.reduce((acc, path) => {
-        acc[path._id] = (path.modules || []).flatMap(module => 
-          (module.lessons || []).map(lesson => lesson._id)
-        );
-        return acc;
-      }, {} as Record<string, string[]>);
+        if (error) {
+          console.error('Error checking admin status:', error);
+          setIsAdmin(false);
+          return;
+        }
 
-      const { data: progressData, error: progressError } = await supabase
-        .from('course_progress')
-        .select('lesson_id, completed')
-        .eq('user_id', user.id)
-        .in('lesson_id', Object.values(pathLessons).flat());
+        setIsAdmin(data?.role === 'admin');
+      } catch (error) {
+        console.error('Error checking admin status:', error);
+        setIsAdmin(false);
+      }
+    };
 
-      if (progressError) throw progressError;
+    checkAdminStatus();
+  }, [user]);
 
-      const pathProgress = journeyPaths.reduce((acc, path) => {
-        const pathLessonIds = pathLessons[path._id];
-        const completedLessons = progressData?.filter(
-          p => pathLessonIds.includes(p.lesson_id) && p.completed
-        ).length || 0;
-        
-        acc[path._id] = pathLessonIds.length > 0 
-          ? Math.round((completedLessons / pathLessonIds.length) * 100)
-          : 0;
-        
-        return acc;
-      }, {} as Record<string, number>);
+  // Set initial collapsed state based on screen size
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth < 1024) {
+        setIsCollapsed(true);
+      }
+    };
 
-      setProgress(pathProgress);
-    } catch (error) {
-      console.error('Error loading progress:', error);
-    }
+    // Set initial state
+    handleResize();
+
+    // Add event listener
+    window.addEventListener('resize', handleResize);
+
+    // Cleanup
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  const toggleMobileMenu = () => {
+    setIsMobileMenuOpen(!isMobileMenuOpen);
   };
 
-  const handlePathClick = (path: JourneyPath) => {
-    if (path.isPremium) {
-      subscribeToPlan('monthly');
-      return;
-    }
-    navigate(`/courses/${path.slug}`);
+  const toggleProfileMenu = () => {
+    setIsProfileMenuOpen(!isProfileMenuOpen);
   };
 
-  if (isLoading || userTypeLoading) {
-    return (
-      <div className="flex items-center justify-center min-h-[400px]" role="status" aria-label="Loading personalized journey paths">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600" aria-hidden="true"></div>
-        <span className="sr-only">Loading personalized content...</span>
-      </div>
-    );
-  }
+  const handleMenuItemClick = (path: string) => {
+    navigate(path);
+    setIsMobileMenuOpen(false); // Close mobile menu after navigation
+  };
 
-  if (error) {
-    return (
-      <div className="text-center py-12" role="alert">
-        <AlertCircle className="h-12 w-12 text-red-500 mx-auto mb-4" />
-        <h2 className="text-xl font-semibold text-gray-800 mb-2">
-          {error instanceof Error ? error.message : 'Error loading journey paths'}
-        </h2>
-        <p className="text-gray-600">
-          {language === 'en' 
-            ? 'Please try again later or contact support'
-            : 'နောက်မှ ထပ်မံကြိုးစားပါ သို့မဟုတ် ပံ့ပိုးမှုကို ဆက်သွယ်ပါ'}
-        </p>
-      </div>
-    );
-  }
+  // Determine if we should show back button instead of menu toggle
+  const showBackButton = () => {
+    const pathsWithBackButton = [
+      '/courses/',
+      '/steps/',
+      '/profile-setup',
+      '/subscription',
+      '/admin/users/'
+    ];
 
-  return (
-    <div className="max-w-7xl mx-auto px-4 py-6 sm:py-8">
-      {/* User Type Debug Info (Development Only) */}
-      {process.env.NODE_ENV === 'development' && (
-        <div className="mb-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
-          <p className="text-sm text-blue-800">
-            <strong>Debug:</strong> User Type: {userType || 'Not set'} | 
-            Showing {paths?.length || 0} available paths
-          </p>
-        </div>
-      )}
-      
-      <div className="mb-6">
-        <div className="flex flex-col md:flex-row md:items-center md:justify-between">
-          <div className="mb-4 md:mb-0">
-            <h1 className="text-2xl font-bold text-gray-800 mb-2">
-              {language === 'en' ? 'Your Personalized Journey' : 'သင့်ကိုယ်ပိုင်ခရီးစဉ်'}
-            </h1>
-            <p className="text-gray-600">
-              {language === 'en'
-                ? `Navigate your new life in America with guidance tailored for ${userType === 'immigrant' ? 'immigrants planning to stay long-term' : 'temporary residents'}`
-                : `${userType === 'immigrant' ? 'ရေရှည်နေထိုင်ရန်စီစဉ်နေသော ရွှေ့ပြောင်းအခြေချသူများ' : 'ယာယီနေထိုင်သူများ'}အတွက် အဆင့်ဆင့်လမ်းညွှန်မှုဖြင့် အမေရိကန်တွင် သင့်ဘဝသစ်ကို လမ်းညွှန်ပါ`}
-            </p>
-          </div>
-        </div>
-      </div>
+    return pathsWithBackButton.some(path => location.pathname.includes(path));
+  };
 
-      {/* Journey Paths Grid */}
-      {paths && paths.length > 0 ? (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8 mb-12 sm:mb-16">
-          {paths.map((path) => (
-            <div key={path._id} className="w-full">
-              <CourseCard 
-                path={path}
-                onPathClick={handlePathClick}
-                progress={progress[path._id] || 0}
-              />
-            </div>
-          ))}
-        </div>
-      ) : (
-        <div className="text-center py-12">
-          <AlertCircle className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-          <h2 className="text-xl font-semibold text-gray-800 mb-2">
-            {language === 'en' ? 'No journey paths available' : 'ခရီးစဉ်လမ်းကြောင်းများ မရရှိနိုင်ပါ'}
-          </h2>
-          <p className="text-gray-600">
-            {language === 'en' 
-              ? 'Journey paths will appear here once they are published in Sanity'
-              : 'Sanity တွင် ထုတ်ဝေပြီးသည်နှင့် ခရီးစဉ်လမ်းကြောင်းများ ဤနေရာတွင် ပေါ်လာမည်'}
-          </p>
-        </div>
-      )}
+  // Determine back button destination
+  const getBackPath = () => {
+    if (location.pathname.includes('/courses/')) {
+      return '/journey';
+    }
+    if (location.pathname.includes('/steps/')) {
+      return '/journey';
+    }
+    if (location.pathname.startsWith('/admin/users/')) {
+      return '/admin';
+    }
+    return '/dashboard';
+  };
 
-      {/* Premium upgrade section */}
-      <div className="bg-gradient-to-r from-purple-600 to-indigo-600 rounded-xl p-6 sm:p-8 text-white shadow-xl">
-        <div className="flex flex-col lg:flex-row items-center justify-between">
-          <div className="mb-6 lg:mb-0 text-center lg:text-left">
-            <h2 className="text-2xl sm:text-3xl font-bold mb-2">
-              {language === 'en' ? 'Unlock Premium Content' : 'Premium အကြောင်းအရာများကို လက်လှမ်းမီရန်'}
-            </h2>
-            <p className="text-lg sm:text-xl text-purple-100">
-              {language === 'en'
-                ? 'Get access to all premium lessons and expert guidance'
-                : 'Premium သင်ခန်းစာအားလုံးနှင့် ကျွမ်းကျင်သူလမ်းညွှန်မှုများကို ရယူပါ'}
-            </p>
-          </div>
-          <button 
-            onClick={() => subscribeToPlan('monthly')}
-            className="bg-white text-purple-600 px-6 sm:px-8 py-3 sm:py-4 rounded-lg text-lg font-medium hover:bg-purple-50 transition-colors shadow-md hover:shadow-lg whitespace-nowrap focus-ring min-h-[44px]"
+  // Get custom right content for specific pages
+  const getRightContent = () => {
+    if (location.pathname === '/chat') {
+      return (
+        <div className="flex items-center space-x-2">
+          <button
+            onClick={() => setIsAccessibilityOpen(true)}
+            className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+            title={language === 'en' ? 'Accessibility settings' : 'အသုံးပြုနိုင်မှု ဆက်တင်များ'}
           >
-            {language === 'en' ? 'Upgrade Now' : 'ယခု အဆင့်မြှင့်ရန်'}
+            <Eye className="h-5 w-5 text-gray-600" />
+          </button>
+          <button
+            onClick={() => {
+              // Clear conversation functionality would go here
+              window.dispatchEvent(new CustomEvent('clear-chat'));
+            }}
+            className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+            title={language === 'en' ? 'Clear conversation' : 'စကားပြောမှုကို ရှင်းလင်းရန်'}
+          >
+            <RotateCcw className="h-5 w-5 text-gray-600" />
+          </button>
+          <button
+            onClick={() => {
+              // Export conversation functionality would go here
+              window.dispatchEvent(new CustomEvent('export-chat'));
+            }}
+            className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+            title={language === 'en' ? 'Export conversation' : 'စကားပြောမှုကို ထုတ်ယူရန်'}
+          >
+            <Download className="h-5 w-5 text-gray-600" />
           </button>
         </div>
+      );
+    }
+    
+    // For courses and lessons, we might want to add a completion button
+    if (location.pathname.includes('/courses/') && location.pathname.includes('/lessons/')) {
+      return (
+        <button
+          onClick={() => {
+            // Toggle completion functionality would go here
+            window.dispatchEvent(new CustomEvent('toggle-lesson-completion'));
+          }}
+          className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+        >
+          {/* This would be a dynamic icon based on completion status */}
+        </button>
+      );
+    }
+    
+    // Default is just the language toggle
+    return (
+      <div className="flex items-center space-x-2">
+        <button
+          onClick={() => setIsSearchOpen(true)}
+          className="p-2 rounded-lg hover:bg-gray-100 transition-colors"
+          title={language === 'en' ? 'Search' : 'ရှာဖွေရန်'}
+        >
+          <Search className="h-5 w-5 text-gray-600" />
+        </button>
+        
+        <button
+          onClick={() => setIsNotificationsOpen(true)}
+          className="relative p-2 rounded-lg hover:bg-gray-100 transition-colors"
+          title={language === 'en' ? 'Notifications' : 'အကြောင်းကြားချက်များ'}
+        >
+          <Bell className="h-5 w-5 text-gray-600" />
+          {unreadNotifications > 0 && (
+            <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
+              {unreadNotifications}
+            </span>
+          )}
+        </button>
+        
+        <button
+          onClick={() => setIsAccessibilityOpen(true)}
+          className="p-2 rounded-lg hover:bg-gray-100 transition-colors"
+          title={language === 'en' ? 'Accessibility settings' : 'အသုံးပြုနိုင်မှု ဆက်တင်များ'}
+        >
+          <Eye className="h-5 w-5 text-gray-600" />
+        </button>
+        
+        <button
+          onClick={toggleLanguage}
+          className="p-2 rounded-lg hover:bg-gray-100 transition-colors"
+          aria-label={language === 'en' ? 'Switch to Burmese' : 'Switch to English'}
+        >
+          <Globe className="h-5 w-5 text-gray-600" />
+        </button>
+      </div>
+    );
+  };
+
+  return (
+    <div className="min-h-screen bg-gray-50 flex">
+      {/* Desktop Sidebar - Visible only on md and larger screens */}
+      <aside
+        className={`hidden md:flex flex-col fixed top-0 h-screen bg-white border-r border-gray-200 z-40 transition-all duration-300 ease-in-out ${
+          isCollapsed ? 'w-16' : 'w-64'
+        }`}
+      >
+        {/* Sidebar Header with Logo */}
+        <div className="h-16 border-b border-gray-100 flex items-center justify-center">
+          {isCollapsed ? (
+            <img src="/icons/logo.svg" alt="MyNewStart" className="h-8 w-8" />
+          ) : (
+            <img src="/icons/logo.svg" alt="MyNewStart" className="h-8" />
+          )}
+        </div>
+
+        {/* Collapse/Expand Button */}
+        <button
+          onClick={() => setIsCollapsed(!isCollapsed)}
+          className="absolute top-16 -right-3 bg-white border border-gray-200 rounded-full p-1 shadow-soft-sm"
+          aria-label={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
+        >
+          {isCollapsed ? (
+            <ChevronRight className="h-4 w-4 text-gray-500" />
+          ) : (
+            <ChevronLeft className="h-4 w-4 text-gray-500" />
+          )}
+        </button>
+
+        {/* Navigation Menu */}
+        <nav className="flex-1 p-4 min-h-0 overflow-y-auto hide-scrollbar">
+          <div className="space-y-2">
+            {menuItems.map((item) => {
+              const isActive = location.pathname === item.path || 
+                (location.pathname.startsWith(`${item.path}/`) && item.path !== '/') ||
+                (item.path === '/journey' && location.pathname.startsWith('/courses'));
+                
+              return (
+                <button
+                  key={item.path}
+                  onClick={() => handleMenuItemClick(item.path)}
+                  className={`w-full flex items-center ${isCollapsed ? 'justify-center' : ''} px-3 py-3 rounded-md transition-colors text-left ${
+                    isActive
+                      ? 'bg-blue-50 text-blue-600'
+                      : 'text-gray-700 hover:bg-gray-50'
+                  }`}
+                  aria-current={isActive ? 'page' : undefined}
+                >
+                  <item.icon className={`h-5 w-5 flex-shrink-0 ${isActive ? 'text-blue-600' : 'text-gray-500'}`} />
+                  {!isCollapsed && (
+                    <span className="ml-3 font-medium truncate">{item.label}</span>
+                  )}
+                </button>
+              );
+            })}
+          </div>
+
+          {/* Premium Upgrade Button */}
+          {!isCollapsed && !hasPremiumAccess && (
+            <div className="mt-6 pt-6 border-t border-gray-200">
+              <button
+                onClick={() => subscribeToPlan('monthly')}
+                className="w-full flex items-center px-4 py-3 bg-gradient-to-r from-purple-600 to-indigo-600 text-white rounded-lg hover:from-purple-700 hover:to-indigo-700 transition-colors"
+              >
+                <Crown className="h-5 w-5 mr-3 flex-shrink-0" />
+                <span className="font-medium">
+                  {language === 'en' ? 'Upgrade to Premium' : 'Premium သို့ အဆင့်မြှင့်ရန်'}
+                </span>
+              </button>
+            </div>
+          )}
+        </nav>
+
+        {/* Sidebar Footer with Profile */}
+        <div className="mt-auto border-t border-gray-200 p-4">
+          <ProfileMenu
+            isOpen={isProfileMenuOpen}
+            onToggle={toggleProfileMenu}
+            isCollapsed={isCollapsed}
+          />
+        </div>
+      </aside>
+
+      {/* Overlay for mobile - only visible when mobile menu is open */}
+      {isMobileMenuOpen && (
+        <div
+          className="fixed inset-0 bg-black bg-opacity-50 z-30 md:hidden"
+          onClick={toggleMobileMenu}
+          aria-hidden="true"
+        />
+      )}
+
+      {/* Main Content Area */}
+      <div className={`flex-1 flex flex-col min-h-screen min-w-0 ${isCollapsed ? 'md:ml-16' : 'md:ml-64'}`}>
+        {/* Mobile Header (Visible only on mobile ) */}
+        {!location.pathname.includes('/lessons/') && (
+        <div className="md:hidden">
+          <MobileHeader
+            onMenuToggle={toggleMobileMenu}
+            showBackButton={showBackButton()}
+            backPath={getBackPath()}
+            rightContent={getRightContent()}
+          />
+        </div>
+      )}
+
+        {/* Mobile Menu (Controlled by isMobileMenuOpen, visible only on mobile) */}
+        <MobileMenu
+          isOpen={isMobileMenuOpen}
+          onClose={() => setIsMobileMenuOpen(false)}
+          menuItems={menuItems}
+        />
+
+        {/* Desktop Header (Visible only on desktop ) */}
+        <div className={`hidden md:flex items-center justify-end h-16 px-8 bg-white border-b border-gray-200 ${
+          location.pathname.includes('/lessons/') ? 'md:hidden' : ''
+        }`}>
+          <div className="flex items-center space-x-4">
+            {getRightContent()}
+          </div>
+        </div>
+
+        {/* Page Content */}
+        <main 
+          id="main-content"
+          className={`flex-1 min-w-0 overflow-y-scroll md:overflow-auto overflow-x-hidden hide-scrollbar [scrollbar-gutter:stable] ${
+            location.pathname.includes('/lessons/') 
+              ? 'p-0 pt-0' 
+              : 'p-4 md:p-6 lg:p-8 pb-safe pt-0 md:pt-6'
+          }`}
+          role="main"
+          aria-label="Main content"
+        >
+          <div className={`w-full min-w-0 ${location.pathname.includes('/lessons/') ? '' : 'max-w-7xl mx-auto'}`}>
+            {/* Main Content */}
+            {children}
+          </div>
+        </main>
+
+        {/* Footer */}
+        <footer className="bg-white py-4 border-t border-gray-200 mt-auto hidden md:block">
+          <div className="container mx-auto px-4 text-center text-gray-500 text-sm">
+            &copy; {new Date().getFullYear()} My New Start. 
+          </div>
+        </footer>
+
+        {/* Mobile Bottom Navigation  (Visible only on mobile) */}
+        <BottomNavBar />
       </div>
       
-      {/* Debug Tools - Development Only */}
-      {process.env.NODE_ENV === 'development' && (
-        <>
-          <UserTypeDebugPanel />
-          <ContentValidationTest />
-        </>
+      {/* Global UI Components */}
+      <OfflineIndicator />
+      
+      {/* Search Modal */}
+      {isSearchOpen && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-start justify-center pt-20 px-4">
+          <div className="bg-white rounded-lg shadow-xl max-w-2xl w-full">
+            <div className="p-4">
+              <SearchBar 
+                autoFocus={true}
+                onResultClick={() => setIsSearchOpen(false)}
+              />
+              <button
+                onClick={() => setIsSearchOpen(false)}
+                className="mt-4 w-full text-center text-gray-600 hover:text-gray-800 py-2"
+              >
+                {language === 'en' ? 'Close' : 'ပိတ်ရန်'}
+              </button>
+            </div>
+          </div>
+        </div>
       )}
+      
+      {/* Notifications */}
+      <NotificationCenter 
+        isOpen={isNotificationsOpen}
+        onClose={() => setIsNotificationsOpen(false)}
+      />
+      
+      {/* Accessibility Menu */}
+      <AccessibilityMenu 
+        isOpen={isAccessibilityOpen}
+        onClose={() => setIsAccessibilityOpen(false)}
+      />
     </div>
   );
 };
 
-export default JourneyHub;
+export default DashboardLayout;

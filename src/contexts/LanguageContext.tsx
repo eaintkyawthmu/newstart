@@ -2,7 +2,6 @@ import React, { createContext, useContext, ReactNode } from 'react';
 
 interface LanguageContextType {
   language: string;
-  t: (key: string) => string;
 }
 
 const LanguageContext = createContext<LanguageContextType | undefined>(undefined);
@@ -14,13 +13,8 @@ interface LanguageProviderProps {
 export const LanguageProvider: React.FC<LanguageProviderProps> = ({ children }) => {
   const language = 'en'; // Fixed to English only
 
-  const t = (key: string) => {
-    // Simple passthrough - just return the key
-    return key;
-  };
-
   return (
-    <LanguageContext.Provider value={{ language, t }}>
+    <LanguageContext.Provider value={{ language }}>
       {children}
     </LanguageContext.Provider>
   );

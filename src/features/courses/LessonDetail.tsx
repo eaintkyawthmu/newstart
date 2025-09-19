@@ -423,7 +423,7 @@ const LessonDetail = () => {
 
   if (!lesson || !path) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
+      <div className="min-h-screen bg-gray-50 overflow-x-hidden flex items-center justify-center p-4">
         <div className="text-center">
           <AlertCircle className="h-12 w-12 text-red-500 mx-auto mb-4" />
           <h2 className="text-xl font-semibold text-gray-800 mb-2">

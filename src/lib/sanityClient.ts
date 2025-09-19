@@ -1,3 +1,4 @@
+// sanityclient.ts
 import { createClient } from '@sanity/client';
 import type { JourneyPath } from '../types/journey';
 import type { UserType } from '../types/user';
@@ -39,24 +40,24 @@ export const sanityClient = createClient({
 
 export const fetchJourneyPath = async (slug: string, userType?: UserType): Promise<JourneyPath | null> => {
   try {
-    // Build the query with optional user type filtering
     const query = `
       *[_type == "journeyPath" && slug.current == $slug][0] {
         _id,
         title,
-        description,
-        whoIsItFor,
-        howItHelps,
         "slug": slug.current,
         duration,
         level,
         rating,
         enrolled,
         isPremium,
-        objectives,
-        completionCriteria,
-        practicalApplications,
-        targetAudience,
+        tags,
+        // The following fields have been updated to match your final schema
+        journeyOutcomes,
+        howItHelps,
+        howToComplete,
+        shortDescription,
+        longDescription,
+        realWorldImpact,
         "coverImage": {
           "url": coverImage.asset->url,
           "alt": coverImage.alt
@@ -74,17 +75,15 @@ export const fetchJourneyPath = async (slug: string, userType?: UserType): Promi
           targetAudience,
           "lessons": *[
             _type == "lesson" && 
-            references(^._id) &&
-            (targetAudience == "all" || targetAudience == $userType)
+            references(^._id)
           ] | order(order asc) {
             _id,
             title,
             "slug": slug.current,
-            description,
             duration,
             type,
             order,
-            targetAudience
+            // You have a single lesson schema, not a conditional one, so this filtering is not needed here
           }
         }
       }
@@ -100,12 +99,11 @@ export const fetchJourneyPath = async (slug: string, userType?: UserType): Promi
       return null;
     }
 
-    console.log('Fetched journey path data:', data); // Debug log
+    console.log('Fetched journey path data:', data);
     return data;
   } catch (error: any) {
     console.error(`Error fetching journey path ${slug}:`, error);
     
-    // Provide more specific error messages for common authentication issues
     if (error.message?.includes('Unauthorized') || error.message?.includes('Session not found')) {
       throw new Error(
         `Sanity authentication failed. Please check that:\n` +
@@ -130,7 +128,6 @@ export const fetchJourneyPath = async (slug: string, userType?: UserType): Promi
   }
 };
 
-// Fetch multiple journey paths with user type filtering
 export const fetchJourneyPaths = async (slugs: string[], userType?: UserType): Promise<JourneyPath[]> => {
   try {
     const query = `
@@ -140,14 +137,13 @@ export const fetchJourneyPaths = async (slugs: string[], userType?: UserType): P
       ] {
         _id,
         title,
-        description,
+        shortDescription,
         "slug": slug.current,
         duration,
         level,
         rating,
         enrolled,
         isPremium,
-        targetAudience,
         "coverImage": {
           "url": coverImage.asset->url,
           "alt": coverImage.alt
@@ -165,17 +161,14 @@ export const fetchJourneyPaths = async (slugs: string[], userType?: UserType): P
           targetAudience,
           "lessons": *[
             _type == "lesson" && 
-            references(^._id) &&
-            (targetAudience == "all" || targetAudience == $userType)
+            references(^._id)
           ] | order(order asc) {
             _id,
             title,
             "slug": slug.current,
-            description,
             duration,
             type,
             order,
-            targetAudience
           }
         }
       } | order(order asc)
@@ -193,7 +186,6 @@ export const fetchJourneyPaths = async (slugs: string[], userType?: UserType): P
   }
 };
 
-// Fetch all modules with user type filtering
 export const fetchFilteredModules = async (userType?: UserType) => {
   try {
     const query = `
@@ -209,17 +201,14 @@ export const fetchFilteredModules = async (userType?: UserType) => {
         targetAudience,
         "lessons": *[
           _type == "lesson" && 
-          references(^._id) &&
-          (targetAudience == "all" || targetAudience == $userType)
+          references(^._id)
         ] | order(order asc) {
           _id,
           title,
           "slug": slug.current,
-          description,
           duration,
           type,
           order,
-          targetAudience
         }
       } | order(order asc)
     `;

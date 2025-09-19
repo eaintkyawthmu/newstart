@@ -1,8 +1,7 @@
-import React, { createContext, useContext, useState, ReactNode } from 'react';
+import React, { createContext, useContext, ReactNode } from 'react';
 
 interface LanguageContextType {
   language: string;
-  toggleLanguage: () => void;
   t: (key: string) => string;
 }
 
@@ -13,20 +12,15 @@ interface LanguageProviderProps {
 }
 
 export const LanguageProvider: React.FC<LanguageProviderProps> = ({ children }) => {
-  const [language, setLanguage] = useState('en');
-
-  const toggleLanguage = () => {
-    setLanguage(prev => prev === 'en' ? 'my' : 'en');
-  };
+  const language = 'en'; // Fixed to English only
 
   const t = (key: string) => {
-    // For now, just return the key as we've removed all translations
-    // This maintains compatibility while the app is English-only
+    // Simple passthrough - just return the key
     return key;
   };
 
   return (
-    <LanguageContext.Provider value={{ language, toggleLanguage, t }}>
+    <LanguageContext.Provider value={{ language, t }}>
       {children}
     </LanguageContext.Provider>
   );

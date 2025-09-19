@@ -636,7 +636,7 @@ const LessonDetail = () => {
                       <h3 className="font-semibold text-amber-800 mb-2 text-sm">
                         {language === 'en' ? 'Reflect & Grow' : 'ပြန်လည်သုံးသပ်ပြီး တိုးတက်ပါ'}
                       </h3>
-                      <div className="prose prose-sm max-w-none text-amber-700">
+                      <div className="prose prose-sm max-w-none text-amber-700 break-words prose-a:break-all">
                         <PortableText value={Array.isArray(lesson.reflectionPrompts) ? lesson.reflectionPrompts : [lesson.reflectionPrompts]} />
                       </div>
                     </div>

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useUserType } from '../../hooks/useUserType';
+import { useAuth } from '../../contexts/AuthContext';
 import { fetchJourneyPaths } from '../../lib/sanityClient';
 import { UserType } from '../../types/user';
 import { JourneyPath } from '../../types/journey';
@@ -23,8 +24,18 @@ interface TestResult {
 
 const ContentValidationTest: React.FC = () => {
   const { userType } = useUserType();
+  const { user, loading, error } = useAuth();
+  const [isVisible, setIsVisible] = useState(false);
   const [testResults, setTestResults] = useState<TestResult[]>([]);
   const [isRunning, setIsRunning] = useState(false);
+  const [debugData, setDebugData] = useState<any>(null);
+
+  const testUserTypeChange = async (newUserType: UserType) => {
+    // This would typically update the user's profile in the database
+    console.log(`Testing user type change to: ${newUserType}`);
+    // For testing purposes, we'll just run validation tests
+    await runValidationTests();
+  };
 
   const runValidationTests = async () => {
     setIsRunning(true);

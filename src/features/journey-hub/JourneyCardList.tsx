@@ -1,232 +1,471 @@
-import React, { useState, useEffect } from 'react';
-import { useLanguage } from '../../contexts/LanguageContext';
-import { useNavigate } from 'react-router-dom';
-import { supabase } from '../../lib/supabaseClient';
+import React, { ReactNode, useState, useEffect } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
+import { useAuth } from '../contexts/AuthContext';
+import { usePremiumAccess } from '../hooks/usePremiumAccess';
+import { useStripe } from '../hooks/useStripe';
+import { supabase } from '../lib/supabaseClient';
+import ProfileMenu from '../components/ProfileMenu';
+import SearchBar from '../components/ui/SearchBar';
+import NotificationCenter from '../components/ui/NotificationCenter';
+import OfflineIndicator from '../components/ui/OfflineIndicator';
+import AccessibilityMenu from '../components/ui/AccessibilityMenu';
 import {
-  UserCircle,
-  ArrowLeft,
+  LayoutDashboard,
+  BookOpen,
+  LifeBuoy,
+  ChevronRight,
+  ChevronLeft,
+  Map,
   Users,
-  Building,
-  Home,
-  GraduationCap,
-  Briefcase,
-  MapPin,
-  ChevronDown,
-  ChevronUp,
-  Clock,
-  Mail,
-  Truck,
-  CheckSquare,
-  FileText,
-  Phone,
-  HelpCircle,
-  Shield,
-  ChevronRight
+  MessageSquare,
+  Crown,
+  Settings,
+  CreditCard,
+  Globe,
+  RotateCcw,
+  Download,
+  Award,
+  Heart,
+  Bell,
+  Search,
+  Eye
 } from 'lucide-react';
+import { BottomNavBar, MobileHeader, MobileMenu } from '../components/navigation';
 
-interface StepProgress {
-  step_id: number;
-  status: 'completed' | 'in-progress' | 'pending';
-  user_id: string;
-}
+type DashboardLayoutProps = {
+  children: ReactNode;
+};
 
-const JourneyCardList = () => {
-  const { language } = useLanguage();
+const DashboardLayout = ({ children }: DashboardLayoutProps) => {
+  const { user } = useAuth();
+  const { hasPremiumAccess, premiumTier } = usePremiumAccess();
+  const { subscribeToPlan } = useStripe();
   const navigate = useNavigate();
-  const [progress, setProgress] = useState<Record<number, StepProgress>>({});
-  const [completedWelcomeSteps, setCompletedWelcomeSteps] = useState<number[]>([]);
-  const [loading, setLoading] = useState(true);
+  const location = useLocation();
+  const [isCollapsed, setIsCollapsed] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
+  const [isAccessibilityOpen, setIsAccessibilityOpen] = useState(false);
+  const [unreadNotifications, setUnreadNotifications] = useState(3);
 
-  useEffect(() => {
-    fetchProgress();
-  }, []);
-
-  const fetchProgress = async () => {
-    try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
-
-      // Fetch journey progress
-      const { data: journeyData, error: journeyError } = await supabase
-        .from('journey_progress')
-        .select('*')
-        .eq('user_id', user.id);
-
-      if (journeyError) throw journeyError;
-
-      // Fetch completed welcome steps
-      const { data: profileData, error: profileError } = await supabase
-        .from('profiles')
-        .select('completed_welcome_steps')
-        .eq('id', user.id)
-        .single();
-
-      if (profileError) throw profileError;
-
-      const progressMap = (journeyData || []).reduce((acc: Record<number, StepProgress>, curr) => {
-        acc[curr.step_id] = curr;
-        return acc;
-      }, {});
-
-      setProgress(progressMap);
-      setCompletedWelcomeSteps(profileData?.completed_welcome_steps || []);
-    } catch (error) {
-      console.error('Error fetching progress:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const journeySteps = [
+  const baseMenuItems = [
     {
-      id: 'welcome',
-      title: language === 'en' ? 'New to America' : 'အမေရိကန်သို့ အသစ်ရောက်ရှိသူ',
-      description: language === 'en' ? 'Essential first steps for absolute beginners' : 'အခြေခံကျသော ပထမဆုံးအဆင့်များ',
-      steps: [
-        { id: 1, title: language === 'en' ? 'Personal Profile Setup' : 'ကိုယ်ရေးအချက်အလက် စီစဉ်ခြင်း' },
-        { id: 2, title: language === 'en' ? 'Life & Household Info' : 'လူနေမှုနှင့် အိမ်ထောင်စု အချက်အလက်' },
-        { id: 3, title: language === 'en' ? 'Document Information' : 'စာရွက်စာတမ်း အချက်အလက်' }
-      ],
-      route: '/steps/welcome-setup',
-      icon: UserCircle
+      path: '/dashboard',
+      icon: LayoutDashboard,
+      label: 'Dashboard'
     },
     {
-      id: 'documents',
-      title: language === 'en' ? 'Initial Document Setup' : 'ကနဦး စာရွက်စာတမ်း စီစဉ်ခြင်း',
-      description: language === 'en' ? 'Get your essential documents and identification' : 'သင့်မရှိမဖြစ် စာရွက်စာတမ်းများနှင့် အထောက်အထားများကို ရယူပါ',
-      steps: [
-        { id: 1, title: language === 'en' ? 'Access I-94 Record' : 'I-94 မှတ်တမ်းကို ရယူပါ' },
-        { id: 2, title: language === 'en' ? 'Apply for SSN/ITIN' : 'SSN/ITIN လျှောက်ထားပါ' },
-        { id: 3, title: language === 'en' ? 'Get State ID/Driver\'s License' : 'ပြည်နယ် ID/ယာဉ်မောင်းလိုင်စင် ရယူပါ' }
-      ],
-      route: '/steps/initial-documents',
-      icon: FileText
+      path: '/journey',
+      icon: Map,
+      label: 'Journey Hub'
     },
     {
-      id: 'safety',
-      title: language === 'en' ? 'Safety & Emergency' : 'လုံခြုံရေးနှင့် အရေးပေါ်',
-      description: language === 'en' ? 'Essential safety knowledge and emergency preparedness' : 'မရှိမဖြစ် လုံခြုံရေးဗဟုသုတနှင့် အရေးပေါ်ကြိုတင်ပြင်ဆင်မှု',
-      steps: [
-        { id: 1, title: language === 'en' ? 'Know Emergency Services (911)' : 'အရေးပေါ်ဝန်ဆောင်မှုများကို သိရှိပါ (911)' },
-        { id: 2, title: language === 'en' ? 'Prepare Emergency Kit' : 'အရေးပေါ်အိတ် ပြင်ဆင်ပါ' },
-        { id: 3, title: language === 'en' ? 'Organize Medical Information' : 'ဆေးဘက်ဆိုင်ရာ အချက်အလက်များကို စီစဉ်ပါ' }
-      ],
-      route: '/steps/safety-emergency',
-      icon: Shield
+      path: '/library',
+      icon: BookOpen,
+      label: 'Library'
     },
     {
-      id: 'banking',
-      title: language === 'en' ? 'Banking & Credit' : 'ဘဏ်လုပ်ငန်းနှင့် ခရက်ဒစ်',
-      description: language === 'en' ? 'Start building your credit history from scratch' : 'သင့်ခရက်ဒစ်မှတ်တမ်းကို အစမှစတင်တည်ဆောက်ပါ',
-      steps: [],
-      route: '/steps/banking-credit',
-      icon: Building
+      path: '/chat',
+      icon: MessageSquare,
+      label: 'Chat with Mini Angel'
     },
     {
-      id: 'housing',
-      title: language === 'en' ? 'Housing & Utilities' : 'အိမ်ရာနှင့် ဝန်ဆောင်မှုများ',
-      description: language === 'en' ? 'Find and set up your home in America' : 'အမေရိကန်တွင် သင့်အိမ်ကို ရှာဖွေပြီး စီစဉ်ပါ',
-      steps: [],
-      route: '/steps/housing-utilities',
-      icon: Home
+      path: '/reflections',
+      icon: Heart,
+      label: 'Reflections'
     },
     {
-      id: 'taxes',
-      title: language === 'en' ? 'Taxes & Employment' : 'အခွန်နှင့် အလုပ်အကိုင်',
-      description: language === 'en' ? 'Understand U.S. tax system and employment' : 'အမေရိကန်အခွန်စနစ်နှင့် အလုပ်အကိုင်ကို နားလည်ပါ',
-      steps: [],
-      route: '/steps/tax-employment',
-      icon: Briefcase
-    }
+      path: '/consultation',
+      icon: Users,
+      label: 'Community'
+    },
+    {
+      path: '/help',
+      icon: LifeBuoy,
+      label: 'Help'
+    },
+    // Add debug menu item in development
+    ...(process.env.NODE_ENV === 'development' ? [{
+      path: '/user-type-test',
+      icon: Settings,
+      label: 'Debug User Types'
+    }] : [])
   ];
 
-  if (loading) {
+  // Add admin menu item conditionally
+  const menuItems = isAdmin
+    ? [...baseMenuItems, {
+        path: '/admin',
+        icon: Settings,
+        label: 'Admin Dashboard'
+      }]
+    : baseMenuItems;
+
+  // Check admin status
+  useEffect(() => {
+    const checkAdminStatus = async () => {
+      if (!user) {
+        setIsAdmin(false);
+        return;
+      }
+
+      try {
+        const { data, error } = await supabase
+          .from('profiles')
+          .select('role')
+          .eq('id', user.id)
+          .maybeSingle();
+
+        if (error) {
+          console.error('Error checking admin status:', error);
+          setIsAdmin(false);
+          return;
+        }
+
+        setIsAdmin(data?.role === 'admin');
+      } catch (error) {
+        console.error('Error checking admin status:', error);
+        setIsAdmin(false);
+      }
+    };
+
+    checkAdminStatus();
+  }, [user]);
+
+  // Set initial collapsed state based on screen size
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth < 1024) {
+        setIsCollapsed(true);
+      }
+    };
+
+    // Set initial state
+    handleResize();
+
+    // Add event listener
+    window.addEventListener('resize', handleResize);
+
+    // Cleanup
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  const toggleMobileMenu = () => {
+    setIsMobileMenuOpen(!isMobileMenuOpen);
+  };
+
+  const toggleProfileMenu = () => {
+    setIsProfileMenuOpen(!isProfileMenuOpen);
+  };
+
+  const handleMenuItemClick = (path: string) => {
+    navigate(path);
+    setIsMobileMenuOpen(false); // Close mobile menu after navigation
+  };
+
+  // Determine if we should show back button instead of menu toggle
+  const showBackButton = () => {
+    const pathsWithBackButton = [
+      '/courses/',
+      '/steps/',
+      '/profile-setup',
+      '/subscription',
+      '/admin/users/'
+    ];
+
+    return pathsWithBackButton.some(path => location.pathname.includes(path));
+  };
+
+  // Determine back button destination
+  const getBackPath = () => {
+    if (location.pathname.includes('/courses/')) {
+      return '/journey';
+    }
+    if (location.pathname.includes('/steps/')) {
+      return '/journey';
+    }
+    if (location.pathname.startsWith('/admin/users/')) {
+      return '/admin';
+    }
+    return '/dashboard';
+  };
+
+  // Get custom right content for specific pages
+  const getRightContent = () => {
+    if (location.pathname === '/chat') {
+      return (
+        <div className="flex items-center space-x-2">
+          <button
+            onClick={() => setIsAccessibilityOpen(true)}
+            className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+            title="Accessibility settings"
+          >
+            <Eye className="h-5 w-5 text-gray-600" />
+          </button>
+          <button
+            onClick={() => {
+              // Clear conversation functionality would go here
+              window.dispatchEvent(new CustomEvent('clear-chat'));
+            }}
+            className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+            title="Clear conversation"
+          >
+            <RotateCcw className="h-5 w-5 text-gray-600" />
+          </button>
+          <button
+            onClick={() => {
+              // Export conversation functionality would go here
+              window.dispatchEvent(new CustomEvent('export-chat'));
+            }}
+            className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+            title="Export conversation"
+          >
+            <Download className="h-5 w-5 text-gray-600" />
+          </button>
+        </div>
+      );
+    }
+    
+    // For courses and lessons, we might want to add a completion button
+    if (location.pathname.includes('/courses/') && location.pathname.includes('/lessons/')) {
+      return (
+        <button
+          onClick={() => {
+            // Toggle completion functionality would go here
+            window.dispatchEvent(new CustomEvent('toggle-lesson-completion'));
+          }}
+          className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+        >
+          {/* This would be a dynamic icon based on completion status */}
+        </button>
+      );
+    }
+    
+    // Default is just the language toggle
     return (
-      <div className="flex items-center justify-center min-h-[200px]">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+      <div className="flex items-center space-x-2">
+        <button
+          onClick={() => setIsSearchOpen(true)}
+          className="p-2 rounded-lg hover:bg-gray-100 transition-colors"
+          title="Search"
+        >
+          <Search className="h-5 w-5 text-gray-600" />
+        </button>
+        
+        <button
+          onClick={() => setIsNotificationsOpen(true)}
+          className="relative p-2 rounded-lg hover:bg-gray-100 transition-colors"
+          title="Notifications"
+        >
+          <Bell className="h-5 w-5 text-gray-600" />
+          {unreadNotifications > 0 && (
+            <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
+              {unreadNotifications}
+            </span>
+          )}
+        </button>
+        
+        <button
+          onClick={() => setIsAccessibilityOpen(true)}
+          className="p-2 rounded-lg hover:bg-gray-100 transition-colors"
+          title="Accessibility settings"
+        >
+          <Eye className="h-5 w-5 text-gray-600" />
+        </button>
       </div>
     );
-  }
+  };
 
   return (
-    <div className="grid grid-cols-1 gap-6">
-      {journeySteps.map((step) => (
-        <div 
-          key={step.id}
-          className="bg-white rounded-lg border border-gray-200 p-6 shadow-sm hover:shadow-md transition-shadow"
+    <div className="min-h-screen bg-gray-50 flex">
+      {/* Desktop Sidebar - Visible only on md and larger screens */}
+      <aside
+        className={`hidden md:flex flex-col fixed top-0 h-screen bg-white border-r border-gray-200 z-40 transition-all duration-300 ease-in-out ${
+          isCollapsed ? 'w-16' : 'w-64'
+        }`}
+      >
+        {/* Sidebar Header with Logo */}
+        <div className="h-16 border-b border-gray-100 flex items-center justify-center">
+          {isCollapsed ? (
+            <img src="/icons/logo.svg" alt="MyNewStart" className="h-8 w-8" />
+          ) : (
+            <img src="/icons/logo.svg" alt="MyNewStart" className="h-8" />
+          )}
+        </div>
+
+        {/* Collapse/Expand Button */}
+        <button
+          onClick={() => setIsCollapsed(!isCollapsed)}
+          className="absolute top-16 -right-3 bg-white border border-gray-200 rounded-full p-1 shadow-soft-sm"
+          aria-label={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
         >
-          <div className="flex items-start justify-between">
-            <div className="flex items-start space-x-4">
-              <div className={`rounded-full p-2 ${
-                step.id === 'welcome' && completedWelcomeSteps?.length === 3
-                  ? 'bg-blue-100'
-                  : step.id === 'documents' && (progress[2]?.status === 'completed' || checklist?.ssn && checklist?.dmv)
-                  ? 'bg-blue-100'
-                  : step.id === 'safety' && (progress[3]?.status === 'completed')
-                  ? 'bg-blue-100'
-                  : 'bg-gray-100'
-              }`}>
-                <step.icon className={`h-6 w-6 ${
-                  step.id === 'welcome' && completedWelcomeSteps?.length === 3
-                    ? 'text-blue-600'
-                    : step.id === 'documents' && (progress[2]?.status === 'completed' || checklist?.ssn && checklist?.dmv)
-                    ? 'text-blue-600'
-                    : step.id === 'safety' && (progress[3]?.status === 'completed')
-                    ? 'text-blue-600'
-                    : 'text-gray-400'
-                }`} />
-              </div>
-              <div>
-                <h2 className="text-xl font-semibold text-gray-800">{step.title}</h2>
-                <p className="text-gray-600 mt-1">{step.description}</p>
+          {isCollapsed ? (
+            <ChevronRight className="h-4 w-4 text-gray-500" />
+          ) : (
+            <ChevronLeft className="h-4 w-4 text-gray-500" />
+          )}
+        </button>
+
+        {/* Navigation Menu */}
+        <nav className="flex-1 p-4 min-h-0 overflow-y-auto hide-scrollbar">
+          <div className="space-y-2">
+            {menuItems.map((item) => {
+              const isActive = location.pathname === item.path || 
+                (location.pathname.startsWith(`${item.path}/`) && item.path !== '/') ||
+                (item.path === '/journey' && location.pathname.startsWith('/courses'));
                 
-                <div className="mt-4 space-y-2">
-                  {step.steps.map((substep, index) => (
-                    <div 
-                      key={substep.id}
-                      className="flex items-center space-x-2"
-                    >
-                      <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${
-                        step.id === 'welcome' && completedWelcomeSteps?.includes(substep.id)
-                          ? 'bg-blue-500 border-blue-500'
-                          : step.id === 'documents' && checklist?.[['i94', 'ssn', 'dmv'][index]]
-                          ? 'bg-blue-500 border-blue-500'
-                          : step.id === 'safety' && checklist?.[['emergency_contacts', 'emergency_kit', 'medical_info'][index]]
-                          ? 'bg-blue-500 border-blue-500'
-                          : 'border-gray-300'
-                      }`}>
-                        {((step.id === 'welcome' && completedWelcomeSteps?.includes(substep.id)) ||
-                          (step.id === 'documents' && checklist?.[['i94', 'ssn', 'dmv'][index]]) ||
-                          (step.id === 'safety' && checklist?.[['emergency_contacts', 'emergency_kit', 'medical_info'][index]])) && (
-                          <CheckSquare className="h-3 w-3 text-white" />
-                        )}
-                      </div>
-                      <span className={((step.id === 'welcome' && completedWelcomeSteps?.includes(substep.id)) ||
-                          (step.id === 'documents' && checklist?.[['i94', 'ssn', 'dmv'][index]]) ||
-                          (step.id === 'safety' && checklist?.[['emergency_contacts', 'emergency_kit', 'medical_info'][index]]))
-                        ? 'text-gray-500 line-through'
-                        : 'text-gray-600'
-                      }>
-                        {substep.title}
-                      </span>
-                    </div>
-                  ))}
-                </div>
-              </div>
+              return (
+                <button
+                  key={item.path}
+                  onClick={() => handleMenuItemClick(item.path)}
+                  className={`w-full flex items-center ${isCollapsed ? 'justify-center' : ''} px-3 py-3 rounded-md transition-colors text-left ${
+                    isActive
+                      ? 'bg-blue-50 text-blue-600'
+                      : 'text-gray-700 hover:bg-gray-50'
+                  }`}
+                  aria-current={isActive ? 'page' : undefined}
+                >
+                  <item.icon className={`h-5 w-5 flex-shrink-0 ${isActive ? 'text-blue-600' : 'text-gray-500'}`} />
+                  {!isCollapsed && (
+                    <span className="ml-3 font-medium truncate">{item.label}</span>
+                  )}
+                </button>
+              );
+            })}
+          </div>
+
+          {/* Premium Upgrade Button */}
+          {!isCollapsed && !hasPremiumAccess && (
+            <div className="mt-6 pt-6 border-t border-gray-200">
+              <button
+                onClick={() => subscribeToPlan('monthly')}
+                className="w-full flex items-center px-4 py-3 bg-gradient-to-r from-purple-600 to-indigo-600 text-white rounded-lg hover:from-purple-700 hover:to-indigo-700 transition-colors"
+              >
+                <Crown className="h-5 w-5 mr-3 flex-shrink-0" />
+                <span className="font-medium">
+                  Upgrade to Premium
+                </span>
+              </button>
             </div>
-            
-            <button
-              onClick={() => navigate(step.route)}
-              className="flex items-center text-blue-600 hover:text-blue-700"
-            >
-              {language === 'en' ? 'View Details' : 'အသေးစိတ်ကြည့်ရန်'}
-              <ChevronRight className="h-5 w-5 ml-1" />
-            </button>
+          )}
+        </nav>
+
+        {/* Sidebar Footer with Profile */}
+        <div className="mt-auto border-t border-gray-200 p-4">
+          <ProfileMenu
+            isOpen={isProfileMenuOpen}
+            onToggle={toggleProfileMenu}
+            isCollapsed={isCollapsed}
+          />
+        </div>
+      </aside>
+
+      {/* Overlay for mobile - only visible when mobile menu is open */}
+      {isMobileMenuOpen && (
+        <div
+          className="fixed inset-0 bg-black bg-opacity-50 z-30 md:hidden"
+          onClick={toggleMobileMenu}
+          aria-hidden="true"
+        />
+      )}
+
+      {/* Main Content Area */}
+      <div className={`flex-1 flex flex-col min-h-screen min-w-0 ${isCollapsed ? 'md:ml-16' : 'md:ml-64'}`}>
+        {/* Mobile Header (Visible only on mobile ) */}
+        {!location.pathname.includes('/lessons/') && (
+        <div className="md:hidden">
+          <MobileHeader
+            onMenuToggle={toggleMobileMenu}
+            showBackButton={showBackButton()}
+            backPath={getBackPath()}
+            rightContent={getRightContent()}
+          />
+        </div>
+      )}
+
+        {/* Mobile Menu (Controlled by isMobileMenuOpen, visible only on mobile) */}
+        <MobileMenu
+          isOpen={isMobileMenuOpen}
+          onClose={() => setIsMobileMenuOpen(false)}
+          menuItems={menuItems}
+        />
+
+        {/* Desktop Header (Visible only on desktop ) */}
+        <div className={`hidden md:flex items-center justify-end h-16 px-8 bg-white border-b border-gray-200 ${
+          location.pathname.includes('/lessons/') ? 'md:hidden' : ''
+        }`}>
+          <div className="flex items-center space-x-4">
+            {getRightContent()}
           </div>
         </div>
-      ))}
+
+        {/* Page Content */}
+        <main 
+          id="main-content"
+          className={`flex-1 min-w-0 overflow-y-scroll md:overflow-auto overflow-x-hidden hide-scrollbar [scrollbar-gutter:stable] ${
+            location.pathname.includes('/lessons/') 
+              ? 'p-0 pt-0' 
+              : 'p-4 md:p-6 lg:p-8 pb-safe pt-0 md:pt-6'
+          }`}
+          role="main"
+          aria-label="Main content"
+        >
+          <div className={`w-full min-w-0 ${location.pathname.includes('/lessons/') ? '' : 'max-w-7xl mx-auto'}`}>
+            {/* Main Content */}
+            {children}
+          </div>
+        </main>
+
+        {/* Footer */}
+        <footer className="bg-white py-4 border-t border-gray-200 mt-auto hidden md:block">
+          <div className="container mx-auto px-4 text-center text-gray-500 text-sm">
+            &copy; {new Date().getFullYear()} My New Start. 
+          </div>
+        </footer>
+
+        {/* Mobile Bottom Navigation  (Visible only on mobile) */}
+        <BottomNavBar />
+      </div>
+      
+      {/* Global UI Components */}
+      <OfflineIndicator />
+      
+      {/* Search Modal */}
+      {isSearchOpen && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-start justify-center pt-20 px-4">
+          <div className="bg-white rounded-lg shadow-xl max-w-2xl w-full">
+            <div className="p-4">
+              <SearchBar 
+                autoFocus={true}
+                onResultClick={() => setIsSearchOpen(false)}
+              />
+              <button
+                onClick={() => setIsSearchOpen(false)}
+                className="mt-4 w-full text-center text-gray-600 hover:text-gray-800 py-2"
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+      
+      {/* Notifications */}
+      <NotificationCenter 
+        isOpen={isNotificationsOpen}
+        onClose={() => setIsNotificationsOpen(false)}
+      />
+      
+      {/* Accessibility Menu */}
+      <AccessibilityMenu 
+        isOpen={isAccessibilityOpen}
+        onClose={() => setIsAccessibilityOpen(false)}
+      />
     </div>
   );
 };
 
-export default JourneyCardList;
+export default DashboardLayout;

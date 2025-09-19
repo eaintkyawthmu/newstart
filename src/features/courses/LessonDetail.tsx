@@ -511,7 +511,7 @@ const LessonDetail = () => {
             {expandedSections.has('intro') && (
               <div className="px-4 pb-4 border-t border-gray-100">
                 {lesson.introduction && (
-                  <div className="prose prose-sm max-w-none text-gray-700 mb-4">
+                  <div className="prose prose-sm max-w-none text-gray-700 mb-4 break-words prose-a:break-all">
                     <PortableText value={Array.isArray(lesson.introduction) ? lesson.introduction : [lesson.introduction]} />
                   </div>
                 )}

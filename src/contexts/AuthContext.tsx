@@ -40,20 +40,18 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
               error.message?.includes('invalid_grant') ||
               error.message?.includes('refresh_token_not_found')) {
             console.log('Invalid refresh token detected, clearing session');
-            await supabase.auth.signOut();
+            await signOut();
             setUser(null);
             setProfileComplete(false);
             setLoading(false);
-            window.location.href = '/';
             return;
           }
           
           // Clear any invalid session and redirect to clean state
-          await supabase.auth.signOut();
+          await signOut();
           setUser(null);
           setProfileComplete(false);
           setLoading(false);
-          window.location.href = '/';
           return;
         }
 
@@ -72,20 +70,18 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
              error.message?.includes('invalid_grant') ||
              error.message?.includes('refresh_token_not_found'))) {
           console.log('Invalid refresh token detected in catch, clearing session');
-          await supabase.auth.signOut();
+          await signOut();
           setUser(null);
           setProfileComplete(false);
           setLoading(false);
-          window.location.href = '/';
           return;
         }
         
         // Clear any invalid session and redirect to clean state
-        await supabase.auth.signOut();
+        await signOut();
         setUser(null);
         setProfileComplete(false);
         setLoading(false);
-        window.location.href = '/';
       }
     };
 
@@ -98,11 +94,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       // Handle token refresh errors
       if (event === 'TOKEN_REFRESHED' && !session) {
         console.log('Token refresh failed, clearing session');
-        await supabase.auth.signOut();
+        await signOut();
         setUser(null);
         setProfileComplete(false);
         setLoading(false);
-        window.location.href = '/';
         return;
       }
       
@@ -156,10 +151,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
               error.message?.includes('invalid_grant') ||
               error.message?.includes('refresh_token_not_found')) {
             console.log('Invalid refresh token detected in profile check, clearing session');
-            await supabase.auth.signOut();
+            await signOut();
             setProfileComplete(false);
             setUser(null);
-            window.location.href = '/';
             return;
           }
           
@@ -167,10 +161,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           if (error.message?.includes('session_not_found') || 
               (error as any)?.status === 403 ||
               error.message?.includes('JWT')) {
-            await supabase.auth.signOut();
+            await signOut();
             setProfileComplete(false);
             setUser(null);
-            window.location.href = '/';
             return;
           }
           
@@ -199,10 +192,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           error?.message?.includes('invalid_grant') ||
           error?.message?.includes('refresh_token_not_found')) {
         console.log('Invalid refresh token detected in profile completion check, clearing session');
-        await supabase.auth.signOut();
+        await signOut();
         setProfileComplete(false);
         setUser(null);
-        window.location.href = '/';
         return;
       }
       
@@ -210,10 +202,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       if (error?.message?.includes('session_not_found') || 
           error?.status === 403 ||
           error?.message?.includes('JWT')) {
-        await supabase.auth.signOut();
+        await signOut();
         setProfileComplete(false);
         setUser(null);
-        window.location.href = '/';
         return;
       }
       
@@ -230,7 +221,23 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   const signOut = async () => {
-    await supabase.auth.signOut();
+    try {
+      await supabase.auth.signOut();
+    } catch (error) {
+      console.error('Error during sign out:', error);
+    } finally {
+      // Clear all auth-related data from localStorage
+      localStorage.removeItem('supabase.auth.token');
+      localStorage.removeItem('sb-svtniefaxjhbnemxylth-auth-token');
+      
+      // Clear any other potential auth keys
+      Object.keys(localStorage).forEach(key => {
+        if (key.includes('supabase') || key.includes('auth')) {
+          localStorage.removeItem(key);
+        }
+      });
+    }
+    
     setProfileComplete(false);
     // Redirect to landing page after sign out
     window.location.href = '/';

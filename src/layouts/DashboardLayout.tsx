@@ -58,9 +58,9 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
       label: 'Dashboard'
     },
     {
-      path: '/journey',
+      path: '/guide',
       icon: Map,
-      label: 'Journey Hub'
+      label: 'Guide'
     },
     {
       path: '/library',
@@ -86,13 +86,7 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
       path: '/help',
       icon: LifeBuoy,
       label: 'Help'
-    },
-    // Add debug menu item in development
-    ...(process.env.NODE_ENV === 'development' ? [{
-      path: '/user-type-test',
-      icon: Settings,
-      label: 'Debug User Types'
-    }] : [])
+    }
   ];
 
   // Add admin menu item conditionally

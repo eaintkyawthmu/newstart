@@ -1,5 +1,7 @@
 import React, { ReactNode, useState, useEffect } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
+import { usePremiumAccess } from '../hooks/usePremiumAccess';
 import { supabase } from '../lib/supabaseClient';
 import ProfileMenu from '../components/ProfileMenu';
 import {

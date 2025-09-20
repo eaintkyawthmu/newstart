@@ -1,14 +1,7 @@
 import React, { ReactNode, useState, useEffect } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
-import { usePremiumAccess } from '../hooks/usePremiumAccess';
-import { useStripe } from '../hooks/useStripe';
 import { supabase } from '../lib/supabaseClient';
 import ProfileMenu from '../components/ProfileMenu';
-import SearchBar from '../components/ui/SearchBar';
-import NotificationCenter from '../components/ui/NotificationCenter';
-import OfflineIndicator from '../components/ui/OfflineIndicator';
-import AccessibilityMenu from '../components/ui/AccessibilityMenu';
 import {
   LayoutDashboard,
   BookOpen,
@@ -30,33 +23,25 @@ import {
   Search,
   Eye
 } from 'lucide-react';
-import { BottomNavBar, MobileHeader, MobileMenu } from '../components/navigation';
 
 type DashboardLayoutProps = {
   children: ReactNode;
 };
 
 const DashboardLayout = ({ children }: DashboardLayoutProps) => {
-  const { user } = useAuth();
   const { hasPremiumAccess, premiumTier } = usePremiumAccess();
-  const { subscribeToPlan } = useStripe();
-  const navigate = useNavigate();
   const location = useLocation();
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
-  const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
-  const [isAccessibilityOpen, setIsAccessibilityOpen] = useState(false);
-  const [unreadNotifications, setUnreadNotifications] = useState(3);
-
   const baseMenuItems = [
     {
       path: '/dashboard',
       icon: LayoutDashboard,
       label: 'Dashboard'
-    },
+      label: 'Dashboard'
     {
       path: '/guide',
       icon: Map,
@@ -87,12 +72,6 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
       icon: LifeBuoy,
       label: 'Help'
     }
-  ];
-
-  // Add admin menu item conditionally
-  const menuItems = isAdmin
-    ? [...baseMenuItems, {
-        path: '/admin',
         icon: Settings,
         label: 'Admin Dashboard'
       }]
@@ -175,11 +154,11 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
 
   // Determine back button destination
   const getBackPath = () => {
-    if (location.pathname.includes('/courses/')) {
-      return '/journey';
+    if (location.pathname.includes('/guide/')) {
+      return '/guide';
     }
     if (location.pathname.includes('/steps/')) {
-      return '/journey';
+      return '/guide';
     }
     if (location.pathname.startsWith('/admin/users/')) {
       return '/admin';
@@ -189,94 +168,9 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
 
   // Get custom right content for specific pages
   const getRightContent = () => {
-    if (location.pathname === '/chat') {
-      return (
-        <div className="flex items-center space-x-2">
-          <button
-            onClick={() => setIsAccessibilityOpen(true)}
-            className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
-            title="Accessibility settings"
-          >
-            <Eye className="h-5 w-5 text-gray-600" />
-          </button>
-          <button
-            onClick={() => {
-              // Clear conversation functionality would go here
-              window.dispatchEvent(new CustomEvent('clear-chat'));
-            }}
-            className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
-            title="Clear conversation"
-          >
-            <RotateCcw className="h-5 w-5 text-gray-600" />
-          </button>
-          <button
-            onClick={() => {
-              // Export conversation functionality would go here
-              window.dispatchEvent(new CustomEvent('export-chat'));
-            }}
-            className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
-            title="Export conversation"
-          >
-            <Download className="h-5 w-5 text-gray-600" />
-          </button>
-        </div>
-      );
-    }
-    
-    // For courses and lessons, we might want to add a completion button
-    if (location.pathname.includes('/courses/') && location.pathname.includes('/lessons/')) {
-      return (
-        <button
-          onClick={() => {
-            // Toggle completion functionality would go here
-            window.dispatchEvent(new CustomEvent('toggle-lesson-completion'));
-          }}
-          className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
-        >
-          {/* This would be a dynamic icon based on completion status */}
-        </button>
-      );
-    }
-    
-    // Default is just the language toggle
     return (
       <div className="flex items-center space-x-2">
-        <button
-          onClick={() => setIsSearchOpen(true)}
-          className="p-2 rounded-lg hover:bg-gray-100 transition-colors"
-          title="Search"
-        >
-          <Search className="h-5 w-5 text-gray-600" />
-        </button>
-        
-        <button
-          onClick={() => setIsNotificationsOpen(true)}
-          className="relative p-2 rounded-lg hover:bg-gray-100 transition-colors"
-          title="Notifications"
-        >
-          <Bell className="h-5 w-5 text-gray-600" />
-          {unreadNotifications > 0 && (
-            <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
-              {unreadNotifications}
-            </span>
-          )}
-        </button>
-        
-        <button
-          onClick={() => setIsAccessibilityOpen(true)}
-          className="p-2 rounded-lg hover:bg-gray-100 transition-colors"
-          title="Accessibility settings"
-        >
-          <Eye className="h-5 w-5 text-gray-600" />
-        </button>
-      </div>
-    );
-  };
-
-  return (
-    <div className="min-h-screen bg-gray-50 flex">
-      {/* Desktop Sidebar - Visible only on md and larger screens */}
-      <aside
+        {/* Simplified header content */}
         className={`hidden md:flex flex-col fixed top-0 h-screen bg-white border-r border-gray-200 z-40 transition-all duration-300 ease-in-out ${
           isCollapsed ? 'w-16' : 'w-64'
         }`}
@@ -331,20 +225,6 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
             })}
           </div>
 
-          {/* Premium Upgrade Button */}
-          {!isCollapsed && !hasPremiumAccess && (
-            <div className="mt-6 pt-6 border-t border-gray-200">
-              <button
-                onClick={() => subscribeToPlan('monthly')}
-                className="w-full flex items-center px-4 py-3 bg-gradient-to-r from-purple-600 to-indigo-600 text-white rounded-lg hover:from-purple-700 hover:to-indigo-700 transition-colors"
-              >
-                <Crown className="h-5 w-5 mr-3 flex-shrink-0" />
-                <span className="font-medium">
-                  Upgrade to Premium
-                </span>
-              </button>
-            </div>
-          )}
         </nav>
 
         {/* Sidebar Footer with Profile */}
@@ -368,29 +248,8 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
 
       {/* Main Content Area */}
       <div className={`flex-1 flex flex-col min-h-screen min-w-0 ${isCollapsed ? 'md:ml-16' : 'md:ml-64'}`}>
-        {/* Mobile Header (Visible only on mobile ) */}
-        {!location.pathname.includes('/lessons/') && (
-        <div className="md:hidden">
-          <MobileHeader
-            onMenuToggle={toggleMobileMenu}
-            showBackButton={showBackButton()}
-            backPath={getBackPath()}
-            rightContent={getRightContent()}
-          />
-        </div>
-      )}
-
-        {/* Mobile Menu (Controlled by isMobileMenuOpen, visible only on mobile) */}
-        <MobileMenu
-          isOpen={isMobileMenuOpen}
-          onClose={() => setIsMobileMenuOpen(false)}
-          menuItems={menuItems}
-        />
-
         {/* Desktop Header (Visible only on desktop ) */}
-        <div className={`hidden md:flex items-center justify-end h-16 px-8 bg-white border-b border-gray-200 ${
-          location.pathname.includes('/lessons/') ? 'md:hidden' : ''
-        }`}>
+        <div className="hidden md:flex items-center justify-end h-16 px-8 bg-white border-b border-gray-200">
           <div className="flex items-center space-x-4">
             {getRightContent()}
           </div>
@@ -399,15 +258,11 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
         {/* Page Content */}
         <main 
           id="main-content"
-          className={`flex-1 min-w-0 overflow-y-scroll md:overflow-auto overflow-x-hidden hide-scrollbar [scrollbar-gutter:stable] ${
-            location.pathname.includes('/lessons/') 
-              ? 'p-0 pt-0' 
-              : 'p-4 md:p-6 lg:p-8 pb-safe pt-0 md:pt-6'
-          }`}
+          className="flex-1 min-w-0 overflow-y-auto overflow-x-hidden p-4 md:p-6 lg:p-8 pt-0 md:pt-6"
           role="main"
           aria-label="Main content"
         >
-          <div className={`w-full min-w-0 ${location.pathname.includes('/lessons/') ? '' : 'max-w-7xl mx-auto'}`}>
+          <div className="w-full min-w-0 max-w-7xl mx-auto">
             {/* Main Content */}
             {children}
           </div>
@@ -419,45 +274,7 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
             &copy; {new Date().getFullYear()} My New Start. 
           </div>
         </footer>
-
-        {/* Mobile Bottom Navigation  (Visible only on mobile) */}
-        <BottomNavBar />
       </div>
-      
-      {/* Global UI Components */}
-      <OfflineIndicator />
-      
-      {/* Search Modal */}
-      {isSearchOpen && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-start justify-center pt-20 px-4">
-          <div className="bg-white rounded-lg shadow-xl max-w-2xl w-full">
-            <div className="p-4">
-              <SearchBar 
-                autoFocus={true}
-                onResultClick={() => setIsSearchOpen(false)}
-              />
-              <button
-                onClick={() => setIsSearchOpen(false)}
-                className="mt-4 w-full text-center text-gray-600 hover:text-gray-800 py-2"
-              >
-                Close
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-      
-      {/* Notifications */}
-      <NotificationCenter 
-        isOpen={isNotificationsOpen}
-        onClose={() => setIsNotificationsOpen(false)}
-      />
-      
-      {/* Accessibility Menu */}
-      <AccessibilityMenu 
-        isOpen={isAccessibilityOpen}
-        onClose={() => setIsAccessibilityOpen(false)}
-      />
     </div>
   );
 };

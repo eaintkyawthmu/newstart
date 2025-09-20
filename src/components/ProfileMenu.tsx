@@ -1,6 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useLanguage } from '../contexts/LanguageContext';
 import { useAuth } from '../contexts/AuthContext';
 import { supabase } from '../lib/supabaseClient';
 import {
@@ -19,7 +18,6 @@ interface ProfileMenuProps {
 }
 
 const ProfileMenu = ({ isOpen, onToggle, isCollapsed }: ProfileMenuProps) => {
-  const { language } = useLanguage();
   const { signOut } = useAuth();
   const navigate = useNavigate();
   const [userProfile, setUserProfile] = useState<{ first_name: string; last_name: string } | null>(null);
@@ -118,7 +116,7 @@ const ProfileMenu = ({ isOpen, onToggle, isCollapsed }: ProfileMenuProps) => {
               className="w-full flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
             >
               <User className="h-4 w-4 mr-3 text-gray-400" />
-              {language === 'en' ? 'Edit Profile' : 'ပရိုဖိုင်ပြင်ဆင်ရန်'}
+              Edit Profile
             </button>
 
             <button
@@ -126,7 +124,7 @@ const ProfileMenu = ({ isOpen, onToggle, isCollapsed }: ProfileMenuProps) => {
               className="w-full flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
             >
               <HelpCircle className="h-4 w-4 mr-3 text-gray-400" />
-              {language === 'en' ? 'Help & Support' : 'အကူအညီနှင့် ပံ့ပိုးမှု'}
+              Help & Support
             </button>
 
             <button
@@ -134,7 +132,7 @@ const ProfileMenu = ({ isOpen, onToggle, isCollapsed }: ProfileMenuProps) => {
               className="w-full flex items-center px-4 py-2 text-sm text-red-600 hover:bg-red-50"
             >
               <LogOut className="h-4 w-4 mr-3" />
-              {language === 'en' ? 'Sign Out' : 'ထွက်မည်'}
+              Sign Out
             </button>
           </div>
         </div>

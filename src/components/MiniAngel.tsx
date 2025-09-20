@@ -2,7 +2,6 @@ import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { MessageSquare, X, Send, Loader2, Minimize2, Maximize2, ExternalLink } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
-import { useAccessibility } from './ui/AccessibilityProvider';
 
 type Message = {
   role: 'user' | 'assistant';
@@ -15,7 +14,6 @@ const INITIAL_RETRY_DELAY = 1000; // 1 second
 
 const MiniAngel = () => {
   const navigate = useNavigate();
-  const { announceMessage } = useAccessibility();
   const [isOpen, setIsOpen] = useState(false);
   const [isMinimized, setIsMinimized] = useState(false);
   const [messages, setMessages] = useState<Message[]>([]);
@@ -93,9 +91,6 @@ const MiniAngel = () => {
       const data = await response.json();
       setMessages(prev => [...prev, { role: 'assistant', content: data.message }]);
       
-      // Announce new message to screen readers
-      announceMessage('New message from Mini Angel');
-      
       // Store the new or existing threadId
       if (data.threadId && data.threadId !== threadId) {
         setThreadId(data.threadId);
@@ -155,7 +150,7 @@ const MiniAngel = () => {
                 onClick={openFullChat}
                 className="text-white hover:text-gray-200 transition-all duration-200 p-1 rounded focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-blue-600"
                 aria-label="Open full chat"
-                title={language === 'en' ? 'Open full chat' : 'စကားပြောမှုအပြည့်အစုံ ဖွင့်ရန်'}
+                title="Open full chat"
               >
                 <ExternalLink className="h-4 w-4" aria-hidden="true" />
               </button>

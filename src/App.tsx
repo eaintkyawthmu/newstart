@@ -5,6 +5,7 @@ import SkipLink from './components/SkipLink';
 import { StepProvider } from './contexts/StepContext';
 import { AuthProvider } from './contexts/AuthContext';
 import { ToastProvider } from './contexts/ToastContext';
+import { LanguageProvider } from './contexts/LanguageContext';
 import { AccessibilityProvider } from './components/ui';
 import { useAuth } from './contexts/AuthContext';
 import { supabase } from './lib/supabaseClient';
@@ -314,11 +315,13 @@ function App() {
         <BrowserRouter>
           <SkipLink />
           <AuthProvider>
-            <StepProvider>
-              <ToastProvider>
-                <AppContent />
-              </ToastProvider>
-            </StepProvider>
+            <LanguageProvider>
+              <StepProvider>
+                <ToastProvider>
+                  <AppContent />
+                </ToastProvider>
+              </StepProvider>
+            </LanguageProvider>
           </AuthProvider>
         </BrowserRouter>
       </AccessibilityProvider>

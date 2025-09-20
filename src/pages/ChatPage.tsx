@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { useLanguage } from '../contexts/LanguageContext';
 import { useNavigate } from 'react-router-dom';
 import { MessageSquare, Send, Loader2 } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
@@ -11,7 +10,6 @@ type Message = {
 };
 
 const ChatPage = () => {
-  const { language } = useLanguage();
   const navigate = useNavigate();
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
@@ -94,7 +92,7 @@ const ChatPage = () => {
           },
           body: JSON.stringify({
             message: userMessage,
-            language,
+            language: 'en',
             threadId,
           }),
         }
@@ -156,20 +154,16 @@ const ChatPage = () => {
 
   const suggestedQuestions = [
     {
-      en: "How do I build credit in the U.S.?",
-      my: "အမေရိကန်တွင် ခရက်ဒစ်ကို ဘယ်လို တည်ဆောက်မလဲ?"
+      text: "How do I build credit in the U.S.?"
     },
     {
-      en: "What's the difference between W-2 and 1099?",
-      my: "W-2 နှင့် 1099 ကွာခြားချက်က ဘာလဲ?"
+      text: "What's the difference between W-2 and 1099?"
     },
     {
-      en: "How do I open a bank account?",
-      my: "ဘဏ်အကောင့် ဘယ်လို ဖွင့်မလဲ?"
+      text: "How do I open a bank account?"
     },
     {
-      en: "What insurance do I need?",
-      my: "ဘယ်အာမခံတွေ လိုအပ်လဲ?"
+      text: "What insurance do I need?"
     }
   ];
 
@@ -177,10 +171,10 @@ const ChatPage = () => {
     <div className="pb-16 md:pb-0">
       <div className="mb-6">
         <h1 className="text-2xl font-bold text-gray-800 mb-2">
-          {language === 'en' ? 'Mini Angel' : 'Mini Angel'}
+          Mini Angel
         </h1>
         <p className="text-gray-600">
-          {language === 'en' ? 'Your AI Financial Guide' : 'သင့် AI ငွေကြေးလမ်းညွှန်'}
+          Your AI Financial Guide
         </p>
       </div>
 
@@ -193,23 +187,21 @@ const ChatPage = () => {
                 <MessageSquare className="h-10 w-10 text-blue-600" />
               </div>
               <h2 className="text-2xl font-semibold text-gray-900 mb-4">
-                {language === 'en' ? 'Welcome to Mini Angel!' : 'Mini Angel သို့ ကြိုဆိုပါသည်!'}
+                Welcome to Mini Angel!
               </h2>
               <p className="text-gray-600 mb-8 max-w-2xl mx-auto">
-                {language === 'en' 
-                  ? 'I\'m here to help you navigate personal finance in the U.S. Ask me anything about banking, credit, taxes, insurance, or any other financial topic.'
-                  : 'အမေရိကန်တွင် ကိုယ်ရေးကိုယ်တာ ငွေကြေးကိစ္စများကို လမ်းညွှန်ပေးရန် ကျွန်တော် ဤနေရာတွင် ရှိပါသည်။ ဘဏ်လုပ်ငန်း၊ ခရက်ဒစ်၊ အခွန်၊ အာမခံ သို့မဟုတ် အခြားငွေကြေးဆိုင်ရာ အကြောင်းအရာများအကြောင်း မေးခွန်းများ မေးနိုင်ပါသည်။'}
+                I'm here to help you navigate personal finance in the U.S. Ask me anything about banking, credit, taxes, insurance, or any other financial topic.
               </p>
               
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3 max-w-2xl mx-auto">
                 {suggestedQuestions.map((question, index) => (
                   <button
                     key={index}
-                    onClick={() => setInput(language === 'en' ? question.en : question.my)}
+                    onClick={() => setInput(question.text)}
                     className="p-4 text-left bg-white border border-gray-200 rounded-lg hover:border-blue-300 hover:bg-blue-50 transition-colors"
                   >
                     <p className="text-sm text-gray-700">
-                      {language === 'en' ? question.en : question.my}
+                      {question.text}
                     </p>
                   </button>
                 ))}
@@ -273,7 +265,7 @@ const ChatPage = () => {
                       <div className="flex items-center space-x-2">
                         <Loader2 className="h-4 w-4 animate-spin text-blue-600" />
                         <span className="text-gray-600">
-                          {language === 'en' ? 'Thinking...' : 'စဉ်းစားနေသည်...'}
+                          Thinking...
                         </span>
                       </div>
                     </div>
@@ -296,9 +288,7 @@ const ChatPage = () => {
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
                 onKeyDown={handleKeyDown}
-                placeholder={language === 'en' 
-                  ? "Ask me about personal finance, banking, credit, taxes..." 
-                  : "ကိုယ်ရေးကိုယ်တာ ငွေကြေး၊ ဘဏ်လုပ်ငန်း၊ ခရက်ဒစ်၊ အခွန်အကြောင်း မေးပါ..."}
+                placeholder="Ask me about personal finance, banking, credit, taxes..."
                 className="w-full resize-none rounded-xl border border-gray-300 px-4 py-3 pr-12 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 rows={1}
                 style={{ minHeight: '52px', maxHeight: '120px' }}

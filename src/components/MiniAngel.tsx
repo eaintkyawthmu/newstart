@@ -1,6 +1,4 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { useLanguage } from '../contexts/LanguageContext';
-import { PageHeader } from '../components/navigation';
 import { useNavigate } from 'react-router-dom';
 import { MessageSquare, X, Send, Loader2, Minimize2, Maximize2, ExternalLink } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
@@ -16,7 +14,6 @@ const MAX_RETRIES = 3;
 const INITIAL_RETRY_DELAY = 1000; // 1 second
 
 const MiniAngel = () => {
-  const { language } = useLanguage();
   const navigate = useNavigate();
   const { announceMessage } = useAccessibility();
   const [isOpen, setIsOpen] = useState(false);
@@ -87,7 +84,7 @@ const MiniAngel = () => {
           },
           body: JSON.stringify({
             message: userMessage,
-            language,
+            language: 'en',
             threadId, // Pass the current threadId
           }),
         }
@@ -97,7 +94,7 @@ const MiniAngel = () => {
       setMessages(prev => [...prev, { role: 'assistant', content: data.message }]);
       
       // Announce new message to screen readers
-      announceMessage(language === 'en' ? 'New message from Mini Angel' : 'Mini Angel မှ စာအသစ်');
+      announceMessage('New message from Mini Angel');
       
       // Store the new or existing threadId
       if (data.threadId && data.threadId !== threadId) {
@@ -197,15 +194,13 @@ const MiniAngel = () => {
                   <div className="text-center text-gray-500 py-8 animate-fade-in">
                     <MessageSquare className="h-12 w-12 mx-auto mb-4 text-gray-300" aria-hidden="true" />
                     <p className="text-sm">
-                      {language === 'en' 
-                        ? 'Hi! I\'m Mini Angel. Ask me anything about personal finance in the U.S.'
-                        : 'မင်္ဂလာပါ! ကျွန်တော် Mini Angel ပါ။ အမေရိကန်တွင် ကိုယ်ရေးကိုယ်တာ ငွေကြေးအကြောင်း မေးခွန်းများ မေးနိုင်ပါသည်။'}
+                      Hi! I'm Mini Angel. Ask me anything about personal finance in the U.S.
                     </p>
                     <button
                       onClick={openFullChat}
                       className="mt-3 text-blue-600 hover:text-blue-700 text-sm underline focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 rounded"
                     >
-                      {language === 'en' ? 'Open full chat' : 'စကားပြောမှုအပြည့်အစုံ ဖွင့်ရန်'}
+                      Open full chat
                     </button>
                   </div>
                 )}
@@ -248,9 +243,7 @@ const MiniAngel = () => {
                     value={input}
                     onChange={(e) => setInput(e.target.value)}
                     onKeyDown={handleKeyDown}
-                    placeholder={language === 'en' 
-                      ? "Ask me about personal finance..." 
-                      : "ကိုယ်ရေးကိုယ်တာ ငွေကြေးအကြောင်း မေးပါ..."}
+                    placeholder="Ask me about personal finance..."
                     className="flex-1 resize-none rounded-lg border border-gray-300 p-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm transition-all duration-200"
                     rows={1}
                     style={{ minHeight: '44px' }}

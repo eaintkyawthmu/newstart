@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useLanguage } from '../contexts/LanguageContext';
 import { useStep } from '../contexts/StepContext';
 import { useSEO } from '../hooks/useSEO';
 import { useStripe } from '../hooks/useStripe';
@@ -33,7 +32,6 @@ type UserProfile = {
 };
 
 const Dashboard = () => {
-  const { t, language } = useLanguage();
   const { currentStep, isCompleted } = useStep();
   const navigate = useNavigate();
   const { showToast } = useToast();
@@ -60,16 +58,12 @@ const Dashboard = () => {
     const canceled = queryParams.get('canceled');
     
     if (success === 'true') {
-      showToast('success', language === 'en' 
-        ? 'Payment successful! Your premium access is now active.' 
-        : 'ငွေပေးချေမှု အောင်မြင်ပါသည်! သင့် premium အသုံးပြုခွင့် ယခု အသက်ဝင်နေပါပြီ။');
+      showToast('success', 'Payment successful! Your premium access is now active.');
       
       // Remove query params from URL
       window.history.replaceState({}, document.title, window.location.pathname);
     } else if (canceled === 'true') {
-      showToast('info', language === 'en' 
-        ? 'Payment canceled. You can try again anytime.' 
-        : 'ငွေပေးချေမှု ပယ်ဖျက်ခဲ့သည်။ သင် မည်သည့်အချိန်တွင်မဆို ထပ်မံကြိုးစားနိုင်ပါသည်။');
+      showToast('info', 'Payment canceled. You can try again anytime.');
       
       // Remove query params from URL
       window.history.replaceState({}, document.title, window.location.pathname);
@@ -249,30 +243,26 @@ const Dashboard = () => {
         <div className="flex flex-col space-y-4">
           <div>
             <h1 className="text-2xl sm:text-3xl font-bold mb-2">
-              {language === 'en' 
-                ? `Welcome${profile?.first_name ? ` ${profile.first_name}` : ''}!` 
-                : `ကြိုဆိုပါသည်${profile?.first_name ? ` ${profile.first_name}` : ''}!`}
+              Welcome{profile?.first_name ? ` ${profile.first_name}` : ''}!
             </h1>
             <p className="text-blue-100 text-base sm:text-lg">
-              {language === 'en' 
-                ? 'Your journey to a successful life in America starts here'
-                : 'အမေရိကန်တွင် အောင်မြင်သောဘဝဆီသို့ သင့်ခရီးစဉ် ဤနေရာတွင် စတင်ပါသည်'}
+              Your journey to a successful life in America starts here
             </p>
           </div>
           <div className="flex flex-col sm:flex-row gap-3">
             <button
-              onClick={() => navigate('/courses/new-to-america')}
+              onClick={() => navigate('/guide')}
               className="px-6 py-3 bg-white text-blue-700 rounded-lg hover:bg-blue-50 transition-all duration-200 font-medium text-center focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-blue-600 min-h-[44px] press-effect"
               aria-label="Start your immigration journey course"
             >
-              {language === 'en' ? 'Start Your Journey' : 'သင့်ခရီးစဉ်ကို စတင်ပါ'}
+              Start Your Journey
             </button>
             <button
               onClick={() => navigate('/profile-setup')}
               className="px-6 py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-400 transition-all duration-200 text-center focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-blue-500 min-h-[44px] press-effect"
               aria-label="Edit your profile information"
             >
-              {language === 'en' ? 'Edit Profile' : 'ပရိုဖိုင်ပြင်ဆင်ရန်'}
+              Edit Profile
             </button>
           </div>
         </div>

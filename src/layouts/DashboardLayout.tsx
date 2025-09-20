@@ -41,7 +41,7 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
       path: '/dashboard',
       icon: LayoutDashboard,
       label: 'Dashboard'
-      label: 'Dashboard'
+    },
     {
       path: '/guide',
       icon: Map,
@@ -72,6 +72,11 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
       icon: LifeBuoy,
       label: 'Help'
     }
+  ];
+
+  const menuItems = isAdmin
+    ? [...baseMenuItems, {
+        path: '/admin',
         icon: Settings,
         label: 'Admin Dashboard'
       }]
@@ -171,6 +176,14 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
     return (
       <div className="flex items-center space-x-2">
         {/* Simplified header content */}
+      </div>
+    );
+  };
+
+  return (
+    <div className="flex h-screen bg-gray-50">
+      {/* Desktop Sidebar */}
+      <aside
         className={`hidden md:flex flex-col fixed top-0 h-screen bg-white border-r border-gray-200 z-40 transition-all duration-300 ease-in-out ${
           isCollapsed ? 'w-16' : 'w-64'
         }`}
